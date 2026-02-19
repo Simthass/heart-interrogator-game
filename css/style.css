@@ -1,0 +1,352 @@
+/* Main Stylesheet for The Heart Interrogator */
+/* Student: Simthass MYM (2540927) */
+/* CIS045-3 Assignment - UI Only (No Backend) */
+
+/* ===== CSS RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ===== ROOT VARIABLES ===== */
+:root {
+  /* Color scheme - retro detective theme */
+  --primary-color: #2563eb;
+  --secondary-color: #1e40af;
+  --accent-color: #10b981;
+  --danger-color: #ef4444;
+  --warning-color: #f59e0b;
+  --dark-bg: #1a1a2e;
+  --card-bg: #16213e;
+  --light-text: #e2e8f0;
+  --gray-text: #94a3b8;
+  --border-color: #334155;
+
+  /* Fonts - gaming style */
+  --font-title: "Orbitron", sans-serif;
+  --font-retro: "Press Start 2P", cursive;
+  --font-mono: "VT323", monospace;
+}
+
+/* ===== BODY STYLES ===== */
+body {
+  font-family: var(--font-title);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: var(--light-text);
+  min-height: 100vh;
+  /* adding subtle pattern background */
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 35px,
+    rgba(255, 255, 255, 0.03) 35px,
+    rgba(255, 255, 255, 0.03) 70px
+  );
+}
+
+/* ===== CONTAINER LAYOUTS ===== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* ===== LOGIN PAGE STYLES ===== */
+.login-card {
+  background: var(--card-bg);
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  max-width: 450px;
+  width: 100%;
+  border: 2px solid var(--border-color);
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.shield-icon {
+  font-size: 60px;
+  margin-bottom: 15px;
+  animation: pulse 2s infinite;
+}
+
+/* simple pulse animation i found online */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.game-title {
+  font-family: var(--font-retro);
+  font-size: 24px;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--gray-text);
+  margin-top: 10px;
+}
+
+/* ===== FORM STYLES ===== */
+.login-form,
+.register-form {
+  width: 100%;
+}
+
+.form-title {
+  font-size: 20px;
+  margin-bottom: 25px;
+  text-align: center;
+  color: var(--light-text);
+}
+
+.input-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 12px 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--light-text);
+  font-size: 14px;
+  font-family: var(--font-title);
+  transition: all 0.3s ease;
+}
+
+/* input focus effect */
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background: rgba(37, 99, 235, 0.1);
+}
+
+.eye-icon {
+  position: absolute;
+  right: 15px;
+  top: 12px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.hint-text {
+  display: block;
+  font-size: 11px;
+  color: var(--gray-text);
+  margin-top: 5px;
+}
+
+/* ===== FORM OPTIONS ===== */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.remember-me input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
+.forgot-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.forgot-link:hover {
+  color: var(--accent-color);
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+  width: 100%;
+  padding: 15px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: var(--font-title);
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.btn-primary:hover {
+  background: var(--secondary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 15px;
+  background: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: var(--font-title);
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(37, 99, 235, 0.1);
+  transform: translateY(-2px);
+}
+
+/* ===== DIVIDER ===== */
+.divider {
+  text-align: center;
+  margin: 25px 0;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+.divider span {
+  background: var(--card-bg);
+  padding: 0 15px;
+  color: var(--gray-text);
+  font-size: 12px;
+}
+
+/* ===== FOOTER INFO ===== */
+.footer-info {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.small-text {
+  font-size: 11px;
+  color: var(--gray-text);
+  margin-bottom: 10px;
+}
+
+.footer-links {
+  font-size: 11px;
+}
+
+.footer-links a {
+  color: var(--gray-text);
+  text-decoration: none;
+  margin: 0 5px;
+}
+
+.footer-links a:hover {
+  color: var(--primary-color);
+}
+
+/* ===== PASSWORD STRENGTH BAR ===== */
+.password-strength {
+  margin-top: 5px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.strength-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--danger-color);
+  transition: all 0.3s ease;
+}
+
+/* ===== CHECKBOX STYLES ===== */
+.checkbox-group {
+  margin-bottom: 20px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-top: 3px;
+}
+
+/* ===== REGISTER CARD ===== */
+.register-card {
+  background: var(--card-bg);
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  max-width: 500px;
+  width: 100%;
+  border: 2px solid var(--border-color);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .login-card,
+  .register-card {
+    padding: 25px;
+    margin: 10px;
+  }
+
+  .game-title {
+    font-size: 18px;
+  }
+
+  .form-options {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+}

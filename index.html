@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Heart Interrogator - Detective Login</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- Using Google Fonts for retro gaming feel -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="login-page">
+    <div class="container">
+      <!-- Main login card -->
+      <div class="login-card">
+        <!-- Logo and title section -->
+        <div class="header-section">
+          <div class="shield-icon">🛡️</div>
+          <h1 class="game-title">THE HEART INTERROGATOR</h1>
+          <p class="subtitle">Cyber Detective Training Academy</p>
+        </div>
+
+        <!-- Login form -->
+        <form id="loginForm" class="login-form">
+          <h2 class="form-title">Detective Login</h2>
+
+          <div class="input-group">
+            <input
+              type="text"
+              id="username"
+              placeholder="Detective ID or Email"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter Secure Passcode"
+              required
+            />
+            <span class="eye-icon" onclick="togglePassword()">👁️</span>
+          </div>
+
+          <div class="form-options">
+            <label class="remember-me">
+              <input type="checkbox" id="rememberMe" />
+              <span>Remember Me</span>
+            </label>
+            <a href="#" class="forgot-link">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="btn-primary">LOGIN</button>
+
+          <div class="divider">
+            <span>OR</span>
+          </div>
+
+          <button type="button" class="btn-secondary" onclick="goToRegister()">
+            Register New Detective
+          </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="footer-info">
+          <p class="small-text">CIS045-3 Assignment | Student ID: 2540927</p>
+          <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <span>|</span>
+            <a href="#">Terms of Service</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/login.js"></script>
+  </body>
+</html>

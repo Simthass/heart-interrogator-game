@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - The Heart Interrogator</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="register-page">
+    <div class="container">
+      <div class="register-card">
+        <!-- Header -->
+        <div class="header-section">
+          <div class="shield-icon">🛡️</div>
+          <h1 class="game-title">THE HEART INTERROGATOR</h1>
+          <p class="subtitle">Join the Detective Academy</p>
+        </div>
+
+        <!-- Registration Form -->
+        <form id="registerForm" class="register-form">
+          <h2 class="form-title">Create Detective Profile</h2>
+
+          <div class="input-group">
+            <input
+              type="text"
+              id="fullName"
+              placeholder="Enter your full name"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <input
+              type="text"
+              id="codename"
+              placeholder="Choose your detective alias"
+              required
+            />
+            <span class="hint-text">This will be your unique username</span>
+          </div>
+
+          <div class="input-group">
+            <input
+              type="email"
+              id="email"
+              placeholder="detective@email.com"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <input
+              type="password"
+              id="newPassword"
+              placeholder="Create secure password"
+              required
+            />
+            <!-- password strength bar -->
+            <div class="password-strength">
+              <div class="strength-bar" id="strengthBar"></div>
+            </div>
+            <span class="hint-text">Min 8 characters</span>
+          </div>
+
+          <div class="input-group">
+            <input
+              type="password"
+              id="confirmPassword"
+              placeholder="Re-enter password"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <select id="country" required>
+              <option value="">Country/Region</option>
+              <option value="uk">Sri Lanka</option>
+              <option value="uk">United Kingdom</option>
+              <option value="us">United States</option>
+              <option value="ca">Canada</option>
+              <option value="au">Australia</option>
+              <option value="in">India</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="terms" required />
+              <span>I agree to the Terms and Data Privacy Policy</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-primary">CREATE ACCOUNT</button>
+
+          <div class="divider">
+            <span>OR</span>
+          </div>
+
+          <button type="button" class="btn-secondary" onclick="goToLogin()">
+            Already a Detective? Login Here
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script src="js/register.js"></script>
+  </body>
+</html>

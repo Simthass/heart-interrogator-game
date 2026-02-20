@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interrogation Room - The Heart Interrogator</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/game.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="game-page">
+    <!-- Top Status Bar -->
+    <div class="status-bar">
+      <div class="status-left">
+        <span class="round-info"
+          >Round <span id="currentRound">3</span>/10</span
+        >
+      </div>
+      <div class="status-center">
+        <div class="lives-display">
+          Lives: <span id="livesDisplay">❤️ ❤️ ❤️</span>
+        </div>
+      </div>
+      <div class="status-right">
+        <span class="score-display"
+          >Score: <span id="scoreValue">245</span> pts</span
+        >
+        <span class="streak-display"
+          >Streak: <span id="streakValue">7</span> 🔥</span
+        >
+      </div>
+    </div>
+
+    <!-- Timer Bar -->
+    <div class="timer-container">
+      <div class="timer-bar" id="timerBar">
+        <div class="timer-fill" id="timerFill"></div>
+      </div>
+      <span class="timer-text" id="timerText">Time Remaining: 10s</span>
+    </div>
+
+    <!-- Main Game Area -->
+    <div class="game-container">
+      <!-- Left Side - AI Suspect Panel -->
+      <div class="suspect-panel">
+        <div class="panel-header">
+          <h3>AI SUSPECT TESTIMONY</h3>
+        </div>
+        <div class="suspect-content">
+          <div class="robot-icon">🤖</div>
+          <div class="suspect-answer">
+            <span class="answer-number" id="suspectAnswer">6</span>
+          </div>
+          <div class="confidence-meter">
+            <span class="confidence-label">Certainty:</span>
+            <div class="confidence-bar">
+              <div class="confidence-fill" style="width: 87%"></div>
+            </div>
+            <span class="confidence-value">87%</span>
+          </div>
+          <p class="suspect-claim">
+            The suspect claims there are <span id="claimNumber">6</span> hearts
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Side - Evidence Panel -->
+      <div class="evidence-panel">
+        <div class="panel-header">
+          <h3>EVIDENCE: Heart Puzzle</h3>
+        </div>
+        <div class="evidence-content">
+          <!-- Placeholder for heart puzzle image -->
+          <div class="puzzle-image">
+            <div class="image-placeholder">
+              <span class="placeholder-text">[Heart Puzzle Image]</span>
+              <p class="api-note">Image from Heart Game API</p>
+            </div>
+          </div>
+          <p class="evidence-instruction">Count the hearts carefully</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decision Panel -->
+    <div class="decision-panel">
+      <h2 class="decision-title">YOUR DECISION:</h2>
+      <div class="decision-buttons">
+        <!-- Trust Button -->
+        <div class="decision-option">
+          <button class="btn-trust" onclick="trustSuspect()">
+            TRUST SUSPECT
+          </button>
+          <p class="option-info">
+            Accept answer: 6 | +20 pts if correct | -1 life if wrong
+          </p>
+        </div>
+
+        <!-- Verify Button -->
+        <div class="decision-option">
+          <button class="btn-verify" onclick="showVerifyInput()">
+            VERIFY MANUALLY
+          </button>
+          <div
+            class="verify-input-group"
+            id="verifyInput"
+            style="display: none"
+          >
+            <input
+              type="number"
+              id="manualCount"
+              placeholder="Enter count"
+              min="0"
+              max="20"
+            />
+            <button class="btn-submit" onclick="submitVerification()">
+              SUBMIT
+            </button>
+          </div>
+          <p class="option-info">+10 pts if correct | -1 life if wrong</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Power-ups Sidebar -->
+    <div class="powerups-sidebar">
+      <h4>Power-Ups</h4>
+      <div class="powerup-item">
+        <span class="powerup-icon">⏭️</span>
+        <span class="powerup-name">Skip</span>
+        <span class="powerup-count">(1)</span>
+      </div>
+      <div class="powerup-item disabled">
+        <span class="powerup-icon">👁️</span>
+        <span class="powerup-name">Reveal</span>
+        <span class="powerup-count">(0)</span>
+      </div>
+      <div class="powerup-item">
+        <span class="powerup-icon">💡</span>
+        <span class="powerup-name">Hint</span>
+        <span class="powerup-count">(2)</span>
+      </div>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="info-bar">
+      <p class="question-text">
+        Question: Was the suspect truthful or deceptive?
+      </p>
+      <button class="help-btn" onclick="showTutorial()">❓ Tutorial</button>
+    </div>
+
+    <script src="js/game.js"></script>
+  </body>
+</html>

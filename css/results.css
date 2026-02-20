@@ -1,0 +1,250 @@
+/* Results Page Styles */
+
+.results-page {
+  padding: 40px 20px;
+}
+
+.results-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.results-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.results-title {
+  font-size: 32px;
+  font-family: var(--font-retro);
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+}
+
+.results-subtitle {
+  font-size: 14px;
+  color: var(--gray-text);
+}
+
+.results-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
+}
+
+.main-results {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 30px;
+  border: 2px solid var(--border-color);
+}
+
+.score-display {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.star-icon {
+  font-size: 60px;
+  display: block;
+  margin-bottom: 15px;
+  animation: pulse 2s infinite;
+}
+
+.points-earned {
+  font-size: 36px;
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.results-table {
+  margin: 30px 0;
+}
+
+.results-table h3 {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: var(--light-text);
+}
+
+.results-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.results-table th {
+  background: rgba(37, 99, 235, 0.1);
+  padding: 12px;
+  text-align: left;
+  font-size: 12px;
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.results-table td {
+  padding: 12px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.correct-row {
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.wrong-row {
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.points-positive {
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.points-negative {
+  color: var(--danger-color);
+  font-weight: bold;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin: 25px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+}
+
+.summary-label {
+  font-size: 12px;
+  color: var(--gray-text);
+}
+
+.summary-value {
+  font-size: 12px;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.btn-continue {
+  flex: 1;
+  padding: 15px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: var(--font-title);
+  transition: all 0.3s;
+}
+
+.btn-continue:hover {
+  background: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+.btn-dashboard {
+  flex: 1;
+  padding: 15px;
+  background: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: var(--font-title);
+  transition: all 0.3s;
+}
+
+.btn-dashboard:hover {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+.side-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.achievement-panel,
+.analysis-panel {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 25px;
+  border: 2px solid var(--border-color);
+  text-align: center;
+}
+
+.achievement-panel h3,
+.analysis-panel h3 {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: var(--light-text);
+}
+
+.achievement-badge-large {
+  font-size: 80px;
+  margin: 20px 0;
+}
+
+.achievement-name {
+  font-size: 16px;
+  color: var(--primary-color);
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.achievement-desc {
+  font-size: 12px;
+  color: var(--gray-text);
+}
+
+.analysis-panel {
+  text-align: left;
+}
+
+.analysis-text {
+  font-size: 12px;
+  color: var(--gray-text);
+  margin-bottom: 12px;
+}
+
+.recommendation {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--light-text);
+}
+
+.recommendation strong {
+  color: var(--primary-color);
+}
+
+@media (max-width: 1024px) {
+  .results-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+}

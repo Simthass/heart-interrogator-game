@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Round Results - The Heart Interrogator</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/results.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="results-page">
+    <div class="results-container">
+      <!-- Header -->
+      <div class="results-header">
+        <h1 class="results-title">INTERROGATION ROUND COMPLETE</h1>
+        <p class="results-subtitle">Round 1 Results</p>
+      </div>
+
+      <div class="results-layout">
+        <!-- Main Results Panel -->
+        <div class="main-results">
+          <div class="score-display">
+            <span class="star-icon">⭐</span>
+            <h2 class="points-earned">+80 POINTS EARNED</h2>
+          </div>
+
+          <!-- Results Table -->
+          <div class="results-table">
+            <h3>Results Breakdown</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Question</th>
+                  <th>Your Decision</th>
+                  <th>Suspect Said</th>
+                  <th>Truth</th>
+                  <th>Result</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="correct-row">
+                  <td>Q1</td>
+                  <td>TRUST</td>
+                  <td>5</td>
+                  <td>5 ✓</td>
+                  <td class="points-positive">+20</td>
+                </tr>
+                <tr class="correct-row">
+                  <td>Q2</td>
+                  <td>VERIFY (6)</td>
+                  <td>7</td>
+                  <td>6 ✓</td>
+                  <td class="points-positive">+10</td>
+                </tr>
+                <tr class="wrong-row">
+                  <td>Q3</td>
+                  <td>TRUST</td>
+                  <td>4</td>
+                  <td>5 ✗</td>
+                  <td class="points-negative">-Life</td>
+                </tr>
+                <tr class="correct-row">
+                  <td>Q4</td>
+                  <td>VERIFY (8)</td>
+                  <td>8</td>
+                  <td>8 ✓</td>
+                  <td class="points-positive">+10</td>
+                </tr>
+                <tr class="correct-row">
+                  <td>Q5</td>
+                  <td>TRUST</td>
+                  <td>6</td>
+                  <td>6 ✓</td>
+                  <td class="points-positive">+20</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Summary Stats -->
+          <div class="summary-stats">
+            <div class="summary-item">
+              <span class="summary-label">Accuracy:</span>
+              <span class="summary-value">4/5 (80%)</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Successful Trusts:</span>
+              <span class="summary-value">2/3</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Successful Verifications:</span>
+              <span class="summary-value">2/2</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Lives Remaining:</span>
+              <span class="summary-value">❤️ ❤️ 🖤</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button class="btn-continue" onclick="continueGame()">
+              CONTINUE TO NEXT ROUND
+            </button>
+            <button class="btn-dashboard" onclick="goToDashboard()">
+              RETURN TO DASHBOARD
+            </button>
+          </div>
+        </div>
+
+        <!-- Side Panels -->
+        <div class="side-panels">
+          <!-- Achievement Panel -->
+          <div class="achievement-panel">
+            <h3>New Achievement Unlocked!</h3>
+            <div class="achievement-badge-large">🏆</div>
+            <p class="achievement-name">Trust Builder</p>
+            <p class="achievement-desc">Successfully trusted suspect 5 times</p>
+          </div>
+
+          <!-- Analysis Panel -->
+          <div class="analysis-panel">
+            <h3>Analysis</h3>
+            <p class="analysis-text">
+              The suspect was deceptive on 2/5 questions (40%)
+            </p>
+            <p class="analysis-text">Your trust accuracy: 66%</p>
+            <p class="recommendation">
+              <strong>Recommendation:</strong> Consider verifying more often
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/results.js"></script>
+  </body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - The Heart Interrogator</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="dashboard-page">
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <div class="nav-left">
+        <h2 class="nav-logo">THE HEART INTERROGATOR</h2>
+      </div>
+      <div class="nav-center">
+        <a href="dashboard.html" class="nav-link active">Home</a>
+        <a href="stats.html" class="nav-link">My Stats</a>
+        <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+        <a href="settings.html" class="nav-link">Settings</a>
+      </div>
+      <div class="nav-right">
+        <div class="user-info">
+          <span class="user-badge">🎖️</span>
+          <span class="username">Det. Phoenix</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+      <!-- Left Panel - Profile Card -->
+      <div class="profile-panel">
+        <div class="profile-card">
+          <div class="profile-pic">
+            <div class="avatar-placeholder">👤</div>
+          </div>
+          <h3 class="detective-name">Detective Phoenix</h3>
+          <p class="codename">@agent_phoenix</p>
+
+          <div class="rank-badge">
+            <span class="badge-icon">🎖️</span>
+            <span class="rank-text">Inspector</span>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">Score</span>
+              <span class="stat-value">2,450</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Cases</span>
+              <span class="stat-value">89</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Accuracy</span>
+              <span class="stat-value">73%</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Streak</span>
+              <span class="stat-value">12 🔥</span>
+            </div>
+          </div>
+
+          <button class="btn-profile">View Full Profile</button>
+        </div>
+      </div>
+
+      <!-- Center Panel - Main Game Area -->
+      <div class="main-panel">
+        <div class="game-card">
+          <h2 class="card-title">Ready for Interrogation?</h2>
+          <p class="card-subtitle">Test the AI Suspect. Trust or Verify?</p>
+
+          <button class="btn-start-game" onclick="startGame()">
+            START NEW INTERROGATION
+          </button>
+
+          <div class="quick-stats">
+            <div class="quick-stat">
+              <span class="label">Today's Cases</span>
+              <span class="value">5</span>
+            </div>
+            <div class="quick-stat">
+              <span class="label">Best Streak</span>
+              <span class="value">18</span>
+            </div>
+          </div>
+
+          <div class="achievements-preview">
+            <h3>Recent Achievements</h3>
+            <div class="badge-row">
+              <div class="achievement-badge">🏆</div>
+              <div class="achievement-badge">⭐</div>
+              <div class="achievement-badge">💎</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Leaderboard Preview -->
+      <div class="leaderboard-panel">
+        <div class="leaderboard-card">
+          <h3 class="card-title">Top Detectives</h3>
+          <div class="leaderboard-list">
+            <div class="leader-item">
+              <span class="rank">#1</span>
+              <span class="name">DetectivePro</span>
+              <span class="score">15,420</span>
+            </div>
+            <div class="leader-item">
+              <span class="rank">#2</span>
+              <span class="name">AgentSmith</span>
+              <span class="score">14,890</span>
+            </div>
+            <div class="leader-item">
+              <span class="rank">#3</span>
+              <span class="name">InspectorMax</span>
+              <span class="score">12,340</span>
+            </div>
+            <div class="leader-item your-rank">
+              <span class="rank">#47</span>
+              <span class="name">You</span>
+              <span class="score">2,450</span>
+            </div>
+          </div>
+          <a href="leaderboard.html" class="view-more-link"
+            >View Full Leaderboard →</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Challenge Section -->
+    <div class="challenge-section">
+      <div class="challenge-card">
+        <div class="challenge-info">
+          <h3>Daily Challenge</h3>
+          <p>Complete 5 interrogations with 80%+ accuracy</p>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 60%"></div>
+            </div>
+            <span class="progress-text">3/5 completed</span>
+          </div>
+        </div>
+        <div class="challenge-reward">
+          <span class="reward-label">Reward</span>
+          <span class="reward-value">+50 pts</span>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+  </body>
+</html>

@@ -3,79 +3,224 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Heart Interrogator - Detective Login</title>
+    <title>The Heart Interrogator - Home</title>
     <link rel="stylesheet" href="css/style.css" />
-    <!-- Using Google Fonts for retro gaming feel -->
+    <!-- using Orbitron font for gaming feel -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
   </head>
-  <body class="login-page">
-    <div class="container">
-      <!-- Main login card -->
-      <div class="login-card">
-        <!-- Logo and title section -->
-        <div class="header-section">
-          <div class="shield-icon">🛡️</div>
-          <h1 class="game-title">THE HEART INTERROGATOR</h1>
-          <p class="subtitle">Cyber Detective Training Academy</p>
+  <body>
+    <!-- Header with logo -->
+    <header class="main-header">
+      <div class="header-container">
+        <div class="logo-section">
+          <img src="public/Logo.png" alt="Game Logo" class="game-logo" />
         </div>
+        <nav class="main-nav">
+          <a href="index.html" class="nav-item active">Home</a>
+          <a href="stats.html" class="nav-item">My Stats</a>
+          <a href="leaderboard.html" class="nav-item">Leaderboard</a>
+          <a href="settings.html" class="nav-item">Settings</a>
+        </nav>
+        <div class="auth-section">
+          <button class="btn-login" onclick="showLogin()">Login</button>
+          <button class="btn-register" onclick="showRegister()">
+            Register
+          </button>
+        </div>
+      </div>
+    </header>
 
-        <!-- Login form -->
-        <form id="loginForm" class="login-form">
-          <h2 class="form-title">Detective Login</h2>
+    <!-- Main Dashboard Content -->
+    <main class="dashboard-main">
+      <div class="welcome-section">
+        <h1 class="welcome-title">WELCOME TO THE INTERROGATION</h1>
+        <p class="welcome-subtitle">
+          Test your skills. Trust or Verify. Make the right choice.
+        </p>
+      </div>
 
-          <div class="input-group">
+      <!-- Game Info Cards -->
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="card-icon">🎯</div>
+          <h3>HOW TO PLAY</h3>
+          <p>
+            Count hearts in puzzles. The AI will give you an answer. Trust it or
+            verify yourself?
+          </p>
+        </div>
+        <div class="info-card">
+          <div class="card-icon">🏆</div>
+          <h3>EARN POINTS</h3>
+          <p>
+            Trust the AI for +20 points (risky) or verify yourself for +10
+            points (safe)
+          </p>
+        </div>
+        <div class="info-card">
+          <div class="card-icon">⚡</div>
+          <h3>COMPETE</h3>
+          <p>
+            Climb the leaderboard and become the top detective in the academy
+          </p>
+        </div>
+      </div>
+
+      <!-- Call to Action -->
+      <div class="cta-section">
+        <div class="login-prompt">
+          <h2>READY TO START?</h2>
+          <p>Login or register to begin your interrogation training</p>
+          <div class="cta-buttons">
+            <button class="btn-play-login" onclick="showLogin()">
+              LOGIN TO PLAY
+            </button>
+            <button class="btn-play-register" onclick="showRegister()">
+              CREATE ACCOUNT
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Stats Preview (dummy data) -->
+      <div class="stats-preview">
+        <h2 class="section-title">GLOBAL STATS</h2>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-number">1,247</div>
+            <div class="stat-label">Active Players</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">45,892</div>
+            <div class="stat-label">Games Played</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">73%</div>
+            <div class="stat-label">Avg Accuracy</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">156</div>
+            <div class="stat-label">Top Score</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Login Modal (hidden by default) -->
+    <div class="modal" id="loginModal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModals()">&times;</span>
+        <h2 class="modal-title">DETECTIVE LOGIN</h2>
+        <form id="loginForm" class="auth-form">
+          <div class="form-group">
             <input
               type="text"
               id="username"
-              placeholder="Detective ID or Email"
+              placeholder="Username or Email"
               required
             />
           </div>
-
-          <div class="input-group">
+          <div class="form-group">
             <input
               type="password"
               id="password"
-              placeholder="Enter Secure Passcode"
+              placeholder="Password"
               required
             />
-            <span class="eye-icon" onclick="togglePassword()">👁️</span>
+            <span class="toggle-password" onclick="togglePassword('password')"
+              >👁️</span
+            >
           </div>
-
           <div class="form-options">
-            <label class="remember-me">
+            <label class="checkbox-label">
               <input type="checkbox" id="rememberMe" />
               <span>Remember Me</span>
             </label>
             <a href="#" class="forgot-link">Forgot Password?</a>
           </div>
-
-          <button type="submit" class="btn-primary">LOGIN</button>
-
-          <div class="divider">
-            <span>OR</span>
-          </div>
-
-          <button type="button" class="btn-secondary" onclick="goToRegister()">
-            Register New Detective
-          </button>
+          <button type="submit" class="btn-submit">LOGIN</button>
         </form>
-
-        <!-- Footer -->
-        <div class="footer-info">
-          <p class="small-text">CIS045-3 Assignment | Student ID: 2540927</p>
-          <div class="footer-links">
-            <a href="#">Privacy Policy</a>
-            <span>|</span>
-            <a href="#">Terms of Service</a>
-          </div>
-        </div>
+        <p class="switch-auth">
+          Don't have an account?
+          <a href="#" onclick="switchToRegister()">Register here</a>
+        </p>
       </div>
     </div>
 
-    <script src="js/login.js"></script>
+    <!-- Register Modal (hidden by default) -->
+    <div class="modal" id="registerModal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModals()">&times;</span>
+        <h2 class="modal-title">CREATE ACCOUNT</h2>
+        <form id="registerForm" class="auth-form">
+          <div class="form-group">
+            <input
+              type="text"
+              id="regFullName"
+              placeholder="Full Name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="text"
+              id="regUsername"
+              placeholder="Choose Username"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="email"
+              id="regEmail"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              id="regPassword"
+              placeholder="Password (min 8 chars)"
+              required
+            />
+            <span
+              class="toggle-password"
+              onclick="togglePassword('regPassword')"
+              >👁️</span
+            >
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              id="regConfirmPassword"
+              placeholder="Confirm Password"
+              required
+            />
+          </div>
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="agreeTerms" required />
+              <span>I agree to Terms & Privacy Policy</span>
+            </label>
+          </div>
+          <button type="submit" class="btn-submit">CREATE ACCOUNT</button>
+        </form>
+        <p class="switch-auth">
+          Already have an account?
+          <a href="#" onclick="switchToLogin()">Login here</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+      <p>CIS045-3 Assignment | Student ID: 2540927 | Simthass MYM</p>
+    </footer>
+
+    <script src="js/home.js"></script>
   </body>
 </html>

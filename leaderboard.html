@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leaderboard - The Heart Interrogator</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="header-container">
+        <div class="logo-section">
+          <img src="public/Logo.png" alt="Game Logo" class="game-logo" />
+        </div>
+        <nav class="main-nav">
+          <a href="index.html" class="nav-item">Home</a>
+          <a href="stats.html" class="nav-item">My Stats</a>
+          <a href="leaderboard.html" class="nav-item active">Leaderboard</a>
+          <a href="settings.html" class="nav-item">Settings</a>
+        </nav>
+        <div class="auth-section">
+          <span class="user-display">Det. Phoenix</span>
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <div class="page-header">
+        <h1 class="page-title">GLOBAL LEADERBOARD</h1>
+        <p class="page-subtitle">Top detectives worldwide</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="leaderboard-filters">
+        <select class="filter-select">
+          <option>All Time</option>
+          <option>This Week</option>
+          <option>Today</option>
+        </select>
+        <select class="filter-select">
+          <option>Global</option>
+          <option>My Country</option>
+        </select>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search detective..."
+        />
+      </div>
+
+      <!-- Top 3 Podium -->
+      <div class="podium">
+        <div class="podium-item second">
+          <div class="podium-rank">#2</div>
+          <div class="podium-avatar">👤</div>
+          <div class="podium-name">AgentSmith</div>
+          <div class="podium-score">14,890</div>
+        </div>
+        <div class="podium-item first">
+          <div class="podium-rank">#1</div>
+          <div class="podium-avatar">👤</div>
+          <div class="podium-name">DetectivePro</div>
+          <div class="podium-score">15,420</div>
+          <div class="crown">👑</div>
+        </div>
+        <div class="podium-item third">
+          <div class="podium-rank">#3</div>
+          <div class="podium-avatar">👤</div>
+          <div class="podium-name">InspectorMax</div>
+          <div class="podium-score">12,340</div>
+        </div>
+      </div>
+
+      <!-- Full Leaderboard Table -->
+      <div class="leaderboard-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Detective</th>
+              <th>Rank Badge</th>
+              <th>Score</th>
+              <th>Cases</th>
+              <th>Accuracy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rank-cell">#4</td>
+              <td class="name-cell">ShadowAgent</td>
+              <td class="badge-cell">🎖️</td>
+              <td class="score-cell">10,250</td>
+              <td>432</td>
+              <td>85%</td>
+            </tr>
+            <tr>
+              <td class="rank-cell">#5</td>
+              <td class="name-cell">NightHawk</td>
+              <td class="badge-cell">🎖️</td>
+              <td class="score-cell">9,890</td>
+              <td>398</td>
+              <td>82%</td>
+            </tr>
+            <tr class="user-row">
+              <td class="rank-cell">#47</td>
+              <td class="name-cell">YOU (Phoenix)</td>
+              <td class="badge-cell">🎖️</td>
+              <td class="score-cell">2,450</td>
+              <td>89</td>
+              <td>73%</td>
+            </tr>
+            <tr>
+              <td class="rank-cell">#48</td>
+              <td class="name-cell">Rookie12</td>
+              <td class="badge-cell">🏅</td>
+              <td class="score-cell">2,390</td>
+              <td>85</td>
+              <td>71%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <button class="page-btn">« Previous</button>
+        <span class="page-numbers">
+          <button class="page-num active">1</button>
+          <button class="page-num">2</button>
+          <button class="page-num">3</button>
+          <span>...</span>
+          <button class="page-num">10</button>
+        </span>
+        <button class="page-btn">Next »</button>
+      </div>
+    </main>
+
+    <footer class="main-footer">
+      <p>CIS045-3 Assignment | Student ID: 2540927 | Simthass MYM</p>
+    </footer>
+
+    <script src="js/pages.js"></script>
+  </body>
+</html>

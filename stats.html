@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Stats - The Heart Interrogator</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="header-container">
+        <div class="logo-section">
+          <img src="public/Logo.png" alt="Game Logo" class="game-logo" />
+        </div>
+        <nav class="main-nav">
+          <a href="index.html" class="nav-item">Home</a>
+          <a href="stats.html" class="nav-item active">My Stats</a>
+          <a href="leaderboard.html" class="nav-item">Leaderboard</a>
+          <a href="settings.html" class="nav-item">Settings</a>
+        </nav>
+        <div class="auth-section">
+          <span class="user-display">Det. Phoenix</span>
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <div class="page-header">
+        <h1 class="page-title">MY STATISTICS</h1>
+        <p class="page-subtitle">Track your performance and progress</p>
+      </div>
+
+      <!-- Profile Section -->
+      <div class="profile-section">
+        <div class="profile-card-big">
+          <div class="profile-avatar">👤</div>
+          <div class="profile-info">
+            <h2 class="profile-name">Detective Phoenix</h2>
+            <p class="profile-username">@agent_phoenix</p>
+            <div class="rank-display">
+              <span class="rank-badge">🎖️ INSPECTOR</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-section">
+        <h2 class="section-heading">PERFORMANCE OVERVIEW</h2>
+        <div class="stats-grid-large">
+          <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-number">2,450</div>
+            <div class="stat-name">Total Score</div>
+            <div class="stat-change">+245 this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-number">89</div>
+            <div class="stat-name">Cases Solved</div>
+            <div class="stat-change">12 this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-number">73%</div>
+            <div class="stat-name">Accuracy Rate</div>
+            <div class="stat-change">+5% improvement</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-number">12</div>
+            <div class="stat-name">Current Streak</div>
+            <div class="stat-change">Best: 18 days</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Games -->
+      <div class="recent-section">
+        <h2 class="section-heading">RECENT GAMES</h2>
+        <div class="recent-games">
+          <div class="game-record">
+            <span class="record-date">Today, 2:30 PM</span>
+            <span class="record-score">+85 points</span>
+            <span class="record-accuracy">80% accuracy</span>
+            <span class="record-status success">Won</span>
+          </div>
+          <div class="game-record">
+            <span class="record-date">Today, 1:15 PM</span>
+            <span class="record-score">+70 points</span>
+            <span class="record-accuracy">70% accuracy</span>
+            <span class="record-status success">Won</span>
+          </div>
+          <div class="game-record">
+            <span class="record-date">Yesterday, 9:00 PM</span>
+            <span class="record-score">+50 points</span>
+            <span class="record-accuracy">60% accuracy</span>
+            <span class="record-status fail">Lost</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="achievements-section">
+        <h2 class="section-heading">ACHIEVEMENTS</h2>
+        <div class="achievements-grid">
+          <div class="achievement-badge-item">
+            <div class="badge-icon">🏆</div>
+            <div class="badge-name">First Victory</div>
+          </div>
+          <div class="achievement-badge-item">
+            <div class="badge-icon">⭐</div>
+            <div class="badge-name">10 Win Streak</div>
+          </div>
+          <div class="achievement-badge-item">
+            <div class="badge-icon">💎</div>
+            <div class="badge-name">Perfect Round</div>
+          </div>
+          <div class="achievement-badge-item locked">
+            <div class="badge-icon">🎯</div>
+            <div class="badge-name">Master Detective</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="main-footer">
+      <p>CIS045-3 Assignment | Student ID: 2540927 | Simthass MYM</p>
+    </footer>
+
+    <script src="js/pages.js"></script>
+  </body>
+</html>

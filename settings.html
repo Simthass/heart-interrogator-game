@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings - The Heart Interrogator</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="header-container">
+        <div class="logo-section">
+          <img src="public/Logo.png" alt="Game Logo" class="game-logo" />
+        </div>
+        <nav class="main-nav">
+          <a href="index.html" class="nav-item">Home</a>
+          <a href="stats.html" class="nav-item">My Stats</a>
+          <a href="leaderboard.html" class="nav-item">Leaderboard</a>
+          <a href="settings.html" class="nav-item active">Settings</a>
+        </nav>
+        <div class="auth-section">
+          <span class="user-display">Det. Phoenix</span>
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <div class="page-header">
+        <h1 class="page-title">SETTINGS</h1>
+        <p class="page-subtitle">Customize your experience</p>
+      </div>
+
+      <!-- Settings Tabs -->
+      <div class="settings-tabs">
+        <button class="settings-tab active" onclick="showTab('account')">
+          Account
+        </button>
+        <button class="settings-tab" onclick="showTab('game')">Game</button>
+        <button class="settings-tab" onclick="showTab('privacy')">
+          Privacy
+        </button>
+      </div>
+
+      <!-- Account Settings -->
+      <div class="settings-panel" id="accountSettings">
+        <h2 class="panel-heading">ACCOUNT INFORMATION</h2>
+
+        <div class="settings-group">
+          <label class="setting-label">Email</label>
+          <div class="setting-control">
+            <input
+              type="email"
+              class="setting-input"
+              value="detective@email.com"
+              readonly
+            />
+            <button class="setting-btn">Change</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="setting-label">Username</label>
+          <div class="setting-control">
+            <input
+              type="text"
+              class="setting-input"
+              value="agent_phoenix"
+              readonly
+            />
+            <button class="setting-btn">Edit</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="setting-label">Password</label>
+          <div class="setting-control">
+            <input
+              type="password"
+              class="setting-input"
+              value="••••••••"
+              readonly
+            />
+            <button class="setting-btn">Change Password</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="setting-label">Profile Picture</label>
+          <div class="setting-control">
+            <div class="profile-pic-preview">👤</div>
+            <button class="setting-btn">Upload New</button>
+          </div>
+        </div>
+
+        <div class="danger-zone">
+          <h3 class="danger-heading">DANGER ZONE</h3>
+          <button class="btn-danger">Delete Account</button>
+        </div>
+      </div>
+
+      <!-- Game Settings -->
+      <div class="settings-panel" id="gameSettings" style="display: none">
+        <h2 class="panel-heading">GAME PREFERENCES</h2>
+
+        <div class="settings-group">
+          <label class="setting-label">Sound Effects</label>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="setting-label">Background Music</label>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="setting-label">Difficulty</label>
+          <div class="setting-control">
+            <select class="setting-select">
+              <option>Easy</option>
+              <option selected>Normal</option>
+              <option>Hard</option>
+              <option>Expert</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="setting-label">Timer Duration</label>
+          <div class="setting-control">
+            <select class="setting-select">
+              <option>5 seconds</option>
+              <option selected>10 seconds</option>
+              <option>15 seconds</option>
+              <option>No Timer</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn-save">Save Game Settings</button>
+      </div>
+
+      <!-- Privacy Settings -->
+      <div class="settings-panel" id="privacySettings" style="display: none">
+        <h2 class="panel-heading">PRIVACY & SECURITY</h2>
+
+        <div class="settings-group">
+          <label class="setting-label">Show Profile on Leaderboard</label>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="setting-label">Show Online Status</label>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="setting-label">Email Notifications</label>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="setting-label">Data Usage</label>
+          <div class="setting-control">
+            <button class="setting-btn">Download My Data</button>
+          </div>
+        </div>
+
+        <button class="btn-save">Save Privacy Settings</button>
+      </div>
+    </main>
+
+    <footer class="main-footer">
+      <p>CIS045-3 Assignment | Student ID: 2540927 | Simthass MYM</p>
+    </footer>
+
+    <script src="js/pages.js"></script>
+  </body>
+</html>

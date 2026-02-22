@@ -1,13 +1,6 @@
-// dashboard.js
-// Main dashboard functionality
-// Simthass MYM - 2540927
-
 // check if user is logged in when page loads
 window.addEventListener("load", function () {
   console.log("Dashboard loaded");
-
-  // TODO: check authentication later
-  // for now just show the page
 
   // could add some animation to the start button
   const startButton = document.querySelector(".btn-start-game");
@@ -45,9 +38,6 @@ function logout() {
     window.location.href = "index.html";
   }
 }
-
-// some dummy data for testing UI
-// will be replaced with real API data later
 const userStats = {
   score: 2450,
   cases: 89,

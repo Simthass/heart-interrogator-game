@@ -1,7 +1,3 @@
-// register.js
-// Registration page JavaScript
-// Student ID: 2540927
-
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Register page ready");
 

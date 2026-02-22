@@ -20,8 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // TODO: will add API call later for authentication
-    // for now just log values
     console.log("Username:", username);
     console.log("Password:", password);
     console.log("Remember me:", rememberMe);

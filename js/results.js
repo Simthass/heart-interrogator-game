@@ -1,12 +1,5 @@
-// results.js
-// Results page functionality
-// Simthass MYM (2540927)
-
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Results page loaded");
-
-  // could load results from localStorage here
-  // for now just showing dummy data in HTML
 
   // add some animations maybe
   animateResults();
@@ -41,9 +34,6 @@ function animateResults() {
 // continue to next round
 function continueGame() {
   console.log("Continuing to next round...");
-
-  // in real app would update round number
-  // then go back to game page
 
   alert("Loading next round...");
   window.location.href = "game.html";

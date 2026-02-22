@@ -1,7 +1,3 @@
-// home.js
-// Student: Simthass MYM (2540927)
-// Homepage functionality with modals
-
 // show login modal
 function showLogin() {
   document.getElementById("loginModal").classList.add("active");
@@ -76,8 +72,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       console.log("Login attempt:", username);
 
-      // TODO: add actual authentication later
-      // for now just redirect to game page
       alert("Login successful! Redirecting to game...");
       window.location.href = "game.html";
     });

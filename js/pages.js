@@ -1,7 +1,3 @@
-// pages.js
-// For stats, leaderboard, and settings pages
-// Student: Simthass MYM (2540927)
-
 // logout function
 function logout() {
   if (confirm("Are you sure you want to logout?")) {
@@ -43,9 +39,6 @@ function showTab(tabName) {
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Pages script loaded");
 
-  // check if user is logged in (basic check for now)
-  // TODO: add real authentication later
-
   // save buttons functionality
   let saveBtns = document.querySelectorAll(".btn-save");
   saveBtns.forEach(function (btn) {
@@ -73,13 +66,10 @@ document.addEventListener("DOMContentLoaded", function () {
         )
       ) {
         alert("Account deletion will be processed");
-        // TODO: add actual deletion logic later
       }
     });
   }
 });
-
-// some helper functions
 
 // format number with commas
 function formatNumber(num) {

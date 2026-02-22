@@ -1,72 +1,89 @@
-/* Results Page Styles */
-
 .results-page {
   padding: 40px 20px;
+  background: #16213e;
 }
 
 .results-container {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
 }
 
 .results-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 45px;
 }
 
 .results-title {
-  font-size: 32px;
-  font-family: var(--font-retro);
-  color: var(--primary-color);
-  margin-bottom: 10px;
-  letter-spacing: 2px;
-  text-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+  font-family: "Teko", sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  color: #00d9ff;
+  margin-bottom: 12px;
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
 }
 
 .results-subtitle {
-  font-size: 14px;
-  color: var(--gray-text);
+  font-size: 15px;
+  color: #a0aec0;
 }
 
 .results-layout {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 30px;
+  gap: 35px;
 }
 
 .main-results {
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 30px;
-  border: 2px solid var(--border-color);
+  background: rgba(30, 42, 71, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 35px;
+  border: 2px solid rgba(0, 217, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .score-display {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 35px;
 }
 
 .star-icon {
-  font-size: 60px;
+  font-size: 70px;
   display: block;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   animation: pulse 2s infinite;
+  filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.5));
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .points-earned {
-  font-size: 36px;
-  color: var(--accent-color);
-  font-weight: bold;
+  font-family: "Teko", sans-serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: #00ff88;
+  text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
 }
 
 .results-table {
-  margin: 30px 0;
+  margin: 35px 0;
 }
 
 .results-table h3 {
-  font-size: 18px;
-  margin-bottom: 20px;
-  color: var(--light-text);
+  font-family: "Teko", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 22px;
+  color: white;
 }
 
 .results-table table {
@@ -75,145 +92,156 @@
 }
 
 .results-table th {
-  background: rgba(37, 99, 235, 0.1);
-  padding: 12px;
+  background: rgba(0, 217, 255, 0.1);
+  padding: 14px;
   text-align: left;
-  font-size: 12px;
-  color: var(--primary-color);
-  border-bottom: 2px solid var(--border-color);
+  font-size: 13px;
+  font-weight: 700;
+  color: #00d9ff;
+  border-bottom: 2px solid rgba(0, 217, 255, 0.3);
 }
 
 .results-table td {
-  padding: 12px;
-  font-size: 12px;
-  border-bottom: 1px solid var(--border-color);
+  padding: 14px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.1);
 }
 
 .correct-row {
-  background: rgba(16, 185, 129, 0.05);
+  background: rgba(0, 255, 136, 0.05);
 }
 
 .wrong-row {
-  background: rgba(239, 68, 68, 0.05);
+  background: rgba(255, 51, 102, 0.05);
 }
 
 .points-positive {
-  color: var(--accent-color);
-  font-weight: bold;
+  color: #00ff88;
+  font-weight: 700;
 }
 
 .points-negative {
-  color: var(--danger-color);
-  font-weight: bold;
+  color: #ff3366;
+  font-weight: 700;
 }
 
 .summary-stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-  margin: 25px 0;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
+  gap: 18px;
+  margin: 30px 0;
+  padding: 25px;
+  background: rgba(0, 217, 255, 0.05);
+  border-radius: 12px;
 }
 
 .summary-item {
   display: flex;
   justify-content: space-between;
-  padding: 8px;
+  padding: 10px;
 }
 
 .summary-label {
-  font-size: 12px;
-  color: var(--gray-text);
+  font-size: 13px;
+  color: #a0aec0;
 }
 
 .summary-value {
-  font-size: 12px;
-  color: var(--primary-color);
-  font-weight: bold;
+  font-size: 13px;
+  color: #00d9ff;
+  font-weight: 700;
 }
 
 .action-buttons {
   display: flex;
-  gap: 15px;
-  margin-top: 30px;
+  gap: 18px;
+  margin-top: 35px;
 }
 
 .btn-continue {
   flex: 1;
-  padding: 15px;
-  background: var(--primary-color);
+  padding: 18px;
+  background: linear-gradient(135deg, #00d9ff, #0099cc);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: bold;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
-  font-family: var(--font-title);
+  font-family: "Teko", sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   transition: all 0.3s;
 }
 
 .btn-continue:hover {
-  background: var(--secondary-color);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 217, 255, 0.4);
 }
 
 .btn-dashboard {
   flex: 1;
-  padding: 15px;
+  padding: 18px;
   background: transparent;
-  color: var(--primary-color);
-  border: 2px solid var(--primary-color);
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: bold;
+  color: #00d9ff;
+  border: 2px solid #00d9ff;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
-  font-family: var(--font-title);
+  font-family: "Teko", sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   transition: all 0.3s;
 }
 
 .btn-dashboard:hover {
-  background: rgba(37, 99, 235, 0.1);
+  background: rgba(0, 217, 255, 0.1);
+  transform: translateY(-3px);
 }
 
 .side-panels {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 25px;
 }
 
 .achievement-panel,
 .analysis-panel {
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 25px;
-  border: 2px solid var(--border-color);
+  background: rgba(30, 42, 71, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 30px;
+  border: 2px solid rgba(0, 217, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   text-align: center;
 }
 
 .achievement-panel h3,
 .analysis-panel h3 {
-  font-size: 16px;
-  margin-bottom: 20px;
-  color: var(--light-text);
+  font-family: "Teko", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 22px;
+  color: white;
 }
 
 .achievement-badge-large {
-  font-size: 80px;
-  margin: 20px 0;
+  font-size: 90px;
+  margin: 25px 0;
+  filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.5));
 }
 
 .achievement-name {
-  font-size: 16px;
-  color: var(--primary-color);
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #00d9ff;
+  margin-bottom: 12px;
 }
 
 .achievement-desc {
-  font-size: 12px;
-  color: var(--gray-text);
+  font-size: 13px;
+  color: #a0aec0;
 }
 
 .analysis-panel {
@@ -221,22 +249,22 @@
 }
 
 .analysis-text {
-  font-size: 12px;
-  color: var(--gray-text);
-  margin-bottom: 12px;
+  font-size: 13px;
+  color: #a0aec0;
+  margin-bottom: 15px;
 }
 
 .recommendation {
-  margin-top: 20px;
-  padding: 15px;
-  background: rgba(37, 99, 235, 0.1);
-  border-radius: 8px;
-  font-size: 12px;
-  color: var(--light-text);
+  margin-top: 22px;
+  padding: 18px;
+  background: rgba(0, 217, 255, 0.1);
+  border-radius: 10px;
+  font-size: 13px;
+  color: white;
 }
 
 .recommendation strong {
-  color: var(--primary-color);
+  color: #00d9ff;
 }
 
 @media (max-width: 1024px) {

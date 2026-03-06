@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/pages.css" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
@@ -20,12 +20,27 @@
         <nav class="main-nav">
           <a href="index.html" class="nav-item">Home</a>
           <a href="stats.html" class="nav-item">My Stats</a>
-          <a href="leaderboard.html" class="nav-item">Leaderboard</a>
           <a href="settings.html" class="nav-item active">Settings</a>
         </nav>
         <div class="auth-section">
-          <span class="user-display">Det. Phoenix</span>
-          <button class="btn-logout" onclick="logout()">Logout</button>
+          <span
+            class="user-display"
+            style="
+              color: var(--cream);
+              font-family: &quot;Rajdhani&quot;, sans-serif;
+              font-size: 18px;
+              align-self: center;
+              margin-right: 15px;
+            "
+            >Det. Simthass</span
+          >
+          <button
+            class="btn-login"
+            onclick="logout()"
+            style="border-color: var(--coral); color: var(--coral)"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </header>
@@ -36,19 +51,19 @@
         <p class="page-subtitle">Customize your experience</p>
       </div>
 
-      <!-- Settings Tabs -->
       <div class="settings-tabs">
-        <button class="settings-tab active" onclick="showTab('account')">
+        <button class="settings-tab active" onclick="showTab('account', this)">
           Account
         </button>
-        <button class="settings-tab" onclick="showTab('game')">Game</button>
-        <button class="settings-tab" onclick="showTab('privacy')">
+        <button class="settings-tab" onclick="showTab('game', this)">
+          Game
+        </button>
+        <button class="settings-tab" onclick="showTab('privacy', this)">
           Privacy
         </button>
       </div>
 
-      <!-- Account Settings -->
-      <div class="settings-panel" id="accountSettings">
+      <div class="settings-panel active" id="accountSettings">
         <h2 class="panel-heading">ACCOUNT INFORMATION</h2>
 
         <div class="settings-group">
@@ -100,11 +115,20 @@
 
         <div class="danger-zone">
           <h3 class="danger-heading">DANGER ZONE</h3>
+          <p
+            style="
+              color: var(--cream);
+              font-family: &quot;Rajdhani&quot;, sans-serif;
+              margin-bottom: 15px;
+            "
+          >
+            Once you delete your account, there is no going back. Please be
+            certain.
+          </p>
           <button class="btn-danger">Delete Account</button>
         </div>
       </div>
 
-      <!-- Game Settings -->
       <div class="settings-panel" id="gameSettings" style="display: none">
         <h2 class="panel-heading">GAME PREFERENCES</h2>
 
@@ -152,10 +176,11 @@
           </div>
         </div>
 
-        <button class="btn-save">Save Game Settings</button>
+        <button class="btn-save" onclick="alert('Game Settings Saved!')">
+          Save Game Settings
+        </button>
       </div>
 
-      <!-- Privacy Settings -->
       <div class="settings-panel" id="privacySettings" style="display: none">
         <h2 class="panel-heading">PRIVACY & SECURITY</h2>
 
@@ -196,14 +221,40 @@
           </div>
         </div>
 
-        <button class="btn-save">Save Privacy Settings</button>
+        <button class="btn-save" onclick="alert('Privacy Settings Saved!')">
+          Save Privacy Settings
+        </button>
       </div>
     </main>
 
     <footer class="main-footer">
-      <p>CIS045-3 Assignment | Student ID: 2540927 | Simthass MYM</p>
+      <p>Developed by Simthass Mohammed(2540927)</p>
     </footer>
 
+    <script>
+      function showTab(tabName, element) {
+        // Hide all panels
+        document.getElementById("accountSettings").style.display = "none";
+        document.getElementById("gameSettings").style.display = "none";
+        document.getElementById("privacySettings").style.display = "none";
+
+        // Remove active class from all tabs
+        const tabs = document.getElementsByClassName("settings-tab");
+        for (let i = 0; i < tabs.length; i++) {
+          tabs[i].classList.remove("active");
+        }
+
+        // Show selected panel and set active tab
+        document.getElementById(tabName + "Settings").style.display = "block";
+        element.classList.add("active");
+      }
+
+      function logout() {
+        if (confirm("Are you sure you want to disconnect?")) {
+          window.location.href = "index.html";
+        }
+      }
+    </script>
     <script src="js/pages.js"></script>
   </body>
 </html>

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/pages.css" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
@@ -20,12 +20,27 @@
         <nav class="main-nav">
           <a href="index.html" class="nav-item">Home</a>
           <a href="stats.html" class="nav-item active">My Stats</a>
-          <a href="leaderboard.html" class="nav-item">Leaderboard</a>
           <a href="settings.html" class="nav-item">Settings</a>
         </nav>
         <div class="auth-section">
-          <span class="user-display">Det. Phoenix</span>
-          <button class="btn-logout" onclick="logout()">Logout</button>
+          <span
+            class="user-display"
+            style="
+              color: var(--cream);
+              font-family: &quot;Rajdhani&quot;, sans-serif;
+              font-size: 18px;
+              align-self: center;
+              margin-right: 15px;
+            "
+            >Det. Simthass</span
+          >
+          <button
+            class="btn-login"
+            onclick="logout()"
+            style="border-color: var(--coral); color: var(--coral)"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </header>
@@ -36,7 +51,6 @@
         <p class="page-subtitle">Track your performance and progress</p>
       </div>
 
-      <!-- Profile Section -->
       <div class="profile-section">
         <div class="profile-card-big">
           <div class="profile-avatar">👤</div>
@@ -50,7 +64,6 @@
         </div>
       </div>
 
-      <!-- Stats Grid -->
       <div class="stats-section">
         <h2 class="section-heading">PERFORMANCE OVERVIEW</h2>
         <div class="stats-grid-large">
@@ -58,30 +71,33 @@
             <div class="stat-icon">🎯</div>
             <div class="stat-number">2,450</div>
             <div class="stat-name">Total Score</div>
-            <div class="stat-change">+245 this week</div>
+            <div class="stat-change" style="color: #39ff14">+245 this week</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">📊</div>
             <div class="stat-number">89</div>
             <div class="stat-name">Cases Solved</div>
-            <div class="stat-change">12 this week</div>
+            <div class="stat-change" style="color: #39ff14">12 this week</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">✅</div>
             <div class="stat-number">73%</div>
             <div class="stat-name">Accuracy Rate</div>
-            <div class="stat-change">+5% improvement</div>
+            <div class="stat-change" style="color: #39ff14">
+              +5% improvement
+            </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">🔥</div>
             <div class="stat-number">12</div>
             <div class="stat-name">Current Streak</div>
-            <div class="stat-change">Best: 18 days</div>
+            <div class="stat-change" style="color: var(--teal-light)">
+              Best: 18 days
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Recent Games -->
       <div class="recent-section">
         <h2 class="section-heading">RECENT GAMES</h2>
         <div class="recent-games">
@@ -99,14 +115,13 @@
           </div>
           <div class="game-record">
             <span class="record-date">Yesterday, 9:00 PM</span>
-            <span class="record-score">+50 points</span>
-            <span class="record-accuracy">60% accuracy</span>
+            <span class="record-score" style="color: #ff3366">-1 Life</span>
+            <span class="record-accuracy">40% accuracy</span>
             <span class="record-status fail">Lost</span>
           </div>
         </div>
       </div>
 
-      <!-- Achievements -->
       <div class="achievements-section">
         <h2 class="section-heading">ACHIEVEMENTS</h2>
         <div class="achievements-grid">
@@ -131,9 +146,16 @@
     </main>
 
     <footer class="main-footer">
-      <p>CIS045-3 Assignment | Student ID: 2540927 | Simthass MYM</p>
+      <p>Developed by Simthass Mohammed(2540927)</p>
     </footer>
 
+    <script>
+      function logout() {
+        if (confirm("Are you sure you want to disconnect?")) {
+          window.location.href = "index.html";
+        }
+      }
+    </script>
     <script src="js/pages.js"></script>
   </body>
 </html>

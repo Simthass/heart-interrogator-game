@@ -16,6 +16,7 @@ window.addEventListener("load", function () {
 // initialize game
 function initGame() {
   updateDisplay();
+  // TODO: fetch puzzle from API later
 }
 
 // update all displays
@@ -24,16 +25,8 @@ function updateDisplay() {
   document.getElementById("scoreValue").textContent = score;
   document.getElementById("streakValue").textContent = streak;
 
-  // update lives
-  let heartsHTML = "";
-  for (let i = 0; i < 3; i++) {
-    if (i < lives) {
-      heartsHTML += "❤️ ";
-    } else {
-      heartsHTML += "🖤 ";
-    }
-  }
-  document.getElementById("livesDisplay").innerHTML = heartsHTML;
+  // update lives display (just show number)
+  document.getElementById("livesDisplay").textContent = lives;
 }
 
 // start timer
@@ -49,12 +42,14 @@ function startTimer() {
     timeLeft--;
 
     // update timer display
-    document.getElementById("timerText").textContent =
-      "Time: " + timeLeft + "s";
+    document.getElementById("timerText").textContent = timeLeft;
 
-    // update timer bar
-    let percentage = (timeLeft / 10) * 100;
-    document.getElementById("timerBar").style.width = percentage + "%";
+    // change color when time is low
+    let timerCircle = document.getElementById("timerCircle");
+    if (timeLeft <= 3) {
+      timerCircle.style.borderColor = "#ff1744";
+      timerCircle.style.background = "rgba(255, 23, 68, 0.2)";
+    }
 
     // check if time's up
     if (timeLeft <= 0) {
@@ -66,9 +61,6 @@ function startTimer() {
 
 // handle timeout
 function handleTimeout() {
-  console.log("Time ran out!");
-  alert("Time's up! Lost a life.");
-
   lives--;
   updateDisplay();
 
@@ -84,6 +76,9 @@ function trustSuspect() {
   console.log("Player trusts suspect");
 
   clearInterval(timerInterval);
+
+  // dummy logic for now
+  // will add real verification with API later
   alert("You trusted the suspect! Moving to next question...");
 
   // for demo, assume correct
@@ -96,7 +91,8 @@ function trustSuspect() {
 
 // show verify input
 function showVerifyInput() {
-  document.getElementById("verifyControls").style.display = "flex";
+  let verifyBox = document.getElementById("verifyBox");
+  verifyBox.style.display = "flex";
   document.getElementById("manualInput").focus();
 }
 
@@ -135,10 +131,17 @@ function nextRound() {
   }
 
   // hide verify input
-  document.getElementById("verifyControls").style.display = "none";
+  document.getElementById("verifyBox").style.display = "none";
   document.getElementById("manualInput").value = "";
 
   updateDisplay();
+
+  // reset timer circle color
+  let timerCircle = document.getElementById("timerCircle");
+  timerCircle.style.borderColor = "var(--main-red)";
+  timerCircle.style.background = "rgba(219, 11, 36, 0.1)";
+
+  // TODO: load new puzzle from API
 
   // restart timer
   startTimer();
@@ -153,7 +156,14 @@ function gameOver() {
   window.location.href = "index.html";
 }
 
+// some helper functions i might need later
+
 // random number generator
 function getRandom(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// format score with commas (might use later)
+function formatScore(num) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }

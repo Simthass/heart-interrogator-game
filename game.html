@@ -7,152 +7,151 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/game.css" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
-  <body class="game-page">
-    <!-- Top Status Bar -->
-    <div class="status-bar">
-      <div class="status-left">
-        <span class="round-info"
-          >Round <span id="currentRound">3</span>/10</span
+  <body class="game-body">
+    <div class="game-top-bar">
+      <div class="game-info-left">
+        <img src="public/Logo.png" alt="Logo" class="game-logo-mini" />
+        <span class="info-item">Round <span id="currentRound">1</span>/10</span>
+        <span class="info-item lives-count"
+          >❤️ <span id="livesDisplay">3</span></span
         >
       </div>
-      <div class="status-center">
-        <div class="lives-display">
-          Lives: <span id="livesDisplay">❤️ ❤️ ❤️</span>
+
+      <div class="game-info-center">
+        <div class="timer-display">
+          <div class="timer-circle" id="timerCircle">
+            <span id="timerText">10</span>
+          </div>
         </div>
       </div>
-      <div class="status-right">
-        <span class="score-display"
-          >Score: <span id="scoreValue">245</span> pts</span
+
+      <div class="game-info-right">
+        <span class="info-item">Score: <span id="scoreValue">0</span></span>
+        <span class="info-item">Streak: <span id="streakValue">0</span>🔥</span>
+        <button
+          class="exit-btn"
+          onclick="window.location.href = 'dashboard.html'"
         >
-        <span class="streak-display"
-          >Streak: <span id="streakValue">7</span> 🔥</span
-        >
+          ABORT
+        </button>
       </div>
     </div>
 
-    <!-- Timer Bar -->
-    <div class="timer-container">
-      <div class="timer-bar" id="timerBar">
-        <div class="timer-fill" id="timerFill"></div>
-      </div>
-      <span class="timer-text" id="timerText">Time Remaining: 10s</span>
-    </div>
-
-    <!-- Main Game Area -->
     <div class="game-container">
-      <!-- Left Side - AI Suspect Panel -->
-      <div class="suspect-panel">
-        <div class="panel-header">
-          <h3>AI SUSPECT TESTIMONY</h3>
-        </div>
+      <div class="suspect-section panel-box">
+        <div class="section-title">AI SUSPECT</div>
         <div class="suspect-content">
           <div class="robot-icon">🤖</div>
-          <div class="suspect-answer">
-            <span class="answer-number" id="suspectAnswer">6</span>
+          <div class="suspect-claim">
+            <div class="claim-label">Claims Answer:</div>
+            <div class="claim-number" id="suspectAnswer">6</div>
           </div>
           <div class="confidence-meter">
-            <span class="confidence-label">Certainty:</span>
-            <div class="confidence-bar">
-              <div class="confidence-fill" style="width: 87%"></div>
+            <div class="conf-label">
+              Confidence: <span id="confValue">87%</span>
             </div>
-            <span class="confidence-value">87%</span>
+            <div class="conf-bar">
+              <div class="conf-fill" id="confFill" style="width: 87%"></div>
+            </div>
           </div>
-          <p class="suspect-claim">
-            The suspect claims there are <span id="claimNumber">6</span> hearts
-          </p>
         </div>
       </div>
 
-      <!-- Right Side - Evidence Panel -->
-      <div class="evidence-panel">
-        <div class="panel-header">
-          <h3>EVIDENCE: Heart Puzzle</h3>
-        </div>
-        <div class="evidence-content">
-          <!-- Placeholder for heart puzzle image -->
+      <div class="evidence-section panel-box">
+        <div class="section-title">EVIDENCE</div>
+        <div class="evidence-frame">
           <div class="puzzle-image">
             <div class="image-placeholder">
-              <span class="placeholder-text">[Heart Puzzle Image]</span>
-              <p class="api-note">Image from Heart Game API</p>
+              <span>Heart Puzzle API</span>
+              <small>Awaiting Data Fetch...</small>
             </div>
           </div>
-          <p class="evidence-instruction">Count the hearts carefully</p>
+        </div>
+        <div class="evidence-instruction">
+          Count the hearts carefully. Do not trust blindly.
         </div>
       </div>
-    </div>
 
-    <!-- Decision Panel -->
-    <div class="decision-panel">
-      <h2 class="decision-title">YOUR DECISION:</h2>
-      <div class="decision-buttons">
-        <!-- Trust Button -->
-        <div class="decision-option">
-          <button class="btn-trust" onclick="trustSuspect()">
-            TRUST SUSPECT
-          </button>
-          <p class="option-info">
-            Accept answer: 6 | +20 pts if correct | -1 life if wrong
-          </p>
-        </div>
-
-        <!-- Verify Button -->
-        <div class="decision-option">
-          <button class="btn-verify" onclick="showVerifyInput()">
-            VERIFY MANUALLY
-          </button>
-          <div
-            class="verify-input-group"
-            id="verifyInput"
-            style="display: none"
-          >
-            <input
-              type="number"
-              id="manualCount"
-              placeholder="Enter count"
-              min="0"
-              max="20"
-            />
-            <button class="btn-submit" onclick="submitVerification()">
-              SUBMIT
+      <div class="decision-section panel-box">
+        <div class="section-title">YOUR DECISION</div>
+        <div class="decision-content">
+          <div class="decision-card trust-card">
+            <div class="card-icon">🤝</div>
+            <div class="card-title">TRUST</div>
+            <div class="card-info">Accept suspect's answer</div>
+            <div class="card-points">+20 pts</div>
+            <button class="decision-btn trust-btn" onclick="trustSuspect()">
+              TRUST SUSPECT
             </button>
           </div>
-          <p class="option-info">+10 pts if correct | -1 life if wrong</p>
+
+          <div class="decision-card verify-card">
+            <div class="card-icon">🔍</div>
+            <div class="card-title">VERIFY</div>
+            <div class="card-info">Calculate manually</div>
+            <div class="card-points">+10 pts</div>
+            <button class="decision-btn verify-btn" onclick="showVerifyInput()">
+              VERIFY MYSELF
+            </button>
+
+            <div class="verify-input-box" id="verifyBox" style="display: none">
+              <input
+                type="number"
+                id="manualInput"
+                placeholder="?"
+                min="0"
+                max="99"
+              />
+              <button class="submit-btn" onclick="submitVerification()">
+                GO
+              </button>
+            </div>
+          </div>
+
+          <div class="powerups-section">
+            <div class="powerup-label">Assistance Protocols</div>
+            <div class="powerup-list">
+              <div class="powerup" title="Skip this question">
+                <span>⏭️</span>
+                <small>1 Left</small>
+              </div>
+              <div class="powerup disabled" title="Reveal answer">
+                <span>👁️</span>
+                <small>0 Left</small>
+              </div>
+              <div class="powerup" title="Get a hint">
+                <span>💡</span>
+                <small>2 Left</small>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Power-ups Sidebar -->
-    <div class="powerups-sidebar">
-      <h4>Power-Ups</h4>
-      <div class="powerup-item">
-        <span class="powerup-icon">⏭️</span>
-        <span class="powerup-name">Skip</span>
-        <span class="powerup-count">(1)</span>
-      </div>
-      <div class="powerup-item disabled">
-        <span class="powerup-icon">👁️</span>
-        <span class="powerup-name">Reveal</span>
-        <span class="powerup-count">(0)</span>
-      </div>
-      <div class="powerup-item">
-        <span class="powerup-icon">💡</span>
-        <span class="powerup-name">Hint</span>
-        <span class="powerup-count">(2)</span>
-      </div>
-    </div>
-
-    <!-- Info Bar -->
-    <div class="info-bar">
-      <p class="question-text">
-        Question: Was the suspect truthful or deceptive?
-      </p>
-      <button class="help-btn" onclick="showTutorial()">❓ Tutorial</button>
-    </div>
-
+    <script>
+      function showVerifyInput() {
+        const box = document.getElementById("verifyBox");
+        if (box.style.display === "none") {
+          box.style.display = "flex";
+          document.getElementById("manualInput").focus();
+        } else {
+          box.style.display = "none";
+        }
+      }
+      function submitVerification() {
+        alert("Verification Submitted!");
+        document.getElementById("verifyBox").style.display = "none";
+        document.getElementById("manualInput").value = "";
+      }
+      function trustSuspect() {
+        alert("You trusted the AI. Let's hope it didn't lie...");
+      }
+    </script>
     <script src="js/game.js"></script>
   </body>
 </html>

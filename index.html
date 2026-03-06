@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Heart Interrogator - Home</title>
     <link rel="stylesheet" href="css/style.css" />
-    <!-- using Orbitron font for gaming feel -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
-    <!-- Header with logo -->
     <header class="main-header">
       <div class="header-container">
         <div class="logo-section">
@@ -21,7 +19,6 @@
         <nav class="main-nav">
           <a href="index.html" class="nav-item active">Home</a>
           <a href="stats.html" class="nav-item">My Stats</a>
-          <a href="leaderboard.html" class="nav-item">Leaderboard</a>
           <a href="settings.html" class="nav-item">Settings</a>
         </nav>
         <div class="auth-section">
@@ -33,7 +30,6 @@
       </div>
     </header>
 
-    <!-- Main Dashboard Content -->
     <main class="dashboard-main">
       <div class="welcome-section">
         <h1 class="welcome-title">WELCOME TO THE INTERROGATION</h1>
@@ -42,7 +38,6 @@
         </p>
       </div>
 
-      <!-- Game Info Cards -->
       <div class="info-cards">
         <div class="info-card">
           <div class="card-icon">🎯</div>
@@ -69,7 +64,6 @@
         </div>
       </div>
 
-      <!-- Call to Action -->
       <div class="cta-section">
         <div class="login-prompt">
           <h2>READY TO START?</h2>
@@ -78,14 +72,17 @@
             <button class="btn-play-login" onclick="showLogin()">
               LOGIN TO PLAY
             </button>
-            <button class="btn-play-register" onclick="showRegister()">
-              CREATE ACCOUNT
+            <button class="btn-play-register" onclick="">
+              <a
+                href="./game.html"
+                style="text-decoration: none; color: inherit"
+                >PLAY GAME</a
+              >
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Game Stats Preview (dummy data) -->
       <div class="stats-preview">
         <h2 class="section-title">GLOBAL STATS</h2>
         <div class="stats-grid">
@@ -109,7 +106,6 @@
       </div>
     </main>
 
-    <!-- Login Modal (hidden by default) -->
     <div class="modal" id="loginModal">
       <div class="modal-content">
         <span class="close-btn" onclick="closeModals()">&times;</span>
@@ -150,7 +146,6 @@
       </div>
     </div>
 
-    <!-- Register Modal (hidden by default) -->
     <div class="modal" id="registerModal">
       <div class="modal-content">
         <span class="close-btn" onclick="closeModals()">&times;</span>
@@ -216,9 +211,8 @@
       </div>
     </div>
 
-    <!-- Footer -->
     <footer class="main-footer">
-      <p>CIS045-3 Assignment | Student ID: 2540927 | Simthass MYM</p>
+      <p>Developed by Simthass Mohammed (2540927) for DSA Assignment</p>
     </footer>
 
     <script src="js/home.js"></script>

@@ -4,31 +4,44 @@
   box-sizing: border-box;
 }
 
-/* color variables */
+/* NEW COLOR PALETTE APPLIED HERE */
 :root {
-  --main-red: #db0b24;
-  --cream: #fef1ec;
-  --dark-bg: #351123;
-  --darker: #1a0812;
+  --teal-dark: #00777b;
+  --teal-light: #009f92;
+  --coral: #fe9e84;
+  --cream: #f7e7be;
 }
 
 body {
-  font-family: "Orbitron", sans-serif;
-  background: var(--dark-bg);
+  font-family: "Rajdhani", sans-serif; /* Much better for reading UI text */
+  background: var(--teal-dark);
   color: var(--cream);
   min-height: 100vh;
   overflow-x: hidden;
 }
 
+h1,
+h2,
+h3,
+.stat-number,
+.btn-submit,
+.btn-play-login,
+.btn-play-register,
+.btn-login,
+.btn-register {
+  font-family:
+    "Orbitron", sans-serif; /* Keeping Orbitron for headers/buttons */
+}
+
 /* Header */
 .main-header {
-  background: rgba(26, 8, 18, 0.95);
-  border-bottom: 2px solid var(--main-red);
+  background: rgba(0, 119, 123, 0.95); /* teal-dark with opacity */
+  border-bottom: 2px solid var(--teal-light);
   padding: 15px 0;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 4px 20px rgba(219, 11, 36, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 159, 146, 0.3);
 }
 
 .header-container {
@@ -47,8 +60,7 @@ body {
 .game-logo {
   height: 70px;
   width: auto;
-  /* if logo doesn't exist, this won't break */
-  filter: drop-shadow(0 0 10px rgba(219, 11, 36, 0.5));
+  filter: drop-shadow(0 0 10px rgba(254, 158, 132, 0.5)); /* Coral glow */
 }
 
 .main-nav {
@@ -61,7 +73,7 @@ body {
 .nav-item {
   color: var(--cream);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   padding: 8px 16px;
   border-radius: 5px;
@@ -71,7 +83,7 @@ body {
 
 .nav-item:hover,
 .nav-item.active {
-  background: var(--main-red);
+  background: var(--teal-light);
   color: var(--cream);
 }
 
@@ -83,36 +95,34 @@ body {
 .btn-login {
   padding: 10px 20px;
   background: transparent;
-  border: 2px solid var(--main-red);
-  color: var(--main-red);
+  border: 2px solid var(--coral);
+  color: var(--coral);
   border-radius: 5px;
   cursor: pointer;
-  font-family: "Orbitron", sans-serif;
   font-size: 13px;
   font-weight: 600;
   transition: all 0.3s;
 }
 
 .btn-login:hover {
-  background: var(--main-red);
-  color: var(--cream);
+  background: var(--coral);
+  color: var(--teal-dark);
 }
 
 .btn-register {
   padding: 10px 20px;
-  background: var(--main-red);
-  border: 2px solid var(--main-red);
-  color: var(--cream);
+  background: var(--coral);
+  border: 2px solid var(--coral);
+  color: var(--teal-dark);
   border-radius: 5px;
   cursor: pointer;
-  font-family: "Orbitron", sans-serif;
   font-size: 13px;
   font-weight: 600;
   transition: all 0.3s;
 }
 
 .btn-register:hover {
-  background: var(--darker);
+  background: var(--teal-light);
   border-color: var(--cream);
   color: var(--cream);
 }
@@ -132,16 +142,16 @@ body {
 .welcome-title {
   font-size: 48px;
   font-weight: 900;
-  color: var(--main-red);
+  color: var(--coral);
   margin-bottom: 15px;
   letter-spacing: 2px;
-  text-shadow: 0 0 20px rgba(219, 11, 36, 0.5);
+  text-shadow: 0 0 20px rgba(254, 158, 132, 0.5);
 }
 
 .welcome-subtitle {
-  font-size: 18px;
+  font-size: 20px;
   color: var(--cream);
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 /* Info Cards */
@@ -153,8 +163,8 @@ body {
 }
 
 .info-card {
-  background: rgba(26, 8, 18, 0.6);
-  border: 2px solid var(--main-red);
+  background: rgba(0, 159, 146, 0.2); /* teal-light background */
+  border: 2px solid var(--teal-light);
   border-radius: 10px;
   padding: 30px;
   text-align: center;
@@ -162,9 +172,10 @@ body {
 }
 
 .info-card:hover {
-  background: rgba(219, 11, 36, 0.1);
-  border-color: var(--cream);
+  background: rgba(254, 158, 132, 0.1);
+  border-color: var(--coral);
   transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .card-icon {
@@ -174,15 +185,15 @@ body {
 
 .info-card h3 {
   font-size: 20px;
-  color: var(--main-red);
+  color: var(--coral);
   margin-bottom: 12px;
   letter-spacing: 1px;
 }
 
 .info-card p {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--cream);
-  opacity: 0.8;
+  opacity: 0.9;
   line-height: 1.6;
 }
 
@@ -192,24 +203,25 @@ body {
 }
 
 .login-prompt {
-  background: rgba(26, 8, 18, 0.8);
-  border: 3px solid var(--main-red);
+  background: rgba(0, 159, 146, 0.15);
+  border: 3px solid var(--coral);
   border-radius: 15px;
   padding: 50px;
   text-align: center;
+  box-shadow: inset 0 0 30px rgba(0, 159, 146, 0.2);
 }
 
 .login-prompt h2 {
   font-size: 36px;
-  color: var(--main-red);
+  color: var(--coral);
   margin-bottom: 15px;
   letter-spacing: 2px;
 }
 
 .login-prompt p {
-  font-size: 16px;
+  font-size: 18px;
   color: var(--cream);
-  opacity: 0.8;
+  opacity: 0.9;
   margin-bottom: 30px;
 }
 
@@ -226,20 +238,20 @@ body {
   font-weight: 700;
   cursor: pointer;
   border-radius: 8px;
-  font-family: "Orbitron", sans-serif;
   letter-spacing: 2px;
   transition: all 0.3s;
 }
 
 .btn-play-login {
-  background: var(--main-red);
-  border: 3px solid var(--main-red);
-  color: var(--cream);
+  background: var(--coral);
+  border: 3px solid var(--coral);
+  color: var(--teal-dark);
 }
 
 .btn-play-login:hover {
-  background: var(--darker);
-  border-color: var(--cream);
+  background: var(--teal-light);
+  border-color: var(--teal-light);
+  color: var(--cream);
 }
 
 .btn-play-register {
@@ -250,7 +262,7 @@ body {
 
 .btn-play-register:hover {
   background: var(--cream);
-  color: var(--main-red);
+  color: var(--teal-dark);
 }
 
 /* Stats Preview */
@@ -260,7 +272,7 @@ body {
 
 .section-title {
   font-size: 32px;
-  color: var(--main-red);
+  color: var(--coral);
   text-align: center;
   margin-bottom: 30px;
   letter-spacing: 2px;
@@ -273,8 +285,8 @@ body {
 }
 
 .stat-box {
-  background: rgba(26, 8, 18, 0.6);
-  border: 2px solid var(--main-red);
+  background: rgba(0, 159, 146, 0.2);
+  border: 2px solid var(--teal-light);
   border-radius: 10px;
   padding: 25px;
   text-align: center;
@@ -282,21 +294,23 @@ body {
 }
 
 .stat-box:hover {
-  border-color: var(--cream);
+  border-color: var(--coral);
   transform: scale(1.05);
+  background: rgba(254, 158, 132, 0.1);
 }
 
 .stat-number {
   font-size: 36px;
   font-weight: 900;
-  color: var(--main-red);
+  color: var(--coral);
   margin-bottom: 8px;
 }
 
 .stat-label {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--cream);
-  opacity: 0.8;
+  font-weight: 600;
+  opacity: 0.9;
 }
 
 /* Modal Styles */
@@ -307,7 +321,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 119, 123, 0.85); /* teal-dark overlay */
   z-index: 1000;
   overflow-y: auto;
 }
@@ -319,17 +333,17 @@ body {
 }
 
 .modal-content {
-  background: var(--dark-bg);
-  border: 3px solid var(--main-red);
+  background: var(--teal-dark);
+  border: 3px solid var(--coral);
   border-radius: 15px;
   padding: 40px;
   max-width: 450px;
   width: 90%;
   position: relative;
   margin: 20px;
-  /* make it fit in viewport */
   max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 .close-btn {
@@ -343,12 +357,12 @@ body {
 }
 
 .close-btn:hover {
-  color: var(--main-red);
+  color: var(--coral);
 }
 
 .modal-title {
   font-size: 28px;
-  color: var(--main-red);
+  color: var(--coral);
   text-align: center;
   margin-bottom: 25px;
   letter-spacing: 2px;
@@ -367,26 +381,25 @@ body {
 .form-group input {
   width: 100%;
   padding: 14px 18px;
-  background: rgba(254, 241, 236, 0.05);
-  border: 2px solid rgba(219, 11, 36, 0.3);
+  background: rgba(247, 231, 190, 0.05);
+  border: 2px solid var(--teal-light);
   border-radius: 8px;
   color: var(--cream);
-  font-size: 14px;
-  font-family: "Orbitron", sans-serif;
+  font-size: 16px;
+  font-family: "Rajdhani", sans-serif;
   transition: all 0.3s;
 }
 
 .form-group input::placeholder {
-  color: rgba(254, 241, 236, 0.5);
+  color: rgba(247, 231, 190, 0.5);
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: var(--main-red);
-  background: rgba(219, 11, 36, 0.1);
+  border-color: var(--coral);
+  background: rgba(254, 158, 132, 0.1);
 }
 
-/* when hover on inputs */
 .form-group input:hover {
   border-color: var(--cream);
 }
@@ -410,7 +423,7 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .checkbox-label {
@@ -424,65 +437,65 @@ body {
 .checkbox-label input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: var(--main-red);
+  accent-color: var(--coral);
 }
 
 .forgot-link {
-  color: var(--main-red);
+  color: var(--teal-light);
   text-decoration: none;
   transition: color 0.3s;
+  font-weight: 600;
 }
 
 .forgot-link:hover {
-  color: var(--cream);
+  color: var(--coral);
 }
 
 .btn-submit {
   width: 100%;
   padding: 16px;
-  background: var(--main-red);
-  border: 2px solid var(--main-red);
-  color: var(--cream);
+  background: var(--coral);
+  border: 2px solid var(--coral);
+  color: var(--teal-dark);
   border-radius: 8px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  font-family: "Orbitron", sans-serif;
   letter-spacing: 2px;
   transition: all 0.3s;
 }
 
 .btn-submit:hover {
-  background: var(--cream);
-  color: var(--main-red);
+  background: var(--teal-light);
+  color: var(--cream);
   border-color: var(--cream);
 }
 
 .switch-auth {
   text-align: center;
   margin-top: 20px;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--cream);
 }
 
 .switch-auth a {
-  color: var(--main-red);
+  color: var(--coral);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .switch-auth a:hover {
-  color: var(--cream);
+  color: var(--teal-light);
 }
 
 /* Footer */
 .main-footer {
-  background: rgba(26, 8, 18, 0.95);
-  border-top: 2px solid var(--main-red);
+  background: rgba(0, 119, 123, 0.95);
+  border-top: 2px solid var(--teal-light);
   padding: 20px;
   text-align: center;
-  font-size: 12px;
-  color: rgba(254, 241, 236, 0.6);
+  font-size: 14px;
+  color: rgba(247, 231, 190, 0.7);
 }
 
 /* Responsive */

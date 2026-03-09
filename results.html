@@ -7,103 +7,62 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/results.css" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
   <body class="results-page">
     <div class="results-container">
-      <!-- Header -->
       <div class="results-header">
-        <h1 class="results-title">INTERROGATION ROUND COMPLETE</h1>
-        <p class="results-subtitle">Round 1 Results</p>
+        <h1 class="results-title">INTERROGATION COMPLETE</h1>
+        <p class="results-subtitle" id="resultSubtitle">Final Status Report</p>
       </div>
 
       <div class="results-layout">
-        <!-- Main Results Panel -->
-        <div class="main-results">
+        <div class="main-results panel-box">
           <div class="score-display">
-            <span class="star-icon">⭐</span>
-            <h2 class="points-earned">+80 POINTS EARNED</h2>
+            <span class="star-icon" id="statusIcon">⭐</span>
+            <h2 class="points-earned" id="finalScoreText">+0 POINTS EARNED</h2>
           </div>
 
-          <!-- Results Table -->
           <div class="results-table">
-            <h3>Results Breakdown</h3>
+            <h3>Case History Breakdown</h3>
             <table>
               <thead>
                 <tr>
-                  <th>Question</th>
-                  <th>Your Decision</th>
-                  <th>Suspect Said</th>
-                  <th>Truth</th>
-                  <th>Result</th>
+                  <th>Round</th>
+                  <th>Decision Made</th>
+                  <th>Suspect Claim</th>
+                  <th>True Answer</th>
+                  <th>Points</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr class="correct-row">
-                  <td>Q1</td>
-                  <td>TRUST</td>
-                  <td>5</td>
-                  <td>5 ✓</td>
-                  <td class="points-positive">+20</td>
-                </tr>
-                <tr class="correct-row">
-                  <td>Q2</td>
-                  <td>VERIFY (6)</td>
-                  <td>7</td>
-                  <td>6 ✓</td>
-                  <td class="points-positive">+10</td>
-                </tr>
-                <tr class="wrong-row">
-                  <td>Q3</td>
-                  <td>TRUST</td>
-                  <td>4</td>
-                  <td>5 ✗</td>
-                  <td class="points-negative">-Life</td>
-                </tr>
-                <tr class="correct-row">
-                  <td>Q4</td>
-                  <td>VERIFY (8)</td>
-                  <td>8</td>
-                  <td>8 ✓</td>
-                  <td class="points-positive">+10</td>
-                </tr>
-                <tr class="correct-row">
-                  <td>Q5</td>
-                  <td>TRUST</td>
-                  <td>6</td>
-                  <td>6 ✓</td>
-                  <td class="points-positive">+20</td>
-                </tr>
-              </tbody>
+              <tbody id="resultsTableBody"></tbody>
             </table>
           </div>
 
-          <!-- Summary Stats -->
           <div class="summary-stats">
             <div class="summary-item">
-              <span class="summary-label">Accuracy:</span>
-              <span class="summary-value">4/5 (80%)</span>
+              <span class="summary-label">Accuracy Rate:</span>
+              <span class="summary-value" id="accRate">0%</span>
             </div>
             <div class="summary-item">
-              <span class="summary-label">Successful Trusts:</span>
-              <span class="summary-value">2/3</span>
+              <span class="summary-label">Trusts Used:</span>
+              <span class="summary-value" id="trustCount">0</span>
             </div>
             <div class="summary-item">
-              <span class="summary-label">Successful Verifications:</span>
-              <span class="summary-value">2/2</span>
+              <span class="summary-label">Verifications Used:</span>
+              <span class="summary-value" id="verifyCount">0</span>
             </div>
             <div class="summary-item">
-              <span class="summary-label">Lives Remaining:</span>
-              <span class="summary-value">❤️ ❤️ 🖤</span>
+              <span class="summary-label">Final Lives:</span>
+              <span class="summary-value" id="finalLives">❤️ 0</span>
             </div>
           </div>
 
-          <!-- Action Buttons -->
           <div class="action-buttons">
-            <button class="btn-continue" onclick="continueGame()">
-              CONTINUE TO NEXT ROUND
+            <button class="btn-continue" onclick="playAgain()">
+              PLAY NEW ROUND
             </button>
             <button class="btn-dashboard" onclick="goToDashboard()">
               RETURN TO DASHBOARD
@@ -111,25 +70,24 @@
           </div>
         </div>
 
-        <!-- Side Panels -->
         <div class="side-panels">
-          <!-- Achievement Panel -->
-          <div class="achievement-panel">
-            <h3>New Achievement Unlocked!</h3>
-            <div class="achievement-badge-large">🏆</div>
-            <p class="achievement-name">Trust Builder</p>
-            <p class="achievement-desc">Successfully trusted suspect 5 times</p>
+          <div class="achievement-panel panel-box">
+            <h3>Performance Status</h3>
+            <div class="achievement-badge-large" id="perfBadge">📊</div>
+            <p class="achievement-name" id="perfName">Processing...</p>
+            <p class="achievement-desc" id="perfDesc">Waiting for data.</p>
           </div>
 
-          <!-- Analysis Panel -->
-          <div class="analysis-panel">
-            <h3>Analysis</h3>
-            <p class="analysis-text">
-              The suspect was deceptive on 2/5 questions (40%)
+          <div class="analysis-panel panel-box">
+            <h3>AI Analysis</h3>
+            <p class="analysis-text" id="aiLieRate">
+              The suspect was deceptive on 0 questions.
             </p>
-            <p class="analysis-text">Your trust accuracy: 66%</p>
             <p class="recommendation">
-              <strong>Recommendation:</strong> Consider verifying more often
+              <strong>System Note:</strong>
+              <span id="sysNote"
+                >Data recorded to local storage successfully.</span
+              >
             </p>
           </div>
         </div>

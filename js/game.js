@@ -11,6 +11,9 @@ let aiClaimedAnswer = 0;
 let isAiLying = false;
 let gameIsActive = false;
 
+// this array save all rounds to show in result page later
+let gameHistoryArray = [];
+
 // DOM Elements
 const timerText = document.getElementById("timerText");
 const scoreValue = document.getElementById("scoreValue");
@@ -31,19 +34,17 @@ const verifyBox = document.getElementById("verifyBox");
 
 // --- INITIALIZATION ---
 window.onload = () => {
-  console.log("Game started! Initializing Interrogation Protocol...");
+  console.log("Game start now...");
   updateHUD();
-  fetchNewCase(); // Start the first round
+  fetchNewCase(); // Start first round
 };
 
-// --- API FETCHING (INTEROPERABILITY) ---
-
-// Async function to get data from multiple APIs
+// --- API FETCHING ---
 async function fetchNewCase() {
-  gameIsActive = false; // block inputs
-  clearInterval(timerInterval); // stop timer
+  gameIsActive = false; // block user click when loading
+  clearInterval(timerInterval);
 
-  // Reset UI for loading
+  // loading ui reset
   apiImage.style.display = "none";
   loadingState.style.display = "block";
   suspectAnswerDisplay.innerText = "?";
@@ -53,82 +54,71 @@ async function fetchNewCase() {
   feedbackText.style.color = "var(--cream)";
 
   try {
-    console.log("Fetching from Heart API...");
-    // 1. Fetch the actual puzzle (API provided in assignment brief)
+    console.log("Get image from Heart API...");
     const heartRes = await fetch(
       "https://marcconrad.com/uob/heart/api.php?out=json",
     );
     const heartData = await heartRes.json();
 
-    console.log("Fetching from YesNo API to determine lie status...");
-    // 2. Fetch from a second API to decide if the AI will lie to the player!
+    console.log("Get from YesNo API to make lie logic...");
     const yesNoRes = await fetch("https://yesno.wtf/api");
     const yesNoData = await yesNoRes.json();
 
-    // Store the true answer
     actualTrueAnswer = heartData.solution;
 
-    // Determine lie logic based on the second API
+    // check if AI will lie based on yesno api
     if (yesNoData.answer === "yes") {
       isAiLying = false;
-      aiClaimedAnswer = actualTrueAnswer; // AI tells the truth
-      console.log("AI is telling the TRUTH this round.");
+      aiClaimedAnswer = actualTrueAnswer; // true
+      console.log("AI tell TRUTH this round.");
     } else {
       isAiLying = true;
-      // create a fake answer by adding or subtracting 1 or 2
+      // make fake answer
       let offset = Math.floor(Math.random() * 2) + 1;
-      // 50% chance to add or subtract
       if (Math.random() > 0.5) {
         aiClaimedAnswer = actualTrueAnswer + offset;
       } else {
         aiClaimedAnswer = actualTrueAnswer - offset;
       }
       console.log(
-        `AI is LYING. Real: ${actualTrueAnswer}, Fake: ${aiClaimedAnswer}`,
+        `AI LYING. Real is ${actualTrueAnswer}, Fake is ${aiClaimedAnswer}`,
       );
     }
 
-    // Update Image UI
+    // show image
     apiImage.src = heartData.question;
     apiImage.style.display = "block";
     loadingState.style.display = "none";
 
-    // Update AI Suspect UI
+    // update UI
     suspectAnswerDisplay.innerText = aiClaimedAnswer;
-
-    // Randomize confidence meter just for visual effect
-    let randomConf = Math.floor(Math.random() * 40) + 60; // 60% to 100%
+    let randomConf = Math.floor(Math.random() * 40) + 60;
     confValue.innerText = randomConf + "%";
     confFill.style.width = randomConf + "%";
 
     feedbackText.innerText = "Interrogation active. Make your choice.";
-
-    // 3. SOUND EFFECTS API: Use Web Speech API to make the robot talk
     speakText(`I have analyzed the data. The answer is ${aiClaimedAnswer}.`);
 
     gameIsActive = true;
     startTimer();
   } catch (error) {
-    console.error("API Fetch Failed! Servers might be down.", error);
-    feedbackText.innerText = "ERROR: Connection to distributed service failed.";
+    console.error("API error", error);
+    feedbackText.innerText = "ERROR: Cannot connect to server.";
     feedbackText.style.color = "#ff3366";
   }
 }
 
-// Web Speech API wrapper
+// robot voice function
 function speakText(text) {
-  // check if browser supports it
   if ("speechSynthesis" in window) {
     let msg = new SpeechSynthesisUtterance(text);
-    msg.pitch = 0.5; // lower pitch for robot voice
-    msg.rate = 1.1; // slightly faster
+    msg.pitch = 0.5;
+    msg.rate = 1.1;
     window.speechSynthesis.speak(msg);
-  } else {
-    console.log("Speech API not supported in this browser.");
   }
 }
 
-// --- EVENT DRIVEN LOGIC (TIMER) ---
+// --- TIMER LOGIC ---
 function startTimer() {
   timeRemaining = 10;
   timerText.innerText = timeRemaining;
@@ -137,7 +127,7 @@ function startTimer() {
     timeRemaining--;
     timerText.innerText = timeRemaining;
 
-    // Turn timer red when time is low
+    // make red when time almost finish
     if (timeRemaining <= 3) {
       document.getElementById("timerCircle").style.borderColor = "#ff3366";
       timerText.style.color = "#ff3366";
@@ -157,43 +147,71 @@ function handleTimeOut() {
   if (!gameIsActive) return;
   gameIsActive = false;
 
-  console.log("Time ran out!");
-  speakText("You are too slow, Detective.");
+  speakText("You are too slow.");
   feedbackText.innerText = "TIME OUT! You lost a life.";
   feedbackText.style.color = "#ff3366";
+
+  // push fail data to history array
+  gameHistoryArray.push({
+    round: currentRound,
+    decision: "TIMEOUT",
+    aiSaid: aiClaimedAnswer,
+    realAnswer: actualTrueAnswer,
+    aiLied: isAiLying,
+    isWin: false,
+    points: "-Life",
+  });
 
   loseLife();
 }
 
-// --- PLAYER ACTIONS ---
+// --- PLAYER CLICK ACTIONS ---
 
-// Triggered when TRUST button is clicked
 function trustSuspect() {
-  if (!gameIsActive) return; // prevent spam clicking
+  if (!gameIsActive) return;
   gameIsActive = false;
   clearInterval(timerInterval);
 
-  console.log("Player clicked TRUST.");
+  let roundWin = false;
+  let pointText = "";
 
   if (isAiLying === false) {
-    // Player trusted the truth -> WIN
+    // player win
     score += 20;
     streak++;
     feedbackText.innerText = "CORRECT! The AI told the truth. +20 Pts";
     feedbackText.style.color = "var(--teal-light)";
     speakText("Thank you for trusting me.");
-    updateHUD();
-    setTimeout(nextRound, 2000); // wait 2 seconds then next round
+    roundWin = true;
+    pointText = "+20";
   } else {
-    // Player trusted a lie -> LOSE
-    feedbackText.innerText = `FOOL! The AI lied. The real answer was ${actualTrueAnswer}.`;
+    // player lose
+    feedbackText.innerText = `FOOL! The AI lied. Real answer was ${actualTrueAnswer}.`;
     feedbackText.style.color = "#ff3366";
     speakText("Ha ha. I deceived you.");
+    roundWin = false;
+    pointText = "-Life";
+  }
+
+  // save round data for result page table
+  gameHistoryArray.push({
+    round: currentRound,
+    decision: "TRUST",
+    aiSaid: aiClaimedAnswer,
+    realAnswer: actualTrueAnswer,
+    aiLied: isAiLying,
+    isWin: roundWin,
+    points: pointText,
+  });
+
+  if (roundWin) {
+    updateHUD();
+    setTimeout(nextRound, 2000);
+  } else {
     loseLife();
   }
 }
 
-// Toggles the input box for manual verification
 function showVerifyInput() {
   if (!gameIsActive) return;
 
@@ -205,14 +223,14 @@ function showVerifyInput() {
   }
 }
 
-// Triggered when GO button is clicked
 function submitVerification() {
   if (!gameIsActive) return;
 
   let playerAnswer = parseInt(manualInput.value);
 
+  // check if empty
   if (isNaN(playerAnswer)) {
-    alert("Please enter a valid number!");
+    alert("Please type number!");
     return;
   }
 
@@ -220,15 +238,14 @@ function submitVerification() {
   clearInterval(timerInterval);
   verifyBox.style.display = "none";
 
-  console.log(
-    `Player guessed: ${playerAnswer}. Real answer: ${actualTrueAnswer}`,
-  );
+  let roundWin = false;
+  let pointText = "";
 
   if (playerAnswer === actualTrueAnswer) {
-    // Player verified correctly
-    score += 10; // less points because it's safer than trusting
+    // player calculate correct
+    score += 10;
     streak++;
-    feedbackText.innerText = "VERIFIED! Your calculation was correct. +10 Pts";
+    feedbackText.innerText = "VERIFIED! Your calculation correct. +10 Pts";
     feedbackText.style.color = "var(--teal-light)";
 
     if (isAiLying) {
@@ -236,23 +253,41 @@ function submitVerification() {
     } else {
       speakText("I told you I was right.");
     }
+    roundWin = true;
+    pointText = "+10";
+  } else {
+    // player do math wrong
+    feedbackText.innerText = `WRONG MATH! True answer was ${actualTrueAnswer}.`;
+    feedbackText.style.color = "#ff3366";
+    speakText("Your human brain is inferior.");
+    roundWin = false;
+    pointText = "-Life";
+  }
 
+  // push data to array
+  gameHistoryArray.push({
+    round: currentRound,
+    decision: "VERIFY (" + playerAnswer + ")",
+    aiSaid: aiClaimedAnswer,
+    realAnswer: actualTrueAnswer,
+    aiLied: isAiLying,
+    isWin: roundWin,
+    points: pointText,
+  });
+
+  if (roundWin) {
     updateHUD();
     setTimeout(nextRound, 2000);
   } else {
-    // Player did the math wrong
-    feedbackText.innerText = `WRONG MATH! The true answer was ${actualTrueAnswer}.`;
-    feedbackText.style.color = "#ff3366";
-    speakText("Your human brain is inferior.");
     loseLife();
   }
 }
 
-// --- GAME STATE MANAGEMENT ---
+// --- STATE MANAGEMENT ---
 
 function loseLife() {
   lives--;
-  streak = 0; // reset streak
+  streak = 0;
   updateHUD();
 
   if (lives <= 0) {
@@ -265,9 +300,9 @@ function loseLife() {
 function nextRound() {
   currentRound++;
   if (currentRound > 10) {
-    // For now, if they beat 10 rounds, they win
-    alert(`YOU WIN! Final Score: ${score}`);
-    window.location.href = "stats.html"; // redirect to stats page
+    // player finish all 10 rounds
+    alert(`YOU SURVIVED! Final Score: ${score}`);
+    saveToStorageAndRedirect();
   } else {
     updateHUD();
     fetchNewCase();
@@ -282,7 +317,17 @@ function updateHUD() {
 }
 
 function gameOver() {
-  alert(`GAME OVER! You have been terminated.\nFinal Score: ${score}`);
-  // In the future, this is where we will POST the score to a database using Virtual Identity
-  window.location.href = "dashboard.html";
+  alert(`GAME OVER! You lost all lives.\nFinal Score: ${score}`);
+  saveToStorageAndRedirect();
+}
+
+// function to save all data before go to result page
+function saveToStorageAndRedirect() {
+  localStorage.setItem(
+    "interrogationHistory",
+    JSON.stringify(gameHistoryArray),
+  );
+  localStorage.setItem("finalGameScore", score);
+  localStorage.setItem("finalLives", lives);
+  window.location.href = "results.html";
 }

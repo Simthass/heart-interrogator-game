@@ -34,7 +34,7 @@
         <span class="info-item">Streak: <span id="streakValue">0</span>🔥</span>
         <button
           class="exit-btn"
-          onclick="window.location.href = 'dashboard.html'"
+          onclick="window.location.href = 'results.html'"
         >
           ABORT
         </button>
@@ -143,26 +143,6 @@
         </div>
       </div>
     </div>
-
-    <script>
-      function showVerifyInput() {
-        const box = document.getElementById("verifyBox");
-        if (box.style.display === "none") {
-          box.style.display = "flex";
-          document.getElementById("manualInput").focus();
-        } else {
-          box.style.display = "none";
-        }
-      }
-      function submitVerification() {
-        alert("Verification Submitted!");
-        document.getElementById("verifyBox").style.display = "none";
-        document.getElementById("manualInput").value = "";
-      }
-      function trustSuspect() {
-        alert("You trusted the AI. Let's hope it didn't lie...");
-      }
-    </script>
     <script src="js/game.js"></script>
   </body>
 </html>

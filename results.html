@@ -16,6 +16,7 @@
     />
   </head>
   <body class="results-page">
+    <div id="header-placeholder"></div>
     <div class="results-container">
       <div class="results-header">
         <h1 class="results-title">
@@ -103,6 +104,18 @@
       </div>
     </div>
 
+    <script src="js/home.js"></script>
     <script src="js/results.js"></script>
+    <script>
+      // load header into results
+      fetch("header.html")
+        .then((res) => res.text())
+        .then((data) => {
+          document.getElementById("header-placeholder").innerHTML = data;
+          if (window.updateHeaderAuth) window.updateHeaderAuth();
+          if (window.setActiveNav) window.setActiveNav();
+        })
+        .catch((err) => console.log("header load error:", err));
+    </script>
   </body>
 </html>

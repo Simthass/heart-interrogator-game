@@ -3,15 +3,11 @@ let lives = 3;
 let score = 0;
 let streak = 0;
 let timeRemaining = 10;
-let timerInterval;
-
-// api stuff
+let timerInterval = null;
 let actualTrueAnswer = 0;
 let aiClaimedAnswer = 0;
 let isAiLying = false;
 let gameIsActive = false;
-
-// history for results page
 let gameHistoryArray = [];
 
 // dom elements
@@ -32,120 +28,131 @@ const verifyBox = document.getElementById("verifyBox");
 const robotIcon = document.querySelector(".robot-icon i");
 const gameBody = document.querySelector(".game-body");
 
+// cookie helper
+function getCookie(name) {
+  let match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+  return match ? match[2] : null;
+}
+
 // get difficulty from storage
 function getDifficultyTimer() {
-  const diff = localStorage.getItem("gameDifficulty") || "easy";
-  if (diff === "easy") return 10;
-  if (diff === "hard") return 5;
-  if (diff === "expert") return 2;
-  return 10;
+  let diff = localStorage.getItem("gameDifficulty") || "easy";
+  if (diff === "easy") return 12;
+  if (diff === "hard") return 7;
+  if (diff === "expert") return 3;
+  return 12;
 }
 
 window.onload = () => {
-  console.log("game starting... diff timer:", getDifficultyTimer());
+  console.log(
+    "game started... difficulty:",
+    localStorage.getItem("gameDifficulty") || "easy",
+  );
+  // reset game state
+  currentRound = 1;
+  lives = 3;
+  score = 0;
+  streak = 0;
+  gameHistoryArray = [];
   updateHUD();
   fetchNewCase();
 };
 
-// show floating notification
+// show notification
 function showNotification(message, type = "success") {
-  const notif = document.createElement("div");
+  let notif = document.createElement("div");
   notif.className = `notification ${type}`;
   notif.innerHTML = message;
   document.body.appendChild(notif);
 
   setTimeout(() => {
     notif.remove();
-  }, 800);
-}
-
-// create particle effect
-function createParticles(x, y, color, count = 10) {
-  for (let i = 0; i < count; i++) {
-    const particle = document.createElement("div");
-    particle.className = "particle";
-    particle.innerHTML = "✨";
-    particle.style.left = x + "px";
-    particle.style.top = y + "px";
-    particle.style.color = color;
-    particle.style.animationDelay = Math.random() * 0.2 + "s";
-    document.body.appendChild(particle);
-
-    setTimeout(() => {
-      particle.remove();
-    }, 1000);
-  }
+  }, 1000);
 }
 
 // flash screen
 function flashScreen(type) {
   if (type === "correct") {
     gameBody.classList.add("flash-correct");
-    setTimeout(() => gameBody.classList.remove("flash-correct"), 300);
+    setTimeout(() => gameBody.classList.remove("flash-correct"), 400);
   } else {
     gameBody.classList.add("flash-wrong");
-    setTimeout(() => gameBody.classList.remove("flash-wrong"), 300);
+    setTimeout(() => gameBody.classList.remove("flash-wrong"), 400);
   }
 }
 
-// animate number change
+// animate value
 function animateValue(element) {
   element.classList.add("pulse-value");
-  setTimeout(() => element.classList.remove("pulse-value"), 500);
+  setTimeout(() => element.classList.remove("pulse-value"), 400);
 }
 
-// make robot speak
+// robot speak
 function robotSpeak(text) {
   if (robotIcon) {
-    robotIcon.classList.add("speaking");
-    setTimeout(() => robotIcon.classList.remove("speaking"), 500);
+    robotIcon.style.transform = "scale(1.1)";
+    setTimeout(() => (robotIcon.style.transform = ""), 300);
   }
-  speakText(text);
+
+  if ("speechSynthesis" in window) {
+    let msg = new SpeechSynthesisUtterance(text);
+    msg.pitch = 0.8;
+    msg.rate = 1.0;
+    window.speechSynthesis.cancel(); // stop any previous speech
+    window.speechSynthesis.speak(msg);
+  }
 }
 
+// fetch new case from apis
 async function fetchNewCase() {
+  // clear any existing timer
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+
   gameIsActive = false;
-  clearInterval(timerInterval);
 
   apiImage.style.display = "none";
   loadingState.style.display = "block";
   suspectAnswerDisplay.innerText = "?";
   verifyBox.style.display = "none";
-  manualInput.value = "";
-  manualInput.classList.remove("error");
+  if (manualInput) manualInput.value = "";
+  if (manualInput) manualInput.classList.remove("error");
   feedbackText.innerHTML =
     '<i class="fas fa-spinner fa-pulse"></i> Connecting to Heart API...';
 
-  // make puzzle image loading
   document.querySelector(".puzzle-image").classList.add("loading");
 
   try {
     console.log("fetching heart api...");
-    const heartRes = await fetch(
+    let heartRes = await fetch(
       "https://marcconrad.com/uob/heart/api.php?out=json",
     );
-    const heartData = await heartRes.json();
+    let heartData = await heartRes.json();
 
     console.log("fetching yesno api...");
-    const yesNoRes = await fetch("https://yesno.wtf/api");
-    const yesNoData = await yesNoRes.json();
+    let yesNoRes = await fetch("https://yesno.wtf/api");
+    let yesNoData = await yesNoRes.json();
 
     actualTrueAnswer = heartData.solution;
 
-    // ai decides to lie or not based on yesno
+    // ai decides to lie or not
     if (yesNoData.answer === "yes") {
       isAiLying = false;
       aiClaimedAnswer = actualTrueAnswer;
       console.log("ai telling truth");
     } else {
       isAiLying = true;
-      // make fake answer
+      // generate fake answer
       let offset = Math.floor(Math.random() * 2) + 1;
       if (Math.random() > 0.5) {
         aiClaimedAnswer = actualTrueAnswer + offset;
       } else {
         aiClaimedAnswer = actualTrueAnswer - offset;
       }
+      // make sure its positive
+      if (aiClaimedAnswer < 0) aiClaimedAnswer = actualTrueAnswer + 1;
       console.log(
         `ai lying: real ${actualTrueAnswer}, fake ${aiClaimedAnswer}`,
       );
@@ -156,69 +163,59 @@ async function fetchNewCase() {
     loadingState.style.display = "none";
     document.querySelector(".puzzle-image").classList.remove("loading");
 
-    // animate number change
-    suspectAnswerDisplay.innerText = aiClaimedAnswer;
+    // update ui
     animateValue(suspectAnswerDisplay);
+    suspectAnswerDisplay.innerText = aiClaimedAnswer;
 
-    let randomConf = Math.floor(Math.random() * 40) + 60;
+    let randomConf = Math.floor(Math.random() * 30) + 65; // 65-95%
     confValue.innerText = randomConf + "%";
     confFill.style.width = randomConf + "%";
 
     feedbackText.innerHTML =
       '<i class="fas fa-microphone"></i> Interrogation active. Make your choice.';
 
-    // robot speaks
     robotSpeak(`I have analyzed the data. The answer is ${aiClaimedAnswer}.`);
-
-    // create particles for new case
-    const rect = document
-      .querySelector(".suspect-section")
-      ?.getBoundingClientRect();
-    if (rect) {
-      createParticles(rect.left + 100, rect.top + 100, "#fe9e84", 5);
-    }
 
     gameIsActive = true;
     startTimer();
   } catch (error) {
-    console.error("api error", error);
+    console.error("api error:", error);
     feedbackText.innerHTML =
       '<i class="fas fa-exclamation-triangle" style="color:#ff4d4d;"></i> ERROR: Cannot connect to server';
     document.querySelector(".puzzle-image").classList.remove("loading");
+
+    // retry after 3 seconds
+    setTimeout(() => {
+      if (!gameIsActive) fetchNewCase();
+    }, 3000);
   }
 }
 
-// robot voice
-function speakText(text) {
-  if ("speechSynthesis" in window) {
-    let msg = new SpeechSynthesisUtterance(text);
-    msg.pitch = 0.5;
-    msg.rate = 1.1;
-    window.speechSynthesis.speak(msg);
-  }
-}
-
+// start timer
 function startTimer() {
   timeRemaining = getDifficultyTimer();
   timerText.innerText = timeRemaining;
   timerCircle.classList.remove("warning");
 
+  if (timerInterval) clearInterval(timerInterval);
+
   timerInterval = setInterval(() => {
     timeRemaining--;
     timerText.innerText = timeRemaining;
 
-    // make timer red when low
     if (timeRemaining <= 3) {
       timerCircle.classList.add("warning");
     }
 
     if (timeRemaining <= 0) {
       clearInterval(timerInterval);
+      timerInterval = null;
       handleTimeOut();
     }
   }, 1000);
 }
 
+// handle timeout
 function handleTimeOut() {
   if (!gameIsActive) return;
   gameIsActive = false;
@@ -228,17 +225,8 @@ function handleTimeOut() {
     '<i class="fas fa-hourglass-end"></i> TIME OUT! You lost a life.';
   feedbackText.style.color = "#ff4d4d";
 
-  // flash screen red
   flashScreen("wrong");
-
-  // show notification
   showNotification("TIME OUT!", "error");
-
-  // create particles
-  const rect = document.querySelector(".timer-circle")?.getBoundingClientRect();
-  if (rect) {
-    createParticles(rect.left, rect.top, "#ff4d4d", 8);
-  }
 
   gameHistoryArray.push({
     round: currentRound,
@@ -253,26 +241,23 @@ function handleTimeOut() {
   loseLife();
 }
 
-// FIXED: now accepts event parameter properly
+// trust suspect
 function trustSuspect(event) {
   if (!gameIsActive) return;
   gameIsActive = false;
-  clearInterval(timerInterval);
+
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
 
   let roundWin = false;
   let pointText = "";
-
-  // get button position for particles - fixed with null check
-  let btnRect = null;
-  if (event && event.target) {
-    btnRect = event.target.getBoundingClientRect();
-  }
 
   if (isAiLying === false) {
     score += 20;
     streak++;
 
-    // animate score
     animateValue(scoreValue);
     animateValue(streakValue);
 
@@ -281,16 +266,8 @@ function trustSuspect(event) {
     feedbackText.style.color = "#39ff14";
     robotSpeak("Thank you for trusting me.");
 
-    // flash screen green
     flashScreen("correct");
-
-    // show success notification
     showNotification("+20 POINTS!", "success");
-
-    // create particles
-    if (btnRect) {
-      createParticles(btnRect.left, btnRect.top, "#39ff14", 15);
-    }
 
     roundWin = true;
     pointText = "+20";
@@ -300,16 +277,8 @@ function trustSuspect(event) {
     feedbackText.style.color = "#ff4d4d";
     robotSpeak("Ha ha ha. I deceived you.");
 
-    // flash screen red
     flashScreen("wrong");
-
-    // show notification
     showNotification("AI LIED!", "error");
-
-    // create particles
-    if (btnRect) {
-      createParticles(btnRect.left, btnRect.top, "#ff4d4d", 10);
-    }
 
     roundWin = false;
     pointText = "-Life";
@@ -327,32 +296,25 @@ function trustSuspect(event) {
 
   if (roundWin) {
     updateHUD();
-    setTimeout(nextRound, 2000);
+    setTimeout(() => nextRound(), 2000);
   } else {
     loseLife();
   }
 }
 
-// FIXED: now accepts event parameter properly
+// show verify input
 function showVerifyInput(event) {
   if (!gameIsActive) return;
 
-  if (verifyBox.style.display === "none") {
+  if (verifyBox.style.display === "none" || verifyBox.style.display === "") {
     verifyBox.style.display = "flex";
     manualInput.focus();
-
-    // animate - fixed with null check
-    if (event && event.target) {
-      const btn = event.target;
-      btn.style.transform = "scale(0.95)";
-      setTimeout(() => (btn.style.transform = ""), 200);
-    }
   } else {
     verifyBox.style.display = "none";
   }
 }
 
-// FIXED: now accepts event parameter properly
+// submit verification
 function submitVerification(event) {
   if (!gameIsActive) return;
 
@@ -366,14 +328,13 @@ function submitVerification(event) {
   }
 
   gameIsActive = false;
-  clearInterval(timerInterval);
-  verifyBox.style.display = "none";
 
-  // get button position for particles - fixed with null check
-  let btnRect = null;
-  if (event && event.target) {
-    btnRect = event.target.getBoundingClientRect();
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
   }
+
+  verifyBox.style.display = "none";
 
   let roundWin = false;
   let pointText = "";
@@ -382,7 +343,6 @@ function submitVerification(event) {
     score += 10;
     streak++;
 
-    // animate values
     animateValue(scoreValue);
     animateValue(streakValue);
 
@@ -390,7 +350,6 @@ function submitVerification(event) {
       '<i class="fas fa-check-circle" style="color:#39ff14;"></i> VERIFIED! Correct answer. +10 POINTS';
     feedbackText.style.color = "#39ff14";
 
-    // flash screen green
     flashScreen("correct");
 
     if (isAiLying) {
@@ -399,13 +358,7 @@ function submitVerification(event) {
       robotSpeak("I told you I was right.");
     }
 
-    // show notification
     showNotification("+10 POINTS!", "success");
-
-    // create particles
-    if (btnRect) {
-      createParticles(btnRect.left, btnRect.top, "#39ff14", 12);
-    }
 
     roundWin = true;
     pointText = "+10";
@@ -415,16 +368,8 @@ function submitVerification(event) {
     feedbackText.style.color = "#ff4d4d";
     robotSpeak("Your human brain is inferior.");
 
-    // flash screen red
     flashScreen("wrong");
-
-    // show notification
     showNotification("WRONG ANSWER!", "error");
-
-    // create particles
-    if (btnRect) {
-      createParticles(btnRect.left, btnRect.top, "#ff4d4d", 10);
-    }
 
     roundWin = false;
     pointText = "-Life";
@@ -442,21 +387,21 @@ function submitVerification(event) {
 
   if (roundWin) {
     updateHUD();
-    setTimeout(nextRound, 2000);
+    setTimeout(() => nextRound(), 2000);
   } else {
     loseLife();
   }
 }
 
+// lose life
 function loseLife() {
   lives--;
   streak = 0;
 
-  // animate lives
   animateValue(livesDisplay);
 
   // shake lives icon
-  const livesIcon = document.querySelector(".lives-count i");
+  let livesIcon = document.querySelector(".lives-count i");
   if (livesIcon) {
     livesIcon.style.animation = "shake 0.3s";
     setTimeout(() => (livesIcon.style.animation = ""), 300);
@@ -465,21 +410,22 @@ function loseLife() {
   updateHUD();
 
   if (lives <= 0) {
-    setTimeout(gameOver, 2000);
+    setTimeout(() => gameOver(), 2000);
   } else {
-    setTimeout(nextRound, 2500);
+    setTimeout(() => nextRound(), 2500);
   }
 }
 
+// next round
 function nextRound() {
   currentRound++;
+
   if (currentRound > 10) {
-    // show final celebration
+    // game complete
     showNotification("GAME COMPLETE!", "success");
-    createParticles(window.innerWidth / 2, window.innerHeight / 2, "gold", 30);
 
     setTimeout(() => {
-      saveToStorageAndRedirect();
+      saveGameToDB();
     }, 1500);
   } else {
     updateHUD();
@@ -487,31 +433,74 @@ function nextRound() {
   }
 }
 
+// update hud
 function updateHUD() {
   scoreValue.innerText = score;
   streakValue.innerText = streak;
   currentRoundDisplay.innerText = currentRound;
   livesDisplay.innerText = lives;
 
-  // animate round change
   animateValue(currentRoundDisplay);
 }
 
+// game over
 function gameOver() {
   showNotification("GAME OVER", "error");
-  createParticles(window.innerWidth / 2, window.innerHeight / 2, "#ff4d4d", 20);
 
   setTimeout(() => {
-    saveToStorageAndRedirect();
+    saveGameToDB();
   }, 1500);
 }
 
-function saveToStorageAndRedirect() {
+// save game to database
+async function saveGameToDB() {
+  // calculate accuracy
+  let correctAnswers = 0;
+  for (let i = 0; i < gameHistoryArray.length; i++) {
+    if (gameHistoryArray[i].isWin) correctAnswers++;
+  }
+  let accuracy =
+    Math.round((correctAnswers / gameHistoryArray.length) * 100) || 0;
+
+  // save to local storage for results page
   localStorage.setItem(
     "interrogationHistory",
     JSON.stringify(gameHistoryArray),
   );
   localStorage.setItem("finalGameScore", score);
   localStorage.setItem("finalLives", lives);
+  localStorage.setItem("finalAccuracy", accuracy);
+  localStorage.setItem("roundsPlayed", gameHistoryArray.length);
+
+  // save to db if logged in
+  let userId = getCookie("loggedId");
+  let username = getCookie("loggedUser");
+
+  if (userId && username) {
+    try {
+      let res = await fetch("http://localhost:3000/api/save-game", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userId,
+          username: username,
+          score: score,
+          livesLeft: lives,
+          rounds: gameHistoryArray.length,
+          accuracy: accuracy,
+        }),
+      });
+
+      if (res.ok) {
+        console.log("game saved to db ok");
+      } else {
+        console.log("failed to save game");
+      }
+    } catch (e) {
+      console.log("could not save game:", e);
+    }
+  }
+
+  // redirect to results
   window.location.href = "results.html";
 }

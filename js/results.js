@@ -1,14 +1,21 @@
 document.addEventListener("DOMContentLoaded", function () {
   console.log("loading results data...");
 
-  let savedData = localStorage.getItem("interrogationHistory");
-  let finalScore = localStorage.getItem("finalGameScore");
-  let finalLivesCount = localStorage.getItem("finalLives");
+  loadResultsData();
+});
 
-  if (!savedData || savedData === "[]") {
+function loadResultsData() {
+  let savedData = localStorage.getItem("interrogationHistory");
+  let finalScore = localStorage.getItem("finalGameScore") || "0";
+  let finalLives = localStorage.getItem("finalLives") || "0";
+  let finalAccuracy = localStorage.getItem("finalAccuracy") || "0";
+  let roundsPlayed = localStorage.getItem("roundsPlayed") || "0";
+
+  if (!savedData || savedData === "[]" || savedData === "null") {
     console.log("no game data found");
     document.getElementById("resultSubtitle").innerText =
       "NO DATA - PLAY GAME FIRST";
+    document.getElementById("finalScoreText").innerText = "0 POINTS";
     return;
   }
 
@@ -32,17 +39,22 @@ document.addEventListener("DOMContentLoaded", function () {
     let tr = document.createElement("tr");
     tr.className = roundData.isWin ? "correct-row" : "wrong-row";
 
+    let aiIcon = roundData.aiLied
+      ? '<i class="fas fa-times" style="color:#ff4d4d;"></i>'
+      : '<i class="fas fa-check" style="color:#39ff14;"></i>';
+
     tr.innerHTML = `
       <td>Q${roundData.round}</td>
       <td>${roundData.decision}</td>
       <td>${roundData.aiSaid}</td>
-      <td>${roundData.realAnswer} ${roundData.aiLied ? '<i class="fas fa-times" style="color:#ff4d4d;"></i>' : '<i class="fas fa-check" style="color:#39ff14;"></i>'}</td>
+      <td>${roundData.realAnswer} ${aiIcon}</td>
       <td class="${roundData.isWin ? "points-positive" : "points-negative"}">${roundData.points}</td>
     `;
 
     tableBody.appendChild(tr);
   }
 
+  // update summary
   document.getElementById("finalScoreText").innerText = finalScore + " POINTS";
 
   let mathAcc = 0;
@@ -56,10 +68,10 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("verifyCount").innerText = verifyCount;
 
   let heartString = "";
-  for (let x = 0; x < parseInt(finalLivesCount); x++) {
+  for (let x = 0; x < parseInt(finalLives); x++) {
     heartString += "❤️ ";
   }
-  if (finalLivesCount <= 0) {
+  if (finalLives <= 0 || finalLives === "0") {
     heartString = "💀 TERMINATED";
   }
   document.getElementById("finalLives").innerText = heartString;
@@ -67,12 +79,13 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("aiLieRate").innerHTML =
     `<i class="fas fa-robot"></i> AI lied on ${aiLiesCount}/${historyArray.length} questions.`;
 
-  if (finalLivesCount > 0) {
+  if (finalLives > 0) {
     document.getElementById("statusIcon").innerHTML =
       '<i class="fas fa-trophy"></i>';
     document.getElementById("perfName").innerText = "Surviving Agent";
     document.getElementById("perfDesc").innerText =
       "You survived the interrogation.";
+    document.getElementById("sysNote").innerText = "Great job detective!";
   } else {
     document.getElementById("statusIcon").innerHTML =
       '<i class="fas fa-skull"></i>';
@@ -82,16 +95,16 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("sysNote").innerText = "More training needed.";
   }
 
-  // small animation
+  // animation
   let rows = document.querySelectorAll("tbody tr");
   for (let r = 0; r < rows.length; r++) {
     rows[r].style.opacity = "0";
     setTimeout(function () {
       rows[r].style.transition = "opacity 0.3s";
       rows[r].style.opacity = "1";
-    }, 100 * r);
+    }, 50 * r);
   }
-});
+}
 
 function playAgain() {
   window.location.href = "game.html";

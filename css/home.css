@@ -1,8 +1,3 @@
-/* ===================================
-   home.css - styles only for home page
-   Student: 2540927 Simthass Mohammed
-   =================================== */
-
 /* main wrapper */
 .home-main {
   max-width: 1300px;
@@ -21,10 +16,6 @@
   align-items: center;
   padding: 70px 0 60px;
   min-height: 480px;
-}
-
-.hero-content {
-  /* left side of hero */
 }
 
 /* small badge at top */

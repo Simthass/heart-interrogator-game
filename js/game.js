@@ -1,7 +1,3 @@
-// game logic - 2540927 - redesigned with better feedback
-// sorry code is messy i just want it to work and look cool
-// FIXED: buttons now work! i forgot to handle event properly
-
 let currentRound = 1;
 let lives = 3;
 let score = 0;

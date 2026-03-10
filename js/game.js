@@ -1,3 +1,7 @@
+// game logic - 2540927 - redesigned with better feedback
+// sorry code is messy i just want it to work and look cool
+// FIXED: buttons now work! i forgot to handle event properly
+
 let currentRound = 1;
 let lives = 3;
 let score = 0;
@@ -5,72 +9,138 @@ let streak = 0;
 let timeRemaining = 10;
 let timerInterval;
 
-// API Data States
+// api stuff
 let actualTrueAnswer = 0;
 let aiClaimedAnswer = 0;
 let isAiLying = false;
 let gameIsActive = false;
 
-// this array save all rounds to show in result page later
+// history for results page
 let gameHistoryArray = [];
 
-// DOM Elements
+// dom elements
 const timerText = document.getElementById("timerText");
+const timerCircle = document.getElementById("timerCircle");
 const scoreValue = document.getElementById("scoreValue");
 const streakValue = document.getElementById("streakValue");
 const livesDisplay = document.getElementById("livesDisplay");
 const currentRoundDisplay = document.getElementById("currentRound");
-
 const suspectAnswerDisplay = document.getElementById("suspectAnswer");
 const confValue = document.getElementById("confValue");
 const confFill = document.getElementById("confFill");
-
 const apiImage = document.getElementById("apiImage");
 const loadingState = document.getElementById("loadingState");
 const feedbackText = document.getElementById("feedbackText");
-
 const manualInput = document.getElementById("manualInput");
 const verifyBox = document.getElementById("verifyBox");
+const robotIcon = document.querySelector(".robot-icon i");
+const gameBody = document.querySelector(".game-body");
 
-// --- INITIALIZATION ---
+// get difficulty from storage
+function getDifficultyTimer() {
+  const diff = localStorage.getItem("gameDifficulty") || "easy";
+  if (diff === "easy") return 10;
+  if (diff === "hard") return 5;
+  if (diff === "expert") return 2;
+  return 10;
+}
+
 window.onload = () => {
-  console.log("Game start now...");
+  console.log("game starting... diff timer:", getDifficultyTimer());
   updateHUD();
-  fetchNewCase(); // Start first round
+  fetchNewCase();
 };
 
-// --- API FETCHING ---
+// show floating notification
+function showNotification(message, type = "success") {
+  const notif = document.createElement("div");
+  notif.className = `notification ${type}`;
+  notif.innerHTML = message;
+  document.body.appendChild(notif);
+
+  setTimeout(() => {
+    notif.remove();
+  }, 800);
+}
+
+// create particle effect
+function createParticles(x, y, color, count = 10) {
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement("div");
+    particle.className = "particle";
+    particle.innerHTML = "✨";
+    particle.style.left = x + "px";
+    particle.style.top = y + "px";
+    particle.style.color = color;
+    particle.style.animationDelay = Math.random() * 0.2 + "s";
+    document.body.appendChild(particle);
+
+    setTimeout(() => {
+      particle.remove();
+    }, 1000);
+  }
+}
+
+// flash screen
+function flashScreen(type) {
+  if (type === "correct") {
+    gameBody.classList.add("flash-correct");
+    setTimeout(() => gameBody.classList.remove("flash-correct"), 300);
+  } else {
+    gameBody.classList.add("flash-wrong");
+    setTimeout(() => gameBody.classList.remove("flash-wrong"), 300);
+  }
+}
+
+// animate number change
+function animateValue(element) {
+  element.classList.add("pulse-value");
+  setTimeout(() => element.classList.remove("pulse-value"), 500);
+}
+
+// make robot speak
+function robotSpeak(text) {
+  if (robotIcon) {
+    robotIcon.classList.add("speaking");
+    setTimeout(() => robotIcon.classList.remove("speaking"), 500);
+  }
+  speakText(text);
+}
+
 async function fetchNewCase() {
-  gameIsActive = false; // block user click when loading
+  gameIsActive = false;
   clearInterval(timerInterval);
 
-  // loading ui reset
   apiImage.style.display = "none";
   loadingState.style.display = "block";
   suspectAnswerDisplay.innerText = "?";
   verifyBox.style.display = "none";
   manualInput.value = "";
-  feedbackText.innerText = "Connecting to remote servers...";
-  feedbackText.style.color = "var(--cream)";
+  manualInput.classList.remove("error");
+  feedbackText.innerHTML =
+    '<i class="fas fa-spinner fa-pulse"></i> Connecting to Heart API...';
+
+  // make puzzle image loading
+  document.querySelector(".puzzle-image").classList.add("loading");
 
   try {
-    console.log("Get image from Heart API...");
+    console.log("fetching heart api...");
     const heartRes = await fetch(
       "https://marcconrad.com/uob/heart/api.php?out=json",
     );
     const heartData = await heartRes.json();
 
-    console.log("Get from YesNo API to make lie logic...");
+    console.log("fetching yesno api...");
     const yesNoRes = await fetch("https://yesno.wtf/api");
     const yesNoData = await yesNoRes.json();
 
     actualTrueAnswer = heartData.solution;
 
-    // check if AI will lie based on yesno api
+    // ai decides to lie or not based on yesno
     if (yesNoData.answer === "yes") {
       isAiLying = false;
-      aiClaimedAnswer = actualTrueAnswer; // true
-      console.log("AI tell TRUTH this round.");
+      aiClaimedAnswer = actualTrueAnswer;
+      console.log("ai telling truth");
     } else {
       isAiLying = true;
       // make fake answer
@@ -81,34 +151,48 @@ async function fetchNewCase() {
         aiClaimedAnswer = actualTrueAnswer - offset;
       }
       console.log(
-        `AI LYING. Real is ${actualTrueAnswer}, Fake is ${aiClaimedAnswer}`,
+        `ai lying: real ${actualTrueAnswer}, fake ${aiClaimedAnswer}`,
       );
     }
 
-    // show image
     apiImage.src = heartData.question;
     apiImage.style.display = "block";
     loadingState.style.display = "none";
+    document.querySelector(".puzzle-image").classList.remove("loading");
 
-    // update UI
+    // animate number change
     suspectAnswerDisplay.innerText = aiClaimedAnswer;
+    animateValue(suspectAnswerDisplay);
+
     let randomConf = Math.floor(Math.random() * 40) + 60;
     confValue.innerText = randomConf + "%";
     confFill.style.width = randomConf + "%";
 
-    feedbackText.innerText = "Interrogation active. Make your choice.";
-    speakText(`I have analyzed the data. The answer is ${aiClaimedAnswer}.`);
+    feedbackText.innerHTML =
+      '<i class="fas fa-microphone"></i> Interrogation active. Make your choice.';
+
+    // robot speaks
+    robotSpeak(`I have analyzed the data. The answer is ${aiClaimedAnswer}.`);
+
+    // create particles for new case
+    const rect = document
+      .querySelector(".suspect-section")
+      ?.getBoundingClientRect();
+    if (rect) {
+      createParticles(rect.left + 100, rect.top + 100, "#fe9e84", 5);
+    }
 
     gameIsActive = true;
     startTimer();
   } catch (error) {
-    console.error("API error", error);
-    feedbackText.innerText = "ERROR: Cannot connect to server.";
-    feedbackText.style.color = "#ff3366";
+    console.error("api error", error);
+    feedbackText.innerHTML =
+      '<i class="fas fa-exclamation-triangle" style="color:#ff4d4d;"></i> ERROR: Cannot connect to server';
+    document.querySelector(".puzzle-image").classList.remove("loading");
   }
 }
 
-// robot voice function
+// robot voice
 function speakText(text) {
   if ("speechSynthesis" in window) {
     let msg = new SpeechSynthesisUtterance(text);
@@ -118,22 +202,18 @@ function speakText(text) {
   }
 }
 
-// --- TIMER LOGIC ---
 function startTimer() {
-  timeRemaining = 10;
+  timeRemaining = getDifficultyTimer();
   timerText.innerText = timeRemaining;
+  timerCircle.classList.remove("warning");
 
   timerInterval = setInterval(() => {
     timeRemaining--;
     timerText.innerText = timeRemaining;
 
-    // make red when time almost finish
+    // make timer red when low
     if (timeRemaining <= 3) {
-      document.getElementById("timerCircle").style.borderColor = "#ff3366";
-      timerText.style.color = "#ff3366";
-    } else {
-      document.getElementById("timerCircle").style.borderColor = "var(--coral)";
-      timerText.style.color = "var(--coral)";
+      timerCircle.classList.add("warning");
     }
 
     if (timeRemaining <= 0) {
@@ -147,11 +227,23 @@ function handleTimeOut() {
   if (!gameIsActive) return;
   gameIsActive = false;
 
-  speakText("You are too slow.");
-  feedbackText.innerText = "TIME OUT! You lost a life.";
-  feedbackText.style.color = "#ff3366";
+  robotSpeak("Time is up. Too slow.");
+  feedbackText.innerHTML =
+    '<i class="fas fa-hourglass-end"></i> TIME OUT! You lost a life.';
+  feedbackText.style.color = "#ff4d4d";
 
-  // push fail data to history array
+  // flash screen red
+  flashScreen("wrong");
+
+  // show notification
+  showNotification("TIME OUT!", "error");
+
+  // create particles
+  const rect = document.querySelector(".timer-circle")?.getBoundingClientRect();
+  if (rect) {
+    createParticles(rect.left, rect.top, "#ff4d4d", 8);
+  }
+
   gameHistoryArray.push({
     round: currentRound,
     decision: "TIMEOUT",
@@ -165,9 +257,8 @@ function handleTimeOut() {
   loseLife();
 }
 
-// --- PLAYER CLICK ACTIONS ---
-
-function trustSuspect() {
+// FIXED: now accepts event parameter properly
+function trustSuspect(event) {
   if (!gameIsActive) return;
   gameIsActive = false;
   clearInterval(timerInterval);
@@ -175,25 +266,59 @@ function trustSuspect() {
   let roundWin = false;
   let pointText = "";
 
+  // get button position for particles - fixed with null check
+  let btnRect = null;
+  if (event && event.target) {
+    btnRect = event.target.getBoundingClientRect();
+  }
+
   if (isAiLying === false) {
-    // player win
     score += 20;
     streak++;
-    feedbackText.innerText = "CORRECT! The AI told the truth. +20 Pts";
-    feedbackText.style.color = "var(--teal-light)";
-    speakText("Thank you for trusting me.");
+
+    // animate score
+    animateValue(scoreValue);
+    animateValue(streakValue);
+
+    feedbackText.innerHTML =
+      '<i class="fas fa-check-circle" style="color:#39ff14;"></i> CORRECT! AI told truth. +20 POINTS';
+    feedbackText.style.color = "#39ff14";
+    robotSpeak("Thank you for trusting me.");
+
+    // flash screen green
+    flashScreen("correct");
+
+    // show success notification
+    showNotification("+20 POINTS!", "success");
+
+    // create particles
+    if (btnRect) {
+      createParticles(btnRect.left, btnRect.top, "#39ff14", 15);
+    }
+
     roundWin = true;
     pointText = "+20";
   } else {
-    // player lose
-    feedbackText.innerText = `FOOL! The AI lied. Real answer was ${actualTrueAnswer}.`;
-    feedbackText.style.color = "#ff3366";
-    speakText("Ha ha. I deceived you.");
+    // ai lied
+    feedbackText.innerHTML = `<i class="fas fa-times-circle"></i> FOOL! AI lied. Real answer was ${actualTrueAnswer}.`;
+    feedbackText.style.color = "#ff4d4d";
+    robotSpeak("Ha ha ha. I deceived you.");
+
+    // flash screen red
+    flashScreen("wrong");
+
+    // show notification
+    showNotification("AI LIED!", "error");
+
+    // create particles
+    if (btnRect) {
+      createParticles(btnRect.left, btnRect.top, "#ff4d4d", 10);
+    }
+
     roundWin = false;
     pointText = "-Life";
   }
 
-  // save round data for result page table
   gameHistoryArray.push({
     round: currentRound,
     decision: "TRUST",
@@ -212,25 +337,35 @@ function trustSuspect() {
   }
 }
 
-function showVerifyInput() {
+// FIXED: now accepts event parameter properly
+function showVerifyInput(event) {
   if (!gameIsActive) return;
 
   if (verifyBox.style.display === "none") {
     verifyBox.style.display = "flex";
     manualInput.focus();
+
+    // animate - fixed with null check
+    if (event && event.target) {
+      const btn = event.target;
+      btn.style.transform = "scale(0.95)";
+      setTimeout(() => (btn.style.transform = ""), 200);
+    }
   } else {
     verifyBox.style.display = "none";
   }
 }
 
-function submitVerification() {
+// FIXED: now accepts event parameter properly
+function submitVerification(event) {
   if (!gameIsActive) return;
 
   let playerAnswer = parseInt(manualInput.value);
 
-  // check if empty
   if (isNaN(playerAnswer)) {
-    alert("Please type number!");
+    manualInput.classList.add("error");
+    setTimeout(() => manualInput.classList.remove("error"), 500);
+    alert("Please type a number!");
     return;
   }
 
@@ -238,33 +373,67 @@ function submitVerification() {
   clearInterval(timerInterval);
   verifyBox.style.display = "none";
 
+  // get button position for particles - fixed with null check
+  let btnRect = null;
+  if (event && event.target) {
+    btnRect = event.target.getBoundingClientRect();
+  }
+
   let roundWin = false;
   let pointText = "";
 
   if (playerAnswer === actualTrueAnswer) {
-    // player calculate correct
     score += 10;
     streak++;
-    feedbackText.innerText = "VERIFIED! Your calculation correct. +10 Pts";
-    feedbackText.style.color = "var(--teal-light)";
+
+    // animate values
+    animateValue(scoreValue);
+    animateValue(streakValue);
+
+    feedbackText.innerHTML =
+      '<i class="fas fa-check-circle" style="color:#39ff14;"></i> VERIFIED! Correct answer. +10 POINTS';
+    feedbackText.style.color = "#39ff14";
+
+    // flash screen green
+    flashScreen("correct");
 
     if (isAiLying) {
-      speakText("Error. You caught my deception.");
+      robotSpeak("You caught my deception. Well done.");
     } else {
-      speakText("I told you I was right.");
+      robotSpeak("I told you I was right.");
     }
+
+    // show notification
+    showNotification("+10 POINTS!", "success");
+
+    // create particles
+    if (btnRect) {
+      createParticles(btnRect.left, btnRect.top, "#39ff14", 12);
+    }
+
     roundWin = true;
     pointText = "+10";
   } else {
-    // player do math wrong
-    feedbackText.innerText = `WRONG MATH! True answer was ${actualTrueAnswer}.`;
-    feedbackText.style.color = "#ff3366";
-    speakText("Your human brain is inferior.");
+    // player wrong
+    feedbackText.innerHTML = `<i class="fas fa-times-circle"></i> WRONG! Real answer was ${actualTrueAnswer}. You entered ${playerAnswer}.`;
+    feedbackText.style.color = "#ff4d4d";
+    robotSpeak("Your human brain is inferior.");
+
+    // flash screen red
+    flashScreen("wrong");
+
+    // show notification
+    showNotification("WRONG ANSWER!", "error");
+
+    // create particles
+    if (btnRect) {
+      createParticles(btnRect.left, btnRect.top, "#ff4d4d", 10);
+    }
+
     roundWin = false;
     pointText = "-Life";
   }
 
-  // push data to array
   gameHistoryArray.push({
     round: currentRound,
     decision: "VERIFY (" + playerAnswer + ")",
@@ -283,15 +452,24 @@ function submitVerification() {
   }
 }
 
-// --- STATE MANAGEMENT ---
-
 function loseLife() {
   lives--;
   streak = 0;
+
+  // animate lives
+  animateValue(livesDisplay);
+
+  // shake lives icon
+  const livesIcon = document.querySelector(".lives-count i");
+  if (livesIcon) {
+    livesIcon.style.animation = "shake 0.3s";
+    setTimeout(() => (livesIcon.style.animation = ""), 300);
+  }
+
   updateHUD();
 
   if (lives <= 0) {
-    setTimeout(gameOver, 1500);
+    setTimeout(gameOver, 2000);
   } else {
     setTimeout(nextRound, 2500);
   }
@@ -300,9 +478,13 @@ function loseLife() {
 function nextRound() {
   currentRound++;
   if (currentRound > 10) {
-    // player finish all 10 rounds
-    alert(`YOU SURVIVED! Final Score: ${score}`);
-    saveToStorageAndRedirect();
+    // show final celebration
+    showNotification("GAME COMPLETE!", "success");
+    createParticles(window.innerWidth / 2, window.innerHeight / 2, "gold", 30);
+
+    setTimeout(() => {
+      saveToStorageAndRedirect();
+    }, 1500);
   } else {
     updateHUD();
     fetchNewCase();
@@ -314,14 +496,20 @@ function updateHUD() {
   streakValue.innerText = streak;
   currentRoundDisplay.innerText = currentRound;
   livesDisplay.innerText = lives;
+
+  // animate round change
+  animateValue(currentRoundDisplay);
 }
 
 function gameOver() {
-  alert(`GAME OVER! You lost all lives.\nFinal Score: ${score}`);
-  saveToStorageAndRedirect();
+  showNotification("GAME OVER", "error");
+  createParticles(window.innerWidth / 2, window.innerHeight / 2, "#ff4d4d", 20);
+
+  setTimeout(() => {
+    saveToStorageAndRedirect();
+  }, 1500);
 }
 
-// function to save all data before go to result page
 function saveToStorageAndRedirect() {
   localStorage.setItem(
     "interrogationHistory",

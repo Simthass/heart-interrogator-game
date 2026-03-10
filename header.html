@@ -1,0 +1,99 @@
+<!-- header component - same for all pages -->
+<!-- student: 2540927 - i copied this to all pages lol -->
+
+<header class="main-header">
+  <div class="header-container">
+    <div class="logo-section">
+      <img src="public/Logo.png" alt="Heart Interrogator" class="game-logo" />
+    </div>
+    <nav class="main-nav">
+      <a href="index.html" class="nav-item" id="nav-home">Home</a>
+      <a href="stats.html" class="nav-item" id="nav-stats">My Stats</a>
+      <a href="settings.html" class="nav-item" id="nav-settings">Settings</a>
+    </nav>
+    <div class="auth-section" id="auth-section">
+      <!-- this gets filled by js based on login state -->
+      <button class="btn-login" onclick="showLogin()">
+        <i class="fas fa-sign-in-alt" style="margin-right: 5px"></i>Login
+      </button>
+      <button class="btn-register" onclick="showRegister()">
+        <i class="fas fa-user-plus" style="margin-right: 5px"></i>Register
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  // simple script to set active nav and show correct auth state
+  document.addEventListener("DOMContentLoaded", function () {
+    // set active nav based on current page
+    const path = window.location.pathname;
+    const page = path.split("/").pop() || "index.html";
+
+    // remove active from all
+    document.getElementById("nav-home")?.classList.remove("active");
+    document.getElementById("nav-stats")?.classList.remove("active");
+    document.getElementById("nav-settings")?.classList.remove("active");
+
+    // add active to current page
+    if (page === "index.html") {
+      document.getElementById("nav-home")?.classList.add("active");
+    } else if (page === "stats.html") {
+      document.getElementById("nav-stats")?.classList.add("active");
+    } else if (page === "settings.html") {
+      document.getElementById("nav-settings")?.classList.add("active");
+    }
+
+    // check if user is logged in (simple localstorage check for demo)
+    const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
+    const authSection = document.getElementById("auth-section");
+
+    if (isLoggedIn) {
+      const username = localStorage.getItem("username") || "Detective";
+      authSection.innerHTML = `
+      <span class="user-display"><i class="fas fa-user-secret" style="margin-right:5px;"></i>${username}</span>
+      <button class="btn-login" onclick="logout()" style="border-color:var(--coral); color:var(--coral);">Logout</button>
+    `;
+    } else {
+      authSection.innerHTML = `
+      <button class="btn-login" onclick="showLogin()"><i class="fas fa-sign-in-alt" style="margin-right:5px;"></i>Login</button>
+      <button class="btn-register" onclick="showRegister()"><i class="fas fa-user-plus" style="margin-right:5px;"></i>Register</button>
+    `;
+    }
+  });
+
+  // logout function
+  function logout() {
+    if (confirm("Logout from system?")) {
+      localStorage.removeItem("userLoggedIn");
+      localStorage.removeItem("username");
+      window.location.href = "index.html";
+    }
+  }
+
+  // make sure modal functions are available globally
+  window.showLogin = function () {
+    const loginModal = document.getElementById("loginModal");
+    if (loginModal) {
+      loginModal.classList.add("active");
+      const registerModal = document.getElementById("registerModal");
+      if (registerModal) registerModal.classList.remove("active");
+    } else {
+      console.log("login modal not found on this page");
+      // if no modal on this page, redirect to home
+      window.location.href = "index.html";
+    }
+  };
+
+  window.showRegister = function () {
+    const registerModal = document.getElementById("registerModal");
+    if (registerModal) {
+      registerModal.classList.add("active");
+      const loginModal = document.getElementById("loginModal");
+      if (loginModal) loginModal.classList.remove("active");
+    } else {
+      console.log("register modal not found on this page");
+      window.location.href = "index.html";
+    }
+  };
+</script>

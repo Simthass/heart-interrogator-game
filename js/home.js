@@ -1,36 +1,28 @@
-// show login modal
 function showLogin() {
   document.getElementById("loginModal").classList.add("active");
-  // hide register if open
   document.getElementById("registerModal").classList.remove("active");
 }
 
-// show register modal
 function showRegister() {
   document.getElementById("registerModal").classList.add("active");
-  // hide login if open
   document.getElementById("loginModal").classList.remove("active");
 }
 
-// close all modals
 function closeModals() {
   document.getElementById("loginModal").classList.remove("active");
   document.getElementById("registerModal").classList.remove("active");
 }
 
-// switch from login to register
 function switchToRegister() {
   closeModals();
   showRegister();
 }
 
-// switch from register to login
 function switchToLogin() {
   closeModals();
   showLogin();
 }
 
-// toggle password visibility
 function togglePassword(inputId) {
   const input = document.getElementById(inputId);
   if (input.type === "password") {
@@ -42,21 +34,14 @@ function togglePassword(inputId) {
 
 // close modal when clicking outside
 window.addEventListener("click", function (e) {
-  const loginModal = document.getElementById("loginModal");
-  const registerModal = document.getElementById("registerModal");
-
-  if (e.target === loginModal) {
-    closeModals();
-  }
-  if (e.target === registerModal) {
+  if (e.target.classList.contains("modal")) {
     closeModals();
   }
 });
 
-// handle login form submission
 document.addEventListener("DOMContentLoaded", function () {
+  // login form
   const loginForm = document.getElementById("loginForm");
-
   if (loginForm) {
     loginForm.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -64,22 +49,24 @@ document.addEventListener("DOMContentLoaded", function () {
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
 
-      // basic validation
       if (!username || !password) {
-        alert("Please fill in all fields");
+        alert("plz fill all fields");
         return;
       }
 
-      console.log("Login attempt:", username);
+      console.log("login attempt:", username);
 
-      alert("Login successful! Redirecting to game...");
+      // fake login for demo
+      localStorage.setItem("userLoggedIn", "true");
+      localStorage.setItem("username", username.split("@")[0] || "Detective");
+
+      alert("Login successful!");
       window.location.href = "game.html";
     });
   }
 
-  // handle register form
+  // register form
   const registerForm = document.getElementById("registerForm");
-
   if (registerForm) {
     registerForm.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -88,36 +75,37 @@ document.addEventListener("DOMContentLoaded", function () {
       const username = document.getElementById("regUsername").value;
       const email = document.getElementById("regEmail").value;
       const password = document.getElementById("regPassword").value;
-      const confirmPassword =
-        document.getElementById("regConfirmPassword").value;
-      const agreeTerms = document.getElementById("agreeTerms").checked;
+      const confirm = document.getElementById("regConfirmPassword").value;
+      const agree = document.getElementById("agreeTerms").checked;
 
-      // validation
-      if (!fullName || !username || !email || !password || !confirmPassword) {
-        alert("Please fill in all fields");
+      if (!fullName || !username || !email || !password || !confirm) {
+        alert("plz fill all fields");
         return;
       }
 
-      if (password !== confirmPassword) {
-        alert("Passwords do not match!");
+      if (password !== confirm) {
+        alert("passwords dont match!");
         return;
       }
 
       if (password.length < 8) {
-        alert("Password must be at least 8 characters");
+        alert("password must be at least 8 chars");
         return;
       }
 
-      if (!agreeTerms) {
-        alert("Please agree to terms and privacy policy");
+      if (!agree) {
+        alert("plz agree to terms");
         return;
       }
 
-      console.log("Registration:", username, email);
+      console.log("registration:", username, email);
 
-      // TODO: add actual registration later
-      alert("Registration successful! You can now login.");
-      switchToLogin();
+      // fake register
+      localStorage.setItem("userLoggedIn", "true");
+      localStorage.setItem("username", username);
+
+      alert("Registration successful!");
+      window.location.href = "game.html";
     });
   }
 });

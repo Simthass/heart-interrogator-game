@@ -1,11 +1,8 @@
-/* Specific Styles for Results Page */
-/* Student ID: 2540927 */
+/* RESULTS PAGE STYLES */
+/* 2540927 - keep it simple */
 
 .results-page {
-  padding: 40px 20px;
-  background: var(--teal-dark);
-  font-family: "Rajdhani", sans-serif;
-  color: var(--cream);
+  padding: 30px 20px;
   min-height: 100vh;
 }
 
@@ -16,84 +13,60 @@
 
 .results-header {
   text-align: center;
-  margin-bottom: 45px;
+  margin-bottom: 30px;
 }
 
 .results-title {
   font-family: "Orbitron", sans-serif;
-  font-size: 48px;
-  font-weight: 900;
+  font-size: 40px;
   color: var(--coral);
-  margin-bottom: 12px;
-  letter-spacing: 3px;
-  text-shadow: 0 0 20px rgba(254, 158, 132, 0.5);
+  margin-bottom: 5px;
 }
 
 .results-subtitle {
-  font-size: 18px;
-  color: var(--cream);
-  opacity: 0.8;
+  font-size: 16px;
+  opacity: 0.7;
 }
 
 .results-layout {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 35px;
+  gap: 25px;
 }
 
-/* Panel Boxes from your color theme */
 .panel-box {
-  background: rgba(0, 119, 123, 0.7);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 35px;
+  background: rgba(0, 119, 123, 0.6);
   border: 2px solid var(--teal-light);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  padding: 25px;
 }
 
 .score-display {
   text-align: center;
-  margin-bottom: 35px;
+  margin-bottom: 25px;
 }
 
-.star-icon {
-  font-size: 70px;
-  display: block;
-  margin-bottom: 20px;
-  animation: pulse 2s infinite;
-  filter: drop-shadow(0 0 20px rgba(254, 158, 132, 0.5));
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
+.star-icon i {
+  font-size: 60px;
+  color: var(--coral);
+  margin-bottom: 10px;
 }
 
 .points-earned {
   font-family: "Orbitron", sans-serif;
-  font-size: 42px;
-  font-weight: 700;
+  font-size: 32px;
   color: var(--coral);
-  text-shadow: 0 0 20px rgba(254, 158, 132, 0.5);
 }
 
-/* Table Design */
 .results-table {
-  margin: 35px 0;
+  margin: 25px 0;
 }
 
 .results-table h3 {
   font-family: "Orbitron", sans-serif;
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 22px;
+  font-size: 20px;
   color: var(--coral);
-  letter-spacing: 1.5px;
+  margin-bottom: 15px;
 }
 
 .results-table table {
@@ -103,17 +76,15 @@
 
 .results-table th {
   background: rgba(0, 159, 146, 0.3);
-  padding: 14px;
+  padding: 12px;
   text-align: left;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--cream);
+  font-size: 14px;
   border-bottom: 2px solid var(--teal-light);
 }
 
 .results-table td {
-  padding: 14px;
-  font-size: 16px;
+  padding: 12px;
+  font-size: 14px;
   border-bottom: 1px solid rgba(0, 159, 146, 0.2);
 }
 
@@ -128,95 +99,83 @@
 .points-positive {
   color: var(--teal-light);
   font-weight: 700;
-  font-family: "Orbitron", sans-serif;
 }
 
 .points-negative {
-  color: #ff3366;
+  color: var(--danger);
   font-weight: 700;
-  font-family: "Orbitron", sans-serif;
 }
 
-/* Summary Stats */
 .summary-stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
-  margin: 30px 0;
-  padding: 25px;
-  background: rgba(0, 159, 146, 0.15);
+  gap: 15px;
+  padding: 20px;
+  background: rgba(0, 159, 146, 0.1);
   border: 1px dashed var(--teal-light);
   border-radius: 12px;
+  margin: 20px 0;
 }
 
 .summary-item {
   display: flex;
   justify-content: space-between;
-  padding: 10px;
 }
 
 .summary-label {
-  font-size: 16px;
-  color: var(--cream);
-  opacity: 0.9;
+  font-size: 14px;
+  opacity: 0.8;
 }
 
 .summary-value {
-  font-size: 18px;
+  font-size: 16px;
   color: var(--coral);
   font-weight: 700;
-  font-family: "Orbitron", sans-serif;
 }
 
-/* Action Buttons */
 .action-buttons {
   display: flex;
-  gap: 18px;
-  margin-top: 35px;
+  gap: 15px;
 }
 
 .btn-continue,
 .btn-dashboard {
   flex: 1;
-  padding: 18px;
-  border-radius: 10px;
-  font-size: 16px;
+  padding: 14px;
+  border-radius: 40px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   font-family: "Orbitron", sans-serif;
-  letter-spacing: 2px;
-  transition: all 0.3s;
+  border: 2px solid;
 }
 
 .btn-continue {
   background: var(--coral);
+  border-color: var(--coral);
   color: var(--teal-dark);
-  border: 2px solid var(--coral);
 }
 
 .btn-continue:hover {
   background: var(--teal-light);
   border-color: var(--teal-light);
-  color: var(--cream);
-  transform: translateY(-3px);
+  color: white;
 }
 
 .btn-dashboard {
   background: transparent;
+  border-color: var(--coral);
   color: var(--coral);
-  border: 2px solid var(--coral);
 }
 
 .btn-dashboard:hover {
   background: rgba(254, 158, 132, 0.1);
-  transform: translateY(-3px);
 }
 
-/* Side Panels */
 .side-panels {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 20px;
 }
 
 .achievement-panel,
@@ -227,30 +186,27 @@
 .achievement-panel h3,
 .analysis-panel h3 {
   font-family: "Orbitron", sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 22px;
+  font-size: 18px;
   color: var(--coral);
+  margin-bottom: 15px;
 }
 
-.achievement-badge-large {
-  font-size: 80px;
-  margin: 25px 0;
-  filter: drop-shadow(0 0 15px rgba(254, 158, 132, 0.4));
+.achievement-badge-large i {
+  font-size: 70px;
+  color: var(--coral);
+  margin: 15px 0;
 }
 
 .achievement-name {
   font-family: "Orbitron", sans-serif;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 16px;
   color: var(--teal-light);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .achievement-desc {
-  font-size: 16px;
-  color: var(--cream);
-  opacity: 0.8;
+  font-size: 14px;
+  opacity: 0.7;
 }
 
 .analysis-panel {
@@ -258,18 +214,15 @@
 }
 
 .analysis-text {
-  font-size: 16px;
-  color: var(--cream);
+  font-size: 14px;
   margin-bottom: 15px;
 }
 
 .recommendation {
-  margin-top: 22px;
-  padding: 18px;
+  padding: 15px;
   background: rgba(0, 159, 146, 0.2);
-  border-radius: 10px;
-  font-size: 15px;
-  color: var(--cream);
+  border-radius: 12px;
+  font-size: 13px;
   border-left: 4px solid var(--coral);
 }
 

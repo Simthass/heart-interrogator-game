@@ -1,0 +1,470 @@
+/* ===================================
+   home.css - styles only for home page
+   Student: 2540927 Simthass Mohammed
+   =================================== */
+
+/* main wrapper */
+.home-main {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 25px 60px;
+}
+
+/* ===========================
+   HERO SECTION
+   =========================== */
+
+.hero-sec {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 40px;
+  align-items: center;
+  padding: 70px 0 60px;
+  min-height: 480px;
+}
+
+.hero-content {
+  /* left side of hero */
+}
+
+/* small badge at top */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(254, 158, 132, 0.12);
+  border: 1px solid rgba(254, 158, 132, 0.35);
+  color: var(--coral);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: "Rajdhani", sans-serif;
+  padding: 6px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.8px;
+  margin-bottom: 22px;
+  text-transform: uppercase;
+}
+
+.hero-badge svg {
+  fill: var(--coral);
+  stroke: none;
+}
+
+.hero-title {
+  font-family: "Orbitron", sans-serif;
+  font-size: 58px;
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--cream);
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+}
+
+.hero-title-accent {
+  color: var(--coral);
+  display: block;
+  text-shadow: 0 0 30px rgba(254, 158, 132, 0.35);
+}
+
+.hero-subtitle {
+  font-size: 19px;
+  color: var(--cream);
+  opacity: 0.75;
+  line-height: 1.6;
+  margin-bottom: 35px;
+  max-width: 480px;
+}
+
+/* hero buttons */
+.hero-btns {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-hero-play {
+  padding: 16px 32px;
+  background: var(--coral);
+  border: 2px solid var(--coral);
+  color: var(--teal-dark);
+  font-family: "Orbitron", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  /* nice glow effect */
+  box-shadow: 0 4px 20px rgba(254, 158, 132, 0.3);
+}
+
+.btn-hero-play:hover {
+  background: transparent;
+  color: var(--coral);
+  box-shadow: 0 4px 25px rgba(254, 158, 132, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-hero-guest {
+  padding: 16px 28px;
+  background: transparent;
+  border: 2px solid rgba(247, 231, 190, 0.35);
+  color: var(--cream);
+  font-family: "Rajdhani", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  opacity: 0.75;
+}
+
+.btn-hero-guest:hover {
+  border-color: var(--cream);
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+/* ===========================
+   ROBOT ANIMATION - right side of hero
+   =========================== */
+
+.hero-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.robot-display {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  /* floating animation */
+  animation: floatRobot 4s ease-in-out infinite;
+}
+
+@keyframes floatRobot {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+.robot-head {
+  width: 120px;
+  height: 90px;
+  background: rgba(0, 119, 123, 0.9);
+  border: 2px solid var(--teal-med);
+  border-radius: 14px 14px 8px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  position: relative;
+  /* top part glow */
+  box-shadow: 0 0 25px rgba(0, 159, 146, 0.3);
+}
+
+.robot-eye {
+  width: 20px;
+  height: 20px;
+  background: var(--coral);
+  border-radius: 50%;
+  /* eyes pulse animation */
+  animation: eyePulse 2.5s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(254, 158, 132, 0.6);
+}
+
+.robot-eye.right-eye {
+  animation-delay: 0.4s;
+}
+
+@keyframes eyePulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}
+
+.robot-mouth {
+  position: absolute;
+  bottom: 14px;
+  width: 40px;
+  height: 6px;
+  background: var(--teal-med);
+  border-radius: 3px;
+  opacity: 0.7;
+}
+
+.robot-body {
+  width: 150px;
+  height: 110px;
+  background: rgba(0, 100, 104, 0.9);
+  border: 2px solid var(--teal-med);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 25px rgba(0, 159, 146, 0.2);
+}
+
+/* the screen on robots body that shows number */
+.robot-screen {
+  width: 110px;
+  height: 75px;
+  background: rgba(0, 30, 32, 0.9);
+  border: 1px solid rgba(0, 159, 146, 0.5);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.screen-num {
+  font-family: "Orbitron", sans-serif;
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--coral);
+  text-shadow: 0 0 15px rgba(254, 158, 132, 0.5);
+}
+
+.screen-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--teal-med);
+  font-family: "Orbitron", sans-serif;
+  opacity: 0.7;
+}
+
+/* pulse ring around robot */
+.robot-pulse {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border: 1px solid rgba(0, 159, 146, 0.2);
+  border-radius: 50%;
+  animation: pulseRing 3s ease-out infinite;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* ===========================
+   INFO CARDS
+   =========================== */
+
+.cards-sec {
+  padding: 20px 0 50px;
+}
+
+.info-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.info-card {
+  background: rgba(0, 100, 104, 0.4);
+  border: 1px solid rgba(0, 159, 146, 0.45);
+  border-radius: 12px;
+  padding: 28px 24px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+/* top glow bar on hover */
+.info-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--coral);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.info-card:hover::before {
+  transform: scaleX(1);
+}
+
+.info-card:hover {
+  border-color: rgba(254, 158, 132, 0.5);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  background: rgba(0, 100, 104, 0.6);
+}
+
+.icard-icon {
+  width: 52px;
+  height: 52px;
+  background: rgba(254, 158, 132, 0.12);
+  border: 1px solid rgba(254, 158, 132, 0.3);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  color: var(--coral);
+}
+
+.info-card h3 {
+  font-family: "Orbitron", sans-serif;
+  font-size: 14px;
+  color: var(--coral);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.info-card p {
+  font-size: 15px;
+  color: var(--cream);
+  opacity: 0.75;
+  line-height: 1.65;
+}
+
+/* ===========================
+   GLOBAL STATS SECTION
+   =========================== */
+
+.global-stats-sec {
+  padding: 15px 0 20px;
+}
+
+.sec-label {
+  font-family: "Orbitron", sans-serif;
+  font-size: 13px;
+  color: var(--coral);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+  opacity: 0.75;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sec-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(0, 159, 146, 0.25);
+}
+
+.gstats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.gstat-item {
+  background: rgba(0, 100, 104, 0.35);
+  border: 1px solid rgba(0, 159, 146, 0.3);
+  border-radius: 10px;
+  padding: 22px 18px;
+  text-align: center;
+  transition: all 0.25s;
+}
+
+.gstat-item:hover {
+  border-color: rgba(254, 158, 132, 0.45);
+  background: rgba(0, 100, 104, 0.55);
+}
+
+.gstat-num {
+  font-family: "Orbitron", sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--coral);
+  margin-bottom: 6px;
+}
+
+.gstat-lbl {
+  font-size: 13px;
+  color: var(--cream);
+  opacity: 0.6;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+@media (max-width: 1024px) {
+  .hero-sec {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 50px 0 40px;
+  }
+
+  .hero-visual {
+    display: none; /* hide robot on tablet */
+  }
+
+  .hero-subtitle {
+    max-width: 100%;
+    margin: 0 auto 30px;
+  }
+
+  .hero-btns {
+    justify-content: center;
+  }
+
+  .info-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gstats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-title {
+    font-size: 38px;
+  }
+
+  .gstats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-btns {
+    flex-direction: column;
+    align-items: center;
+  }
+}

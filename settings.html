@@ -10,64 +10,41 @@
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
-    <header class="main-header">
-      <div class="header-container">
-        <div class="logo-section">
-          <img src="public/Logo.png" alt="Game Logo" class="game-logo" />
-        </div>
-        <nav class="main-nav">
-          <a href="index.html" class="nav-item">Home</a>
-          <a href="stats.html" class="nav-item">My Stats</a>
-          <a href="settings.html" class="nav-item active">Settings</a>
-        </nav>
-        <div class="auth-section">
-          <span
-            class="user-display"
-            style="
-              color: var(--cream);
-              font-family: &quot;Rajdhani&quot;, sans-serif;
-              font-size: 18px;
-              align-self: center;
-              margin-right: 15px;
-            "
-            >Det. Simthass</span
-          >
-          <button
-            class="btn-login"
-            onclick="logout()"
-            style="border-color: var(--coral); color: var(--coral)"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-    </header>
+    <!-- header will be loaded here -->
+    <div id="header-placeholder"></div>
 
     <main class="page-main">
       <div class="page-header">
-        <h1 class="page-title">SETTINGS</h1>
+        <h1 class="page-title">
+          <i class="fas fa-cog" style="margin-right: 10px"></i>SETTINGS
+        </h1>
         <p class="page-subtitle">Customize your experience</p>
       </div>
 
       <div class="settings-tabs">
         <button class="settings-tab active" onclick="showTab('account', this)">
-          Account
+          <i class="fas fa-user"></i> Account
         </button>
         <button class="settings-tab" onclick="showTab('game', this)">
-          Game
-        </button>
-        <button class="settings-tab" onclick="showTab('privacy', this)">
-          Privacy
+          <i class="fas fa-gamepad"></i> Game
         </button>
       </div>
 
-      <div class="settings-panel active" id="accountSettings">
+      <!-- ACCOUNT TAB -->
+      <div class="settings-panel" id="accountSettings">
         <h2 class="panel-heading">ACCOUNT INFORMATION</h2>
 
         <div class="settings-group">
-          <label class="setting-label">Email</label>
+          <span class="setting-label"
+            ><i class="fas fa-envelope" style="margin-right: 8px"></i>
+            Email</span
+          >
           <div class="setting-control">
             <input
               type="email"
@@ -75,12 +52,22 @@
               value="detective@email.com"
               readonly
             />
-            <button class="setting-btn">Change</button>
+            <span
+              class="setting-btn"
+              style="
+                background: transparent;
+                border: 1px dashed var(--teal-light);
+              "
+              >can't change</span
+            >
           </div>
         </div>
 
         <div class="settings-group">
-          <label class="setting-label">Username</label>
+          <span class="setting-label"
+            ><i class="fas fa-user" style="margin-right: 8px"></i>
+            Username</span
+          >
           <div class="setting-control">
             <input
               type="text"
@@ -88,173 +75,295 @@
               value="agent_phoenix"
               readonly
             />
-            <button class="setting-btn">Edit</button>
+            <span
+              class="setting-btn"
+              style="
+                background: transparent;
+                border: 1px dashed var(--teal-light);
+              "
+              >read only</span
+            >
           </div>
         </div>
 
         <div class="settings-group">
-          <label class="setting-label">Password</label>
+          <span class="setting-label"
+            ><i class="fas fa-lock" style="margin-right: 8px"></i>
+            Password</span
+          >
           <div class="setting-control">
-            <input
-              type="password"
-              class="setting-input"
-              value="••••••••"
-              readonly
-            />
-            <button class="setting-btn">Change Password</button>
+            <div class="password-change-group">
+              <input
+                type="password"
+                id="currentPass"
+                placeholder="Current"
+                value="••••••••"
+              />
+              <input type="password" id="newPass" placeholder="New password" />
+              <input type="password" id="confirmPass" placeholder="Confirm" />
+            </div>
           </div>
         </div>
 
         <div class="settings-group">
-          <label class="setting-label">Profile Picture</label>
+          <span class="setting-label"
+            ><i class="fas fa-camera" style="margin-right: 8px"></i>
+            Profile</span
+          >
           <div class="setting-control">
-            <div class="profile-pic-preview">👤</div>
-            <button class="setting-btn">Upload New</button>
+            <div class="profile-pic-preview">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <button
+              class="setting-btn"
+              onclick="alert('profile pic upload coming soon')"
+            >
+              <i class="fas fa-upload"></i> Upload
+            </button>
           </div>
         </div>
+
+        <button class="btn-save" onclick="changePassword()">
+          <i class="fas fa-save"></i> UPDATE PASSWORD
+        </button>
 
         <div class="danger-zone">
-          <h3 class="danger-heading">DANGER ZONE</h3>
-          <p
-            style="
-              color: var(--cream);
-              font-family: &quot;Rajdhani&quot;, sans-serif;
-              margin-bottom: 15px;
+          <h3 class="danger-heading">
+            <i class="fas fa-exclamation-triangle"></i> DANGER ZONE
+          </h3>
+          <p>Once you delete your account, there is no going back.</p>
+          <button
+            class="btn-danger"
+            onclick="
+              if (confirm('Are you SURE? This cannot be undone!'))
+                alert('Account deletion requested');
             "
           >
-            Once you delete your account, there is no going back. Please be
-            certain.
-          </p>
-          <button class="btn-danger">Delete Account</button>
+            <i class="fas fa-trash"></i> Delete Account
+          </button>
         </div>
       </div>
 
+      <!-- GAME TAB (updated) -->
       <div class="settings-panel" id="gameSettings" style="display: none">
         <h2 class="panel-heading">GAME PREFERENCES</h2>
 
         <div class="settings-group">
-          <label class="setting-label">Sound Effects</label>
+          <span class="setting-label"
+            ><i class="fas fa-chart-line"></i> Difficulty</span
+          >
           <div class="setting-control">
-            <label class="toggle-switch">
-              <input type="checkbox" checked />
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <label class="setting-label">Background Music</label>
-          <div class="setting-control">
-            <label class="toggle-switch">
-              <input type="checkbox" checked />
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <label class="setting-label">Difficulty</label>
-          <div class="setting-control">
-            <select class="setting-select">
-              <option>Easy</option>
-              <option selected>Normal</option>
-              <option>Hard</option>
-              <option>Expert</option>
+            <select
+              class="setting-select"
+              id="difficultySelect"
+              onchange="saveDifficulty()"
+            >
+              <option value="easy">Easy (10 sec)</option>
+              <option value="hard" selected>Hard (5 sec)</option>
+              <option value="expert">Expert (2 sec)</option>
             </select>
           </div>
         </div>
 
-        <div class="settings-group">
-          <label class="setting-label">Timer Duration</label>
-          <div class="setting-control">
-            <select class="setting-select">
-              <option>5 seconds</option>
-              <option selected>10 seconds</option>
-              <option>15 seconds</option>
-              <option>No Timer</option>
-            </select>
-          </div>
-        </div>
-
-        <button class="btn-save" onclick="alert('Game Settings Saved!')">
-          Save Game Settings
-        </button>
-      </div>
-
-      <div class="settings-panel" id="privacySettings" style="display: none">
-        <h2 class="panel-heading">PRIVACY & SECURITY</h2>
-
-        <div class="settings-group">
-          <label class="setting-label">Show Profile on Leaderboard</label>
-          <div class="setting-control">
-            <label class="toggle-switch">
-              <input type="checkbox" checked />
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <label class="setting-label">Show Online Status</label>
-          <div class="setting-control">
-            <label class="toggle-switch">
-              <input type="checkbox" checked />
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <label class="setting-label">Email Notifications</label>
-          <div class="setting-control">
-            <label class="toggle-switch">
-              <input type="checkbox" />
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <label class="setting-label">Data Usage</label>
-          <div class="setting-control">
-            <button class="setting-btn">Download My Data</button>
-          </div>
-        </div>
-
-        <button class="btn-save" onclick="alert('Privacy Settings Saved!')">
-          Save Privacy Settings
+        <button class="btn-save" onclick="saveGameSettings()">
+          <i class="fas fa-save"></i> SAVE DIFFICULTY
         </button>
       </div>
     </main>
 
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModals()">&times;</span>
+        <h2 class="modal-title">DETECTIVE LOGIN</h2>
+        <form id="loginForm" class="auth-form">
+          <div class="form-group">
+            <i class="fas fa-user input-icon"></i>
+            <input
+              type="text"
+              id="username"
+              placeholder="Username or Email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
+              required
+            />
+            <span class="toggle-password" onclick="togglePassword('password')"
+              ><i class="fas fa-eye"></i
+            ></span>
+          </div>
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="rememberMe" /> <span>Remember me</span>
+            </label>
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-sign-in-alt" style="margin-right: 8px"></i>LOGIN
+          </button>
+        </form>
+        <p class="switch-auth">
+          Don't have an account?
+          <a href="#" onclick="switchToRegister()">Register here</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModals()">&times;</span>
+        <h2 class="modal-title">CREATE ACCOUNT</h2>
+        <form id="registerForm" class="auth-form">
+          <div class="form-group">
+            <i class="fas fa-user input-icon"></i>
+            <input
+              type="text"
+              id="regFullName"
+              placeholder="Full Name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <i class="fas fa-id-card input-icon"></i>
+            <input
+              type="text"
+              id="regUsername"
+              placeholder="Username"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <i class="fas fa-envelope input-icon"></i>
+            <input
+              type="email"
+              id="regEmail"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              type="password"
+              id="regPassword"
+              placeholder="Password (min 8 chars)"
+              required
+            />
+            <span
+              class="toggle-password"
+              onclick="togglePassword('regPassword')"
+              ><i class="fas fa-eye"></i
+            ></span>
+          </div>
+          <div class="form-group">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              type="password"
+              id="regConfirmPassword"
+              placeholder="Confirm Password"
+              required
+            />
+          </div>
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="agreeTerms" required />
+              <span>I agree to Terms & Privacy</span>
+            </label>
+          </div>
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-user-plus" style="margin-right: 8px"></i>REGISTER
+          </button>
+        </form>
+        <p class="switch-auth">
+          Already have an account?
+          <a href="#" onclick="switchToLogin()">Login here</a>
+        </p>
+      </div>
+    </div>
+
     <footer class="main-footer">
-      <p>Developed by Simthass Mohammed(2540927)</p>
+      <p>Developed by Simthass Mohammed (2540927)</p>
     </footer>
 
+    <script src="js/pages.js"></script>
+    <script src="js/home.js"></script>
     <script>
-      function showTab(tabName, element) {
-        // Hide all panels
+      // load header
+      fetch("header.html")
+        .then((res) => res.text())
+        .then((data) => {
+          document.getElementById("header-placeholder").innerHTML = data;
+        })
+        .catch((err) => {
+          console.log("header load error:", err);
+        });
+
+      // settings functions
+      function showTab(tabName, btn) {
         document.getElementById("accountSettings").style.display = "none";
         document.getElementById("gameSettings").style.display = "none";
-        document.getElementById("privacySettings").style.display = "none";
 
-        // Remove active class from all tabs
-        const tabs = document.getElementsByClassName("settings-tab");
-        for (let i = 0; i < tabs.length; i++) {
-          tabs[i].classList.remove("active");
+        document
+          .querySelectorAll(".settings-tab")
+          .forEach((t) => t.classList.remove("active"));
+
+        if (tabName === "account") {
+          document.getElementById("accountSettings").style.display = "block";
+        } else if (tabName === "game") {
+          document.getElementById("gameSettings").style.display = "block";
         }
 
-        // Show selected panel and set active tab
-        document.getElementById(tabName + "Settings").style.display = "block";
-        element.classList.add("active");
+        btn.classList.add("active");
       }
 
-      function logout() {
-        if (confirm("Are you sure you want to disconnect?")) {
-          window.location.href = "index.html";
+      // load saved difficulty
+      document.addEventListener("DOMContentLoaded", function () {
+        const saved = localStorage.getItem("gameDifficulty") || "hard";
+        document.getElementById("difficultySelect").value = saved;
+      });
+
+      function saveDifficulty() {
+        const diff = document.getElementById("difficultySelect").value;
+        localStorage.setItem("gameDifficulty", diff);
+        alert("Difficulty saved! It will apply next game.");
+      }
+
+      function saveGameSettings() {
+        saveDifficulty();
+      }
+
+      function changePassword() {
+        const current = document.getElementById("currentPass").value;
+        const newPass = document.getElementById("newPass").value;
+        const confirm = document.getElementById("confirmPass").value;
+
+        if (!current || !newPass || !confirm) {
+          alert("plz fill all password fields");
+          return;
         }
+
+        if (newPass !== confirm) {
+          alert("new passwords dont match");
+          return;
+        }
+
+        if (newPass.length < 8) {
+          alert("password must be atleast 8 characters");
+          return;
+        }
+
+        alert("password changed successfully! (not really, this is just demo)");
+        document.getElementById("currentPass").value = "••••••••";
+        document.getElementById("newPass").value = "";
+        document.getElementById("confirmPass").value = "";
       }
     </script>
-    <script src="js/pages.js"></script>
   </body>
 </html>

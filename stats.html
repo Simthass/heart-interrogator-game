@@ -10,152 +10,272 @@
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
-    <header class="main-header">
-      <div class="header-container">
-        <div class="logo-section">
-          <img src="public/Logo.png" alt="Game Logo" class="game-logo" />
-        </div>
-        <nav class="main-nav">
-          <a href="index.html" class="nav-item">Home</a>
-          <a href="stats.html" class="nav-item active">My Stats</a>
-          <a href="settings.html" class="nav-item">Settings</a>
-        </nav>
-        <div class="auth-section">
-          <span
-            class="user-display"
-            style="
-              color: var(--cream);
-              font-family: &quot;Rajdhani&quot;, sans-serif;
-              font-size: 18px;
-              align-self: center;
-              margin-right: 15px;
-            "
-            >Det. Simthass</span
-          >
-          <button
-            class="btn-login"
-            onclick="logout()"
-            style="border-color: var(--coral); color: var(--coral)"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-    </header>
+    <!-- header will be loaded here -->
+    <div id="header-placeholder"></div>
 
     <main class="page-main">
       <div class="page-header">
-        <h1 class="page-title">MY STATISTICS</h1>
+        <h1 class="page-title">
+          <i class="fas fa-chart-bar" style="margin-right: 10px"></i>MY
+          STATISTICS
+        </h1>
         <p class="page-subtitle">Track your performance and progress</p>
       </div>
 
       <div class="profile-section">
         <div class="profile-card-big">
-          <div class="profile-avatar">👤</div>
+          <div class="profile-avatar"><i class="fas fa-user-secret"></i></div>
           <div class="profile-info">
             <h2 class="profile-name">Detective Phoenix</h2>
             <p class="profile-username">@agent_phoenix</p>
             <div class="rank-display">
-              <span class="rank-badge">🎖️ INSPECTOR</span>
+              <span class="rank-badge"
+                ><i class="fas fa-medal"></i> INSPECTOR</span
+              >
             </div>
           </div>
         </div>
       </div>
 
       <div class="stats-section">
-        <h2 class="section-heading">PERFORMANCE OVERVIEW</h2>
+        <h2 class="section-heading">
+          <i class="fas fa-chart-pie" style="margin-right: 8px"></i>PERFORMANCE
+          OVERVIEW
+        </h2>
         <div class="stats-grid-large">
           <div class="stat-card">
-            <div class="stat-icon">🎯</div>
+            <i class="fas fa-star"></i>
             <div class="stat-number">2,450</div>
             <div class="stat-name">Total Score</div>
             <div class="stat-change" style="color: #39ff14">+245 this week</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">📊</div>
+            <i class="fas fa-check-circle"></i>
             <div class="stat-number">89</div>
             <div class="stat-name">Cases Solved</div>
-            <div class="stat-change" style="color: #39ff14">12 this week</div>
+            <div class="stat-change" style="color: #39ff14">+12 this week</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">✅</div>
+            <i class="fas fa-bullseye"></i>
             <div class="stat-number">73%</div>
-            <div class="stat-name">Accuracy Rate</div>
+            <div class="stat-name">Accuracy</div>
             <div class="stat-change" style="color: #39ff14">
               +5% improvement
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">🔥</div>
+            <i class="fas fa-fire"></i>
             <div class="stat-number">12</div>
             <div class="stat-name">Current Streak</div>
             <div class="stat-change" style="color: var(--teal-light)">
-              Best: 18 days
+              Best: 18
             </div>
           </div>
         </div>
       </div>
 
       <div class="recent-section">
-        <h2 class="section-heading">RECENT GAMES</h2>
+        <h2 class="section-heading">
+          <i class="fas fa-history" style="margin-right: 8px"></i>RECENT GAMES
+        </h2>
         <div class="recent-games">
           <div class="game-record">
-            <span class="record-date">Today, 2:30 PM</span>
-            <span class="record-score">+85 points</span>
-            <span class="record-accuracy">80% accuracy</span>
-            <span class="record-status success">Won</span>
+            <span class="record-date"
+              ><i class="far fa-calendar"></i> Today, 2:30 PM</span
+            >
+            <span class="record-score">+85 pts</span>
+            <span class="record-accuracy">80% acc</span>
+            <span class="record-status success"
+              ><i class="fas fa-check-circle"></i> Won</span
+            >
           </div>
           <div class="game-record">
-            <span class="record-date">Today, 1:15 PM</span>
-            <span class="record-score">+70 points</span>
-            <span class="record-accuracy">70% accuracy</span>
-            <span class="record-status success">Won</span>
+            <span class="record-date"
+              ><i class="far fa-calendar"></i> Today, 1:15 PM</span
+            >
+            <span class="record-score">+70 pts</span>
+            <span class="record-accuracy">70% acc</span>
+            <span class="record-status success"
+              ><i class="fas fa-check-circle"></i> Won</span
+            >
           </div>
           <div class="game-record">
-            <span class="record-date">Yesterday, 9:00 PM</span>
-            <span class="record-score" style="color: #ff3366">-1 Life</span>
-            <span class="record-accuracy">40% accuracy</span>
-            <span class="record-status fail">Lost</span>
+            <span class="record-date"
+              ><i class="far fa-calendar"></i> Yesterday, 9:00 PM</span
+            >
+            <span class="record-score" style="color: #ff4d4d">-1 Life</span>
+            <span class="record-accuracy">40% acc</span>
+            <span class="record-status fail"
+              ><i class="fas fa-times-circle"></i> Lost</span
+            >
           </div>
         </div>
       </div>
 
       <div class="achievements-section">
-        <h2 class="section-heading">ACHIEVEMENTS</h2>
+        <h2 class="section-heading">
+          <i class="fas fa-trophy" style="margin-right: 8px"></i>ACHIEVEMENTS
+        </h2>
         <div class="achievements-grid">
           <div class="achievement-badge-item">
-            <div class="badge-icon">🏆</div>
+            <i class="fas fa-crown"></i>
             <div class="badge-name">First Victory</div>
           </div>
           <div class="achievement-badge-item">
-            <div class="badge-icon">⭐</div>
+            <i class="fas fa-star"></i>
             <div class="badge-name">10 Win Streak</div>
           </div>
           <div class="achievement-badge-item">
-            <div class="badge-icon">💎</div>
+            <i class="fas fa-gem"></i>
             <div class="badge-name">Perfect Round</div>
           </div>
           <div class="achievement-badge-item locked">
-            <div class="badge-icon">🎯</div>
+            <i class="fas fa-lock"></i>
             <div class="badge-name">Master Detective</div>
           </div>
         </div>
       </div>
     </main>
 
+    <!-- Login Modal (for when user clicks login from header) -->
+    <div class="modal" id="loginModal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModals()">&times;</span>
+        <h2 class="modal-title">DETECTIVE LOGIN</h2>
+        <form id="loginForm" class="auth-form">
+          <div class="form-group">
+            <i class="fas fa-user input-icon"></i>
+            <input
+              type="text"
+              id="username"
+              placeholder="Username or Email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
+              required
+            />
+            <span class="toggle-password" onclick="togglePassword('password')"
+              ><i class="fas fa-eye"></i
+            ></span>
+          </div>
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="rememberMe" /> <span>Remember me</span>
+            </label>
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-sign-in-alt" style="margin-right: 8px"></i>LOGIN
+          </button>
+        </form>
+        <p class="switch-auth">
+          Don't have an account?
+          <a href="#" onclick="switchToRegister()">Register here</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModals()">&times;</span>
+        <h2 class="modal-title">CREATE ACCOUNT</h2>
+        <form id="registerForm" class="auth-form">
+          <div class="form-group">
+            <i class="fas fa-user input-icon"></i>
+            <input
+              type="text"
+              id="regFullName"
+              placeholder="Full Name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <i class="fas fa-id-card input-icon"></i>
+            <input
+              type="text"
+              id="regUsername"
+              placeholder="Username"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <i class="fas fa-envelope input-icon"></i>
+            <input
+              type="email"
+              id="regEmail"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              type="password"
+              id="regPassword"
+              placeholder="Password (min 8 chars)"
+              required
+            />
+            <span
+              class="toggle-password"
+              onclick="togglePassword('regPassword')"
+              ><i class="fas fa-eye"></i
+            ></span>
+          </div>
+          <div class="form-group">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              type="password"
+              id="regConfirmPassword"
+              placeholder="Confirm Password"
+              required
+            />
+          </div>
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="agreeTerms" required />
+              <span>I agree to Terms & Privacy</span>
+            </label>
+          </div>
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-user-plus" style="margin-right: 8px"></i>REGISTER
+          </button>
+        </form>
+        <p class="switch-auth">
+          Already have an account?
+          <a href="#" onclick="switchToLogin()">Login here</a>
+        </p>
+      </div>
+    </div>
+
     <footer class="main-footer">
-      <p>Developed by Simthass Mohammed(2540927)</p>
+      <p>Developed by Simthass Mohammed (2540927) for DSA Assignment</p>
     </footer>
 
-    <script>
-      function logout() {
-        if (confirm("Are you sure you want to disconnect?")) {
-          window.location.href = "index.html";
-        }
-      }
-    </script>
     <script src="js/pages.js"></script>
+    <script src="js/home.js"></script>
+    <script>
+      // load header
+      fetch("header.html")
+        .then((res) => res.text())
+        .then((data) => {
+          document.getElementById("header-placeholder").innerHTML = data;
+        })
+        .catch((err) => {
+          console.log("header load error:", err);
+        });
+    </script>
   </body>
 </html>

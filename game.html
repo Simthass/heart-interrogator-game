@@ -10,15 +10,24 @@
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body class="game-body">
+    <!-- game header - smaller -->
     <div class="game-top-bar">
       <div class="game-info-left">
         <img src="public/Logo.png" alt="Logo" class="game-logo-mini" />
-        <span class="info-item">Round <span id="currentRound">1</span>/10</span>
-        <span class="info-item lives-count"
-          >❤️ <span id="livesDisplay">3</span></span
-        >
+        <div class="info-item">
+          <i class="far fa-clock"></i>
+          <span>R<span id="currentRound">1</span>/10</span>
+        </div>
+        <div class="info-item lives-count">
+          <i class="fas fa-heart" style="color: #fe9e84"></i>
+          <span id="livesDisplay">3</span>
+        </div>
       </div>
 
       <div class="game-info-center">
@@ -30,29 +39,40 @@
       </div>
 
       <div class="game-info-right">
-        <span class="info-item">Score: <span id="scoreValue">0</span></span>
-        <span class="info-item">Streak: <span id="streakValue">0</span>🔥</span>
+        <div class="info-item">
+          <i class="fas fa-star" style="color: #fe9e84"></i>
+          <span id="scoreValue">0</span>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-fire" style="color: #fe9e84"></i>
+          <span id="streakValue">0</span>
+        </div>
         <button
           class="exit-btn"
           onclick="window.location.href = 'results.html'"
         >
-          ABORT
+          <i class="fas fa-times"></i> ABORT
         </button>
       </div>
     </div>
 
+    <!-- main game container -->
     <div class="game-container">
+      <!-- left: suspect -->
       <div class="suspect-section panel-box">
-        <div class="section-title">AI SUSPECT</div>
+        <div class="section-title"><i class="fas fa-robot"></i> AI SUSPECT</div>
         <div class="suspect-content">
-          <div class="robot-icon">🤖</div>
+          <div class="robot-icon">
+            <i class="fas fa-robot"></i>
+          </div>
           <div class="suspect-claim">
-            <div class="claim-label">Claims Answer:</div>
+            <div class="claim-label">CLAIMS</div>
             <div class="claim-number" id="suspectAnswer">6</div>
           </div>
           <div class="confidence-meter">
             <div class="conf-label">
-              Confidence: <span id="confValue">87%</span>
+              <span>CONF</span>
+              <span id="confValue">87%</span>
             </div>
             <div class="conf-bar">
               <div class="conf-fill" id="confFill" style="width: 87%"></div>
@@ -61,13 +81,15 @@
         </div>
       </div>
 
+      <!-- center: evidence -->
       <div class="evidence-section panel-box">
-        <div class="section-title">EVIDENCE</div>
+        <div class="section-title"><i class="fas fa-search"></i> EVIDENCE</div>
         <div class="evidence-frame">
           <div class="puzzle-image" id="imageContainer">
             <div class="image-placeholder" id="loadingState">
-              <span>INITIALIZING...</span>
-              <small>Connecting to Heart API...</small>
+              <i class="fas fa-circle-notch fa-spin"></i>
+              <span>LOADING...</span>
+              <small>Heart API</small>
             </div>
             <img
               id="apiImage"
@@ -77,38 +99,48 @@
                 display: none;
                 max-width: 100%;
                 max-height: 100%;
-                border-radius: 8px;
+                border-radius: 10px;
               "
             />
           </div>
         </div>
         <div class="evidence-instruction" id="feedbackText">
-          Count the hearts carefully. Do not trust blindly.
+          <i class="fas fa-info-circle"></i> Count hearts
         </div>
       </div>
 
+      <!-- right: decision - FIXED - NO SCROLL, PROPER SIZING -->
       <div class="decision-section panel-box">
-        <div class="section-title">YOUR DECISION</div>
+        <div class="section-title"><i class="fas fa-gavel"></i> DECISION</div>
         <div class="decision-content">
-          <div class="decision-card trust-card">
-            <div class="card-icon">🤝</div>
+          <!-- TRUST CARD - smaller -->
+          <div class="decision-card">
+            <i class="fas fa-handshake"></i>
             <div class="card-title">TRUST</div>
-            <div class="card-info">Accept suspect's answer</div>
-            <div class="card-points">+20 pts</div>
-            <button class="decision-btn trust-btn" onclick="trustSuspect()">
-              TRUST SUSPECT
+            <div class="card-info">Accept AI answer</div>
+            <div class="card-points">+20</div>
+            <button
+              class="decision-btn trust-btn"
+              onclick="trustSuspect(event)"
+            >
+              <i class="fas fa-check-circle"></i> TRUST
             </button>
           </div>
 
-          <div class="decision-card verify-card">
-            <div class="card-icon">🔍</div>
+          <!-- VERIFY CARD - smaller -->
+          <div class="decision-card">
+            <i class="fas fa-search"></i>
             <div class="card-title">VERIFY</div>
-            <div class="card-info">Calculate manually</div>
-            <div class="card-points">+10 pts</div>
-            <button class="decision-btn verify-btn" onclick="showVerifyInput()">
-              VERIFY MYSELF
+            <div class="card-info">Count yourself</div>
+            <div class="card-points">+10</div>
+            <button
+              class="decision-btn verify-btn"
+              onclick="showVerifyInput(event)"
+            >
+              <i class="fas fa-calculator"></i> VERIFY
             </button>
 
+            <!-- VERIFY INPUT - fixed alignment -->
             <div class="verify-input-box" id="verifyBox" style="display: none">
               <input
                 type="number"
@@ -117,32 +149,24 @@
                 min="0"
                 max="99"
               />
-              <button class="submit-btn" onclick="submitVerification()">
-                GO
+              <button class="submit-btn" onclick="submitVerification(event)">
+                <i class="fas fa-arrow-right"></i> GO
               </button>
             </div>
           </div>
 
-          <div class="powerups-section">
-            <div class="powerup-label">Assistance Protocols</div>
-            <div class="powerup-list">
-              <div class="powerup" title="Skip this question">
-                <span>⏭️</span>
-                <small>1 Left</small>
-              </div>
-              <div class="powerup disabled" title="Reveal answer">
-                <span>👁️</span>
-                <small>0 Left</small>
-              </div>
-              <div class="powerup" title="Get a hint">
-                <span>💡</span>
-                <small>2 Left</small>
-              </div>
-            </div>
-          </div>
+          <!-- NO MORE ASSISTANCE PROTOCOLS - removed completely -->
         </div>
       </div>
     </div>
+
     <script src="js/game.js"></script>
+    <script>
+      // load difficulty setting
+      document.addEventListener("DOMContentLoaded", function () {
+        const diff = localStorage.getItem("gameDifficulty") || "easy";
+        console.log("current difficulty:", diff);
+      });
+    </script>
   </body>
 </html>

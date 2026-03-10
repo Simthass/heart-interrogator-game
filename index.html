@@ -9,109 +9,181 @@
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
-    <header class="main-header">
-      <div class="header-container">
-        <div class="logo-section">
-          <img src="public/Logo.png" alt="Game Logo" class="game-logo" />
-        </div>
-        <nav class="main-nav">
-          <a href="index.html" class="nav-item active">Home</a>
-          <a href="stats.html" class="nav-item">My Stats</a>
-          <a href="settings.html" class="nav-item">Settings</a>
-        </nav>
-        <div class="auth-section">
-          <button class="btn-login" onclick="showLogin()">Login</button>
-          <button class="btn-register" onclick="showRegister()">
-            Register
+    <!-- header will be loaded here -->
+    <div id="header-placeholder"></div>
+
+    <main class="dashboard-main">
+      <!-- Hero Section - big and bold -->
+      <div class="hero-section">
+        <h1 class="welcome-title">THE HEART INTERROGATOR</h1>
+        <p class="welcome-subtitle">
+          A psychological puzzle game where you must decide: trust the AI or
+          trust yourself? Every choice matters.
+        </p>
+        <div class="hero-buttons">
+          <button
+            class="btn-hero btn-hero-primary"
+            onclick="window.location.href = 'game.html'"
+          >
+            <i class="fas fa-play" style="margin-right: 8px"></i>PLAY NOW
+          </button>
+          <button class="btn-hero btn-hero-secondary" onclick="showLogin()">
+            <i class="fas fa-info-circle" style="margin-right: 8px"></i>LEARN
+            MORE
           </button>
         </div>
       </div>
-    </header>
 
-    <main class="dashboard-main">
-      <div class="welcome-section">
-        <h1 class="welcome-title">WELCOME TO THE INTERROGATION</h1>
-        <p class="welcome-subtitle">
-          Test your skills. Trust or Verify. Make the right choice.
-        </p>
-      </div>
-
-      <div class="info-cards">
-        <div class="info-card">
-          <div class="card-icon">🎯</div>
-          <h3>HOW TO PLAY</h3>
-          <p>
-            Count hearts in puzzles. The AI will give you an answer. Trust it or
-            verify yourself?
-          </p>
-        </div>
-        <div class="info-card">
-          <div class="card-icon">🏆</div>
-          <h3>EARN POINTS</h3>
-          <p>
-            Trust the AI for +20 points (risky) or verify yourself for +10
-            points (safe)
-          </p>
-        </div>
-        <div class="info-card">
-          <div class="card-icon">⚡</div>
-          <h3>COMPETE</h3>
-          <p>
-            Climb the leaderboard and become the top detective in the academy
-          </p>
-        </div>
-      </div>
-
-      <div class="cta-section">
-        <div class="login-prompt">
-          <h2>READY TO START?</h2>
-          <p>Login or register to begin your interrogation training</p>
-          <div class="cta-buttons">
-            <button class="btn-play-login" onclick="showLogin()">
-              LOGIN TO PLAY
-            </button>
-            <button class="btn-play-register" onclick="">
-              <a
-                href="./game.html"
-                style="text-decoration: none; color: inherit"
-                >PLAY GAME</a
-              >
-            </button>
+      <!-- Features Grid - what makes game special -->
+      <div class="features-section">
+        <h2 class="section-title">GAME FEATURES</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <i class="fas fa-brain"></i>
+            <h3>AI DECEPTION</h3>
+            <p>
+              The AI suspect might lie or tell the truth. You never know! It
+              uses real API to decide randomly.
+            </p>
+            <span class="feature-tag">50/50 Chance</span>
+          </div>
+          <div class="feature-card">
+            <i class="fas fa-balance-scale"></i>
+            <h3>RISK VS REWARD</h3>
+            <p>
+              Trust the AI: +20 points but if it lies you lose life. Verify
+              yourself: +10 points but safe.
+            </p>
+            <span class="feature-tag">Strategic Choice</span>
+          </div>
+          <div class="feature-card">
+            <i class="fas fa-clock"></i>
+            <h3>TIME PRESSURE</h3>
+            <p>
+              Only 10 seconds to decide! Choose difficulty: Easy (10s), Hard
+              (5s), Expert (2s).
+            </p>
+            <span class="feature-tag">Fast Decisions</span>
           </div>
         </div>
       </div>
 
+      <!-- How to Play - step by step -->
+      <div class="howto-section">
+        <h2 class="section-title">HOW TO PLAY</h2>
+        <div class="howto-grid">
+          <div class="howto-step">
+            <div class="step-number">1</div>
+            <i
+              class="fas fa-image"
+              style="font-size: 30px; color: var(--coral); margin: 10px 0"
+            ></i>
+            <h4>COUNT HEARTS</h4>
+            <p>Look at the puzzle image. Count how many hearts you see.</p>
+          </div>
+          <div class="howto-step">
+            <div class="step-number">2</div>
+            <i
+              class="fas fa-robot"
+              style="font-size: 30px; color: var(--coral); margin: 10px 0"
+            ></i>
+            <h4>LISTEN TO AI</h4>
+            <p>The AI suspect gives an answer. It might be lying!</p>
+          </div>
+          <div class="howto-step">
+            <div class="step-number">3</div>
+            <i
+              class="fas fa-gavel"
+              style="font-size: 30px; color: var(--coral); margin: 10px 0"
+            ></i>
+            <h4>MAKE CHOICE</h4>
+            <p>Trust AI (+20) or Verify yourself (+10). Choose wisely!</p>
+          </div>
+          <div class="howto-step">
+            <div class="step-number">4</div>
+            <i
+              class="fas fa-trophy"
+              style="font-size: 30px; color: var(--coral); margin: 10px 0"
+            ></i>
+            <h4>SURVIVE</h4>
+            <p>
+              10 rounds. 3 lives. Wrong answers cost lives. Highest score wins!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Preview -->
       <div class="stats-preview">
-        <h2 class="section-title">GLOBAL STATS</h2>
+        <h2 class="section-title">GLOBAL STATISTICS</h2>
         <div class="stats-grid">
           <div class="stat-box">
             <div class="stat-number">1,247</div>
-            <div class="stat-label">Active Players</div>
+            <div class="stat-label">Active Detectives</div>
+            <div class="stat-trend">
+              <i class="fas fa-arrow-up"></i> +12% this week
+            </div>
           </div>
           <div class="stat-box">
-            <div class="stat-number">45,892</div>
+            <div class="stat-number">45.8k</div>
             <div class="stat-label">Games Played</div>
+            <div class="stat-trend"><i class="fas fa-arrow-up"></i> +5.2k</div>
           </div>
           <div class="stat-box">
             <div class="stat-number">73%</div>
             <div class="stat-label">Avg Accuracy</div>
+            <div class="stat-trend">
+              <i class="fas fa-chart-line"></i> rising
+            </div>
           </div>
           <div class="stat-box">
             <div class="stat-number">156</div>
             <div class="stat-label">Top Score</div>
+            <div class="stat-trend"><i class="fas fa-crown"></i> beat it!</div>
           </div>
+        </div>
+      </div>
+
+      <!-- Call to Action -->
+      <div class="cta-section">
+        <div class="cta-box">
+          <h2>READY FOR INTERROGATION?</h2>
+          <p>
+            Join 1000+ detectives testing their instincts against AI deception.
+          </p>
+          <div class="cta-buttons">
+            <button
+              class="btn-cta btn-cta-primary"
+              onclick="window.location.href = 'game.html'"
+            >
+              <i class="fas fa-play"></i> PLAY AS GUEST
+            </button>
+            <button class="btn-cta btn-cta-secondary" onclick="showRegister()">
+              <i class="fas fa-user-plus"></i> CREATE ACCOUNT
+            </button>
+          </div>
+          <p style="margin-top: 20px; font-size: 13px; opacity: 0.6">
+            <i class="fas fa-shield-alt"></i> No credit card. Just detective
+            work.
+          </p>
         </div>
       </div>
     </main>
 
+    <!-- Login Modal -->
     <div class="modal" id="loginModal">
       <div class="modal-content">
         <span class="close-btn" onclick="closeModals()">&times;</span>
         <h2 class="modal-title">DETECTIVE LOGIN</h2>
         <form id="loginForm" class="auth-form">
           <div class="form-group">
+            <i class="fas fa-user input-icon"></i>
             <input
               type="text"
               id="username"
@@ -120,6 +192,7 @@
             />
           </div>
           <div class="form-group">
+            <i class="fas fa-lock input-icon"></i>
             <input
               type="password"
               id="password"
@@ -127,17 +200,18 @@
               required
             />
             <span class="toggle-password" onclick="togglePassword('password')"
-              >👁️</span
-            >
+              ><i class="fas fa-eye"></i
+            ></span>
           </div>
           <div class="form-options">
             <label class="checkbox-label">
-              <input type="checkbox" id="rememberMe" />
-              <span>Remember Me</span>
+              <input type="checkbox" id="rememberMe" /> <span>Remember me</span>
             </label>
-            <a href="#" class="forgot-link">Forgot Password?</a>
+            <a href="#" class="forgot-link">Forgot password?</a>
           </div>
-          <button type="submit" class="btn-submit">LOGIN</button>
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-sign-in-alt" style="margin-right: 8px"></i>LOGIN
+          </button>
         </form>
         <p class="switch-auth">
           Don't have an account?
@@ -146,12 +220,14 @@
       </div>
     </div>
 
+    <!-- Register Modal -->
     <div class="modal" id="registerModal">
       <div class="modal-content">
         <span class="close-btn" onclick="closeModals()">&times;</span>
         <h2 class="modal-title">CREATE ACCOUNT</h2>
         <form id="registerForm" class="auth-form">
           <div class="form-group">
+            <i class="fas fa-user input-icon"></i>
             <input
               type="text"
               id="regFullName"
@@ -160,14 +236,16 @@
             />
           </div>
           <div class="form-group">
+            <i class="fas fa-id-card input-icon"></i>
             <input
               type="text"
               id="regUsername"
-              placeholder="Choose Username"
+              placeholder="Username"
               required
             />
           </div>
           <div class="form-group">
+            <i class="fas fa-envelope input-icon"></i>
             <input
               type="email"
               id="regEmail"
@@ -176,6 +254,7 @@
             />
           </div>
           <div class="form-group">
+            <i class="fas fa-lock input-icon"></i>
             <input
               type="password"
               id="regPassword"
@@ -185,10 +264,11 @@
             <span
               class="toggle-password"
               onclick="togglePassword('regPassword')"
-              >👁️</span
-            >
+              ><i class="fas fa-eye"></i
+            ></span>
           </div>
           <div class="form-group">
+            <i class="fas fa-lock input-icon"></i>
             <input
               type="password"
               id="regConfirmPassword"
@@ -199,10 +279,12 @@
           <div class="form-options">
             <label class="checkbox-label">
               <input type="checkbox" id="agreeTerms" required />
-              <span>I agree to Terms & Privacy Policy</span>
+              <span>I agree to Terms & Privacy</span>
             </label>
           </div>
-          <button type="submit" class="btn-submit">CREATE ACCOUNT</button>
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-user-plus" style="margin-right: 8px"></i>REGISTER
+          </button>
         </form>
         <p class="switch-auth">
           Already have an account?
@@ -212,9 +294,42 @@
     </div>
 
     <footer class="main-footer">
-      <p>Developed by Simthass Mohammed (2540927) for DSA Assignment</p>
+      <p>
+        Developed by Simthass Mohammed (2540927) for DSA Assignment |
+        <i class="fas fa-code"></i> with 🧠 and ☕
+      </p>
     </footer>
 
     <script src="js/home.js"></script>
+    <script>
+      // load header
+      fetch("header.html")
+        .then((res) => res.text())
+        .then((data) => {
+          document.getElementById("header-placeholder").innerHTML = data;
+        })
+        .catch((err) => {
+          console.log("header load error:", err);
+          // fallback header if fetch fails
+          document.getElementById("header-placeholder").innerHTML = `
+          <header class="main-header">
+            <div class="header-container">
+              <div class="logo-section">
+                <img src="public/Logo.png" alt="Heart Interrogator" class="game-logo">
+              </div>
+              <nav class="main-nav">
+                <a href="index.html" class="nav-item active">Home</a>
+                <a href="stats.html" class="nav-item">My Stats</a>
+                <a href="settings.html" class="nav-item">Settings</a>
+              </nav>
+              <div class="auth-section">
+                <button class="btn-login" onclick="showLogin()"><i class="fas fa-sign-in-alt"></i>Login</button>
+                <button class="btn-register" onclick="showRegister()"><i class="fas fa-user-plus"></i>Register</button>
+              </div>
+            </div>
+          </header>
+        `;
+        });
+    </script>
   </body>
 </html>

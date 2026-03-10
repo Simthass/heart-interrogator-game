@@ -16,7 +16,6 @@
     />
   </head>
   <body>
-    <!-- header will be loaded here -->
     <div id="header-placeholder"></div>
 
     <main class="page-main">
@@ -36,7 +35,6 @@
         </button>
       </div>
 
-      <!-- ACCOUNT TAB -->
       <div class="settings-panel" id="accountSettings">
         <h2 class="panel-heading">ACCOUNT INFORMATION</h2>
 
@@ -49,17 +47,10 @@
             <input
               type="email"
               class="setting-input"
-              value="detective@email.com"
+              id="emailInput"
+              value="Loading..."
               readonly
             />
-            <span
-              class="setting-btn"
-              style="
-                background: transparent;
-                border: 1px dashed var(--teal-light);
-              "
-              >can't change</span
-            >
           </div>
         </div>
 
@@ -72,79 +63,101 @@
             <input
               type="text"
               class="setting-input"
-              value="agent_phoenix"
+              id="usernameInput"
+              value="Loading..."
               readonly
             />
-            <span
-              class="setting-btn"
-              style="
-                background: transparent;
-                border: 1px dashed var(--teal-light);
-              "
-              >read only</span
-            >
           </div>
         </div>
 
         <div class="settings-group">
           <span class="setting-label"
-            ><i class="fas fa-lock" style="margin-right: 8px"></i>
-            Password</span
+            ><i class="fas fa-user-tag" style="margin-right: 8px"></i> Full
+            Name</span
           >
           <div class="setting-control">
-            <div class="password-change-group">
-              <input
-                type="password"
-                id="currentPass"
-                placeholder="Current"
-                value="••••••••"
-              />
-              <input type="password" id="newPass" placeholder="New password" />
-              <input type="password" id="confirmPass" placeholder="Confirm" />
-            </div>
+            <input
+              type="text"
+              class="setting-input"
+              id="fullnameInput"
+              value="Loading..."
+              readonly
+            />
           </div>
         </div>
 
         <div class="settings-group">
           <span class="setting-label"
-            ><i class="fas fa-camera" style="margin-right: 8px"></i>
-            Profile</span
+            ><i class="fas fa-calendar" style="margin-right: 8px"></i> Member
+            Since</span
           >
           <div class="setting-control">
-            <div class="profile-pic-preview">
-              <i class="fas fa-user-circle"></i>
-            </div>
-            <button
-              class="setting-btn"
-              onclick="alert('profile pic upload coming soon')"
-            >
-              <i class="fas fa-upload"></i> Upload
-            </button>
+            <input
+              type="text"
+              class="setting-input"
+              id="joinedInput"
+              value="Loading..."
+              readonly
+            />
+          </div>
+        </div>
+
+        <h2 class="panel-heading" style="margin-top: 30px">CHANGE PASSWORD</h2>
+
+        <div class="settings-group">
+          <span class="setting-label"
+            ><i class="fas fa-lock" style="margin-right: 8px"></i> Current</span
+          >
+          <div class="setting-control">
+            <input
+              type="password"
+              id="currentPass"
+              placeholder="Current Password"
+            />
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <span class="setting-label"
+            ><i class="fas fa-lock" style="margin-right: 8px"></i> New</span
+          >
+          <div class="setting-control">
+            <input
+              type="password"
+              id="newPass"
+              placeholder="New password (min 8 chars)"
+            />
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <span class="setting-label"
+            ><i class="fas fa-lock" style="margin-right: 8px"></i> Confirm</span
+          >
+          <div class="setting-control">
+            <input
+              type="password"
+              id="confirmPass"
+              placeholder="Confirm new password"
+            />
           </div>
         </div>
 
         <button class="btn-save" onclick="changePassword()">
-          <i class="fas fa-save"></i> UPDATE PASSWORD
+          <i class="fas fa-key"></i> UPDATE PASSWORD
         </button>
 
         <div class="danger-zone">
           <h3 class="danger-heading">
             <i class="fas fa-exclamation-triangle"></i> DANGER ZONE
           </h3>
-          <p>Once you delete your account, there is no going back.</p>
-          <button
-            class="btn-danger"
-            onclick="
-              if (confirm('Are you SURE? This cannot be undone!'))
-                alert('Account deletion requested');
-            "
-          >
-            <i class="fas fa-trash"></i> Delete Account
+          <p>This action cannot be undone. All your data will be deleted.</p>
+          <button class="btn-danger" onclick="deleteAccount()">
+            <i class="fas fa-trash"></i> DELETE ACCOUNT
           </button>
         </div>
       </div>
 
-      <!-- GAME TAB (updated) -->
       <div class="settings-panel" id="gameSettings" style="display: none">
         <h2 class="panel-heading">GAME PREFERENCES</h2>
 
@@ -158,154 +171,139 @@
               id="difficultySelect"
               onchange="saveDifficulty()"
             >
-              <option value="easy">Easy (10 sec)</option>
-              <option value="hard" selected>Hard (5 sec)</option>
-              <option value="expert">Expert (2 sec)</option>
+              <option value="easy">Easy (12 seconds)</option>
+              <option value="hard">Hard (7 seconds)</option>
+              <option value="expert">Expert (3 seconds)</option>
             </select>
           </div>
         </div>
 
+        <div class="settings-group">
+          <span class="setting-label"
+            ><i class="fas fa-volume-up"></i> Sound Effects</span
+          >
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input
+                type="checkbox"
+                id="soundToggle"
+                checked
+                onchange="toggleSound()"
+              />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <span class="setting-label"
+            ><i class="fas fa-microphone"></i> AI Voice</span
+          >
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input
+                type="checkbox"
+                id="voiceToggle"
+                checked
+                onchange="toggleVoice()"
+              />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
         <button class="btn-save" onclick="saveGameSettings()">
-          <i class="fas fa-save"></i> SAVE DIFFICULTY
+          <i class="fas fa-save"></i> SAVE SETTINGS
         </button>
       </div>
     </main>
 
-    <!-- Login Modal -->
-    <div class="modal" id="loginModal">
-      <div class="modal-content">
-        <span class="close-btn" onclick="closeModals()">&times;</span>
-        <h2 class="modal-title">DETECTIVE LOGIN</h2>
-        <form id="loginForm" class="auth-form">
-          <div class="form-group">
-            <i class="fas fa-user input-icon"></i>
-            <input
-              type="text"
-              id="username"
-              placeholder="Username or Email"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <i class="fas fa-lock input-icon"></i>
-            <input
-              type="password"
-              id="password"
-              placeholder="Password"
-              required
-            />
-            <span class="toggle-password" onclick="togglePassword('password')"
-              ><i class="fas fa-eye"></i
-            ></span>
-          </div>
-          <div class="form-options">
-            <label class="checkbox-label">
-              <input type="checkbox" id="rememberMe" /> <span>Remember me</span>
-            </label>
-            <a href="#" class="forgot-link">Forgot password?</a>
-          </div>
-          <button type="submit" class="btn-submit">
-            <i class="fas fa-sign-in-alt" style="margin-right: 8px"></i>LOGIN
-          </button>
-        </form>
-        <p class="switch-auth">
-          Don't have an account?
-          <a href="#" onclick="switchToRegister()">Register here</a>
-        </p>
-      </div>
-    </div>
-
-    <!-- Register Modal -->
-    <div class="modal" id="registerModal">
-      <div class="modal-content">
-        <span class="close-btn" onclick="closeModals()">&times;</span>
-        <h2 class="modal-title">CREATE ACCOUNT</h2>
-        <form id="registerForm" class="auth-form">
-          <div class="form-group">
-            <i class="fas fa-user input-icon"></i>
-            <input
-              type="text"
-              id="regFullName"
-              placeholder="Full Name"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <i class="fas fa-id-card input-icon"></i>
-            <input
-              type="text"
-              id="regUsername"
-              placeholder="Username"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <i class="fas fa-envelope input-icon"></i>
-            <input
-              type="email"
-              id="regEmail"
-              placeholder="Email Address"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <i class="fas fa-lock input-icon"></i>
-            <input
-              type="password"
-              id="regPassword"
-              placeholder="Password (min 8 chars)"
-              required
-            />
-            <span
-              class="toggle-password"
-              onclick="togglePassword('regPassword')"
-              ><i class="fas fa-eye"></i
-            ></span>
-          </div>
-          <div class="form-group">
-            <i class="fas fa-lock input-icon"></i>
-            <input
-              type="password"
-              id="regConfirmPassword"
-              placeholder="Confirm Password"
-              required
-            />
-          </div>
-          <div class="form-options">
-            <label class="checkbox-label">
-              <input type="checkbox" id="agreeTerms" required />
-              <span>I agree to Terms & Privacy</span>
-            </label>
-          </div>
-          <button type="submit" class="btn-submit">
-            <i class="fas fa-user-plus" style="margin-right: 8px"></i>REGISTER
-          </button>
-        </form>
-        <p class="switch-auth">
-          Already have an account?
-          <a href="#" onclick="switchToLogin()">Login here</a>
-        </p>
-      </div>
-    </div>
-
     <footer class="main-footer">
-      <p>Developed by Simthass Mohammed (2540927)</p>
+      <p>
+        Developed by Simthass Mohammed (2540927) for DSA Assignment |
+        <i class="fas fa-code"></i> with 🧠 and ☕
+      </p>
     </footer>
 
-    <script src="js/pages.js"></script>
     <script src="js/home.js"></script>
     <script>
+      function getCookie(name) {
+        let match = document.cookie.match(
+          new RegExp("(^| )" + name + "=([^;]+)"),
+        );
+        return match ? match[2] : null;
+      }
+
       // load header
       fetch("header.html")
         .then((res) => res.text())
         .then((data) => {
           document.getElementById("header-placeholder").innerHTML = data;
+
+          if (window.updateHeaderAuth) window.updateHeaderAuth();
+          if (window.setActiveNav) window.setActiveNav();
+
+          // load settings data
+          checkLoginAndLoadSettings();
         })
         .catch((err) => {
           console.log("header load error:", err);
         });
 
-      // settings functions
+      async function checkLoginAndLoadSettings() {
+        let userId = getCookie("loggedId");
+
+        if (!userId) {
+          alert("Please login to access settings");
+          window.location.href = "index.html";
+          return;
+        }
+
+        // load saved difficulty
+        let savedDiff = localStorage.getItem("gameDifficulty") || "hard";
+        document.getElementById("difficultySelect").value = savedDiff;
+
+        // load sound settings
+        let soundEnabled = localStorage.getItem("soundEnabled") !== "false";
+        document.getElementById("soundToggle").checked = soundEnabled;
+
+        let voiceEnabled = localStorage.getItem("voiceEnabled") !== "false";
+        document.getElementById("voiceToggle").checked = voiceEnabled;
+
+        // fetch user info from db
+        try {
+          let res = await fetch("http://localhost:3000/api/user-info", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: userId }),
+          });
+
+          let data = await res.json();
+
+          if (res.ok) {
+            document.getElementById("emailInput").value =
+              data.email || "No email";
+            document.getElementById("usernameInput").value =
+              data.username || "No username";
+            document.getElementById("fullnameInput").value =
+              data.fullname || "No name";
+
+            if (data.createdAt) {
+              let joinedDate = new Date(data.createdAt);
+              document.getElementById("joinedInput").value =
+                joinedDate.toLocaleDateString();
+            } else {
+              document.getElementById("joinedInput").value = "Unknown";
+            }
+          } else {
+            console.log("failed to load user data");
+          }
+        } catch (e) {
+          console.log("settings fetch error:", e);
+          alert("Error loading settings. Make sure server is running.");
+        }
+      }
+
       function showTab(tabName, btn) {
         document.getElementById("accountSettings").style.display = "none";
         document.getElementById("gameSettings").style.display = "none";
@@ -323,46 +321,101 @@
         btn.classList.add("active");
       }
 
-      // load saved difficulty
-      document.addEventListener("DOMContentLoaded", function () {
-        const saved = localStorage.getItem("gameDifficulty") || "hard";
-        document.getElementById("difficultySelect").value = saved;
-      });
-
       function saveDifficulty() {
-        const diff = document.getElementById("difficultySelect").value;
+        let diff = document.getElementById("difficultySelect").value;
         localStorage.setItem("gameDifficulty", diff);
-        alert("Difficulty saved! It will apply next game.");
+        showNotification("Difficulty saved!");
+      }
+
+      function toggleSound() {
+        let enabled = document.getElementById("soundToggle").checked;
+        localStorage.setItem("soundEnabled", enabled);
+      }
+
+      function toggleVoice() {
+        let enabled = document.getElementById("voiceToggle").checked;
+        localStorage.setItem("voiceEnabled", enabled);
       }
 
       function saveGameSettings() {
         saveDifficulty();
+        toggleSound();
+        toggleVoice();
+        showNotification("Settings saved!");
       }
 
-      function changePassword() {
-        const current = document.getElementById("currentPass").value;
-        const newPass = document.getElementById("newPass").value;
-        const confirm = document.getElementById("confirmPass").value;
+      async function changePassword() {
+        let userId = getCookie("loggedId");
+        let current = document.getElementById("currentPass").value;
+        let newPass = document.getElementById("newPass").value;
+        let confirm = document.getElementById("confirmPass").value;
+
+        if (!userId) {
+          alert("Please login first");
+          return;
+        }
 
         if (!current || !newPass || !confirm) {
-          alert("plz fill all password fields");
+          alert("Please fill all password fields");
           return;
         }
 
         if (newPass !== confirm) {
-          alert("new passwords dont match");
+          alert("New passwords do not match!");
           return;
         }
 
         if (newPass.length < 8) {
-          alert("password must be atleast 8 characters");
+          alert("New password must be at least 8 characters");
           return;
         }
 
-        alert("password changed successfully! (not really, this is just demo)");
-        document.getElementById("currentPass").value = "••••••••";
-        document.getElementById("newPass").value = "";
-        document.getElementById("confirmPass").value = "";
+        try {
+          let res = await fetch("http://localhost:3000/api/update-pass", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: userId,
+              oldPass: current,
+              newPass: newPass,
+            }),
+          });
+
+          let data = await res.json();
+
+          if (res.ok) {
+            alert("Password changed successfully!");
+            document.getElementById("currentPass").value = "";
+            document.getElementById("newPass").value = "";
+            document.getElementById("confirmPass").value = "";
+          } else {
+            alert(data.msg || "Failed to change password");
+          }
+        } catch (e) {
+          console.log("password change error:", e);
+          alert("Error connecting to server");
+        }
+      }
+
+      function deleteAccount() {
+        if (
+          confirm(
+            "WARNING: This will permanently delete your account and all game data. Are you absolutely sure?",
+          )
+        ) {
+          alert("Account deletion not implemented in this version");
+        }
+      }
+
+      function showNotification(msg) {
+        let notif = document.createElement("div");
+        notif.className = "notification success";
+        notif.innerHTML = msg;
+        document.body.appendChild(notif);
+
+        setTimeout(() => {
+          notif.remove();
+        }, 2000);
       }
     </script>
   </body>

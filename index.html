@@ -33,7 +33,10 @@
           >
             <i class="fas fa-play" style="margin-right: 8px"></i>PLAY NOW
           </button>
-          <button class="btn-hero btn-hero-secondary" onclick="showLogin()">
+          <button
+            class="btn-hero btn-hero-secondary"
+            onclick="showLoginModal()"
+          >
             <i class="fas fa-info-circle" style="margin-right: 8px"></i>LEARN
             MORE
           </button>
@@ -164,7 +167,10 @@
             >
               <i class="fas fa-play"></i> PLAY AS GUEST
             </button>
-            <button class="btn-cta btn-cta-secondary" onclick="showRegister()">
+            <button
+              class="btn-cta btn-cta-secondary"
+              onclick="showRegisterModal()"
+            >
               <i class="fas fa-user-plus"></i> CREATE ACCOUNT
             </button>
           </div>
@@ -307,28 +313,12 @@
         .then((res) => res.text())
         .then((data) => {
           document.getElementById("header-placeholder").innerHTML = data;
+          // run the funcs immediately now that html is inside DOM
+          if (window.updateHeaderAuth) window.updateHeaderAuth();
+          if (window.setActiveNav) window.setActiveNav();
         })
         .catch((err) => {
           console.log("header load error:", err);
-          // fallback header if fetch fails
-          document.getElementById("header-placeholder").innerHTML = `
-          <header class="main-header">
-            <div class="header-container">
-              <div class="logo-section">
-                <img src="public/Logo.png" alt="Heart Interrogator" class="game-logo">
-              </div>
-              <nav class="main-nav">
-                <a href="index.html" class="nav-item active">Home</a>
-                <a href="stats.html" class="nav-item">My Stats</a>
-                <a href="settings.html" class="nav-item">Settings</a>
-              </nav>
-              <div class="auth-section">
-                <button class="btn-login" onclick="showLogin()"><i class="fas fa-sign-in-alt"></i>Login</button>
-                <button class="btn-register" onclick="showRegister()"><i class="fas fa-user-plus"></i>Register</button>
-              </div>
-            </div>
-          </header>
-        `;
         });
     </script>
   </body>

@@ -16,7 +16,6 @@
     />
   </head>
   <body class="game-body">
-    <!-- game header - smaller -->
     <div class="game-top-bar">
       <div class="game-info-left">
         <img src="public/Logo.png" alt="Logo" class="game-logo-mini" />
@@ -56,9 +55,7 @@
       </div>
     </div>
 
-    <!-- main game container -->
     <div class="game-container">
-      <!-- left: suspect -->
       <div class="suspect-section panel-box">
         <div class="section-title"><i class="fas fa-robot"></i> AI SUSPECT</div>
         <div class="suspect-content">
@@ -81,7 +78,6 @@
         </div>
       </div>
 
-      <!-- center: evidence -->
       <div class="evidence-section panel-box">
         <div class="section-title"><i class="fas fa-search"></i> EVIDENCE</div>
         <div class="evidence-frame">
@@ -109,11 +105,9 @@
         </div>
       </div>
 
-      <!-- right: decision - FIXED - NO SCROLL, PROPER SIZING -->
       <div class="decision-section panel-box">
         <div class="section-title"><i class="fas fa-gavel"></i> DECISION</div>
         <div class="decision-content">
-          <!-- TRUST CARD - smaller -->
           <div class="decision-card">
             <i class="fas fa-handshake"></i>
             <div class="card-title">TRUST</div>
@@ -127,7 +121,6 @@
             </button>
           </div>
 
-          <!-- VERIFY CARD - smaller -->
           <div class="decision-card">
             <i class="fas fa-search"></i>
             <div class="card-title">VERIFY</div>
@@ -140,7 +133,6 @@
               <i class="fas fa-calculator"></i> VERIFY
             </button>
 
-            <!-- VERIFY INPUT - fixed alignment -->
             <div class="verify-input-box" id="verifyBox" style="display: none">
               <input
                 type="number"
@@ -154,11 +146,19 @@
               </button>
             </div>
           </div>
-
-          <!-- NO MORE ASSISTANCE PROTOCOLS - removed completely -->
         </div>
       </div>
     </div>
+
+    <audio
+      id="hSound"
+      loop
+      src="https://actions.google.com/sounds/v1/alarms/heartbeat_fast.ogg"
+    ></audio>
+    <audio
+      id="drumSound"
+      src="https://actions.google.com/sounds/v1/foley/drum_roll.ogg"
+    ></audio>
 
     <script src="js/game.js"></script>
     <script>

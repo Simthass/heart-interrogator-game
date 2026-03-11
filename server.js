@@ -295,6 +295,42 @@ app.post("/api/update-pass", async (req, res) => {
   }
 });
 
+// ========== GET GLOBAL STATS ==========
+// fetching data from all users to show real data on index.html
+app.get("/api/global-data", async (req, res) => {
+  try {
+    let allUsersCount = await UserModel.countDocuments();
+    let allGames = await GameModel.find({});
+
+    let totalGames = allGames.length;
+    let bestScore = 0;
+    let totalAcc = 0;
+
+    // looping to find highest score and total accuracy for average
+    for (let i = 0; i < allGames.length; i++) {
+      if (allGames[i].score > bestScore) {
+        bestScore = allGames[i].score;
+      }
+      totalAcc += allGames[i].accuracy || 0;
+    }
+
+    let realAvgAcc = 0;
+    if (totalGames > 0) {
+      realAvgAcc = Math.round(totalAcc / totalGames);
+    }
+
+    res.json({
+      totalDetectives: allUsersCount,
+      gamesPlayed: totalGames,
+      avgAcc: realAvgAcc,
+      topScore: bestScore,
+    });
+  } catch (err) {
+    console.log("global stats error", err);
+    res.status(500).json({ msg: "server error for global stats" });
+  }
+});
+
 app.listen(3000, () => {
   console.log("server running on http://localhost:3000");
 });

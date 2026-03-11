@@ -112,6 +112,7 @@
             <input
               type="password"
               id="currentPass"
+              class="setting-input"
               placeholder="Current Password"
             />
           </div>
@@ -125,6 +126,7 @@
             <input
               type="password"
               id="newPass"
+              class="setting-input"
               placeholder="New password (min 8 chars)"
             />
           </div>
@@ -138,6 +140,7 @@
             <input
               type="password"
               id="confirmPass"
+              class="setting-input"
               placeholder="Confirm new password"
             />
           </div>
@@ -277,7 +280,6 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userId: userId }),
           });
-
           let data = await res.json();
 
           if (res.ok) {

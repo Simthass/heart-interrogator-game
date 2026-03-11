@@ -15,11 +15,9 @@
     />
   </head>
   <body>
-    <!-- header will be loaded here -->
     <div id="header-placeholder"></div>
 
     <main class="dashboard-main">
-      <!-- Hero Section - big and bold -->
       <div class="hero-section">
         <h1 class="welcome-title">THE HEART INTERROGATOR</h1>
         <p class="welcome-subtitle">
@@ -35,7 +33,11 @@
           </button>
           <button
             class="btn-hero btn-hero-secondary"
-            onclick="showLoginModal()"
+            onclick="
+              document
+                .getElementById('howToPlaySec')
+                .scrollIntoView({ behavior: 'smooth' })
+            "
           >
             <i class="fas fa-info-circle" style="margin-right: 8px"></i>LEARN
             MORE
@@ -43,7 +45,6 @@
         </div>
       </div>
 
-      <!-- Features Grid - what makes game special -->
       <div class="features-section">
         <h2 class="section-title">GAME FEATURES</h2>
         <div class="features-grid">
@@ -77,8 +78,7 @@
         </div>
       </div>
 
-      <!-- How to Play - step by step -->
-      <div class="howto-section">
+      <div class="howto-section" id="howToPlaySec">
         <h2 class="section-title">HOW TO PLAY</h2>
         <div class="howto-grid">
           <div class="howto-step">
@@ -122,55 +122,42 @@
         </div>
       </div>
 
-      <!-- Stats Preview -->
       <div class="stats-preview">
         <h2 class="section-title">GLOBAL STATISTICS</h2>
         <div class="stats-grid">
           <div class="stat-box">
-            <div class="stat-number">1,247</div>
+            <div class="stat-number" id="realGlobalUsers">...</div>
             <div class="stat-label">Active Detectives</div>
-            <div class="stat-trend">
-              <i class="fas fa-arrow-up"></i> +12% this week
-            </div>
           </div>
           <div class="stat-box">
-            <div class="stat-number">45.8k</div>
+            <div class="stat-number" id="realGlobalGames">...</div>
             <div class="stat-label">Games Played</div>
-            <div class="stat-trend"><i class="fas fa-arrow-up"></i> +5.2k</div>
           </div>
           <div class="stat-box">
-            <div class="stat-number">73%</div>
+            <div class="stat-number" id="realGlobalAcc">...</div>
             <div class="stat-label">Avg Accuracy</div>
-            <div class="stat-trend">
-              <i class="fas fa-chart-line"></i> rising
-            </div>
           </div>
           <div class="stat-box">
-            <div class="stat-number">156</div>
+            <div class="stat-number" id="realGlobalTop">...</div>
             <div class="stat-label">Top Score</div>
-            <div class="stat-trend"><i class="fas fa-crown"></i> beat it!</div>
           </div>
         </div>
       </div>
 
-      <!-- Call to Action -->
       <div class="cta-section">
         <div class="cta-box">
           <h2>READY FOR INTERROGATION?</h2>
           <p>
             Join 1000+ detectives testing their instincts against AI deception.
           </p>
-          <div class="cta-buttons">
+          <div class="cta-buttons" id="bottomCtaButtons">
             <button
               class="btn-cta btn-cta-primary"
               onclick="window.location.href = 'game.html'"
             >
               <i class="fas fa-play"></i> PLAY AS GUEST
             </button>
-            <button
-              class="btn-cta btn-cta-secondary"
-              onclick="showRegisterModal()"
-            >
+            <button class="btn-cta btn-cta-secondary" onclick="showRegister()">
               <i class="fas fa-user-plus"></i> CREATE ACCOUNT
             </button>
           </div>
@@ -182,7 +169,6 @@
       </div>
     </main>
 
-    <!-- Login Modal -->
     <div class="modal" id="loginModal">
       <div class="modal-content">
         <span class="close-btn" onclick="closeModals()">&times;</span>
@@ -226,7 +212,6 @@
       </div>
     </div>
 
-    <!-- Register Modal -->
     <div class="modal" id="registerModal">
       <div class="modal-content">
         <span class="close-btn" onclick="closeModals()">&times;</span>
@@ -316,10 +301,59 @@
           // run the funcs immediately now that html is inside DOM
           if (window.updateHeaderAuth) window.updateHeaderAuth();
           if (window.setActiveNav) window.setActiveNav();
+
+          // update cta button based on login
+          updateBottomCta();
         })
         .catch((err) => {
           console.log("header load error:", err);
         });
+
+      // function to change CTA if user is logged in
+      function updateBottomCta() {
+        let nameInCookie = null;
+        // manually getting cookie here cause home.js might load late sometimes
+        let ca = document.cookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i].trim();
+          if (c.indexOf("loggedUser=") == 0) {
+            nameInCookie = c.substring(11, c.length);
+          }
+        }
+
+        if (nameInCookie && nameInCookie !== "") {
+          document.getElementById("bottomCtaButtons").innerHTML = `
+              <button class="btn-cta btn-cta-primary" style="width: 300px;" onclick="window.location.href = 'game.html'">
+                <i class="fas fa-play"></i> START INTERROGATION
+              </button>
+            `;
+        }
+      }
+
+      // get real global stats from backend
+      async function fetchRealGlobalStats() {
+        try {
+          let datRes = await fetch("http://localhost:3000/api/global-data");
+          let finalData = await datRes.json();
+
+          if (datRes.ok) {
+            // put real numbers to HTML
+            document.getElementById("realGlobalUsers").innerText =
+              finalData.totalDetectives;
+            document.getElementById("realGlobalGames").innerText =
+              finalData.gamesPlayed;
+            document.getElementById("realGlobalAcc").innerText =
+              finalData.avgAcc + "%";
+            document.getElementById("realGlobalTop").innerText =
+              finalData.topScore;
+          }
+        } catch (err) {
+          console.log("cant get global stats", err);
+        }
+      }
+
+      // call it when page loads
+      document.addEventListener("DOMContentLoaded", fetchRealGlobalStats);
     </script>
   </body>
 </html>

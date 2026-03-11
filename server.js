@@ -292,48 +292,35 @@ app.get("/api/global-data", async (req, res) => {
   }
 });
 
+// FIXED LEADERBOARD ROUTE
 app.get("/api/leaderboard", async (req, res) => {
   try {
     let allGames = await GameModel.find({});
     let playersObj = {};
 
-    // loop through all games and group them by user to get real total stats
+    // loop through all games to find the best single score for EACH user
     for (let i = 0; i < allGames.length; i++) {
       let g = allGames[i];
 
-      // if user not in object yet, add them
-      if (!playersObj[g.username]) {
+      // if user not in object yet, OR if this game's score is bigger than their saved one
+      if (!playersObj[g.username] || g.score > playersObj[g.username].score) {
         playersObj[g.username] = {
           username: g.username,
-          totalScore: 0,
-          totalAcc: 0,
-          gameCount: 0,
+          score: g.score,
+          accuracy: g.accuracy || 0,
         };
       }
-
-      // add up their stats
-      playersObj[g.username].totalScore += g.score;
-      playersObj[g.username].totalAcc += g.accuracy || 0;
-      playersObj[g.username].gameCount += 1;
     }
 
     let leaderArr = [];
-
-    // calculate real average accuracy for each player
     for (let key in playersObj) {
-      let p = playersObj[key];
-      if (p.gameCount > 0) {
-        p.realAvgAccuracy = Math.round(p.totalAcc / p.gameCount);
-      } else {
-        p.realAvgAccuracy = 0;
-      }
-      leaderArr.push(p);
+      leaderArr.push(playersObj[key]);
     }
 
-    // sort array by total score highest first
-    leaderArr.sort((a, b) => b.totalScore - a.totalScore);
+    // sort array by highest score first
+    leaderArr.sort((a, b) => b.score - a.score);
 
-    // only send top 5 players to frontend
+    // only send top 5 unique players to frontend
     let top5 = leaderArr.slice(0, 5);
     res.json(top5);
   } catch (e) {

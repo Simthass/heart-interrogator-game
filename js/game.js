@@ -10,35 +10,14 @@ let actualTrueAnswer = 0;
 let aiClaimedAnswer = 0;
 let isAiLying = false;
 let gameIsActive = false;
-
-// history for results page
 let gameHistoryArray = [];
 
-// =====================================================
-// FEATURE 5 - Robot Remembers Your Mistakes Across Games
-// basically we store all the wrong answers player did
-// in localstorage so robot can use it next time to taunt
-// =====================================================
+// audio tracking fix
+let isAudioPlaying = false;
 
-// this loads the mistake memory from storage, if nothing there just empty object
-let robotMistakeMemory = JSON.parse(
-  localStorage.getItem("robotMistakeMemory") || "{}",
-);
-// e.g. robotMistakeMemory = { "3": 5, "7": 2 } means player wrong on answer=3 five times
-
-// also store how many total games played so robot can reference it
-let totalGamesPlayed = parseInt(
-  localStorage.getItem("totalGamesPlayed") || "0",
-);
-
-// track current game mistakes separate, merge at end
-let thisGameMistakes = {};
-
-// how many times player wrong this specific game (for live tracking)
-let mistakeCountThisGame = 0;
-
-// flag to know if robot already made a "remember" comment this round
-let robotAlreadyRemembered = false;
+// badges tracking for dynamic difficulty
+let userTotalWins = 0;
+let myBadgeLevel = 0;
 
 // dom elements
 const timerText = document.getElementById("timerText");
@@ -57,277 +36,130 @@ const manualInput = document.getElementById("manualInput");
 const verifyBox = document.getElementById("verifyBox");
 const robotIcon = document.querySelector(".robot-icon i");
 const gameBody = document.querySelector(".game-body");
+const distractionBox = document.getElementById("hackDistractionBox");
 
-// cookie helper
 function getCookie(name) {
   let match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
   return match ? match[2] : null;
 }
 
-// get difficulty from storage
+// grabbing stats first to set the dynamic difficulty
+async function setBadgeLevel() {
+  let myToken = getCookie("authToken");
+  if (myToken) {
+    try {
+      let res = await fetch("http://localhost:3000/api/my-stats", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + myToken,
+        },
+        body: JSON.stringify({}),
+      });
+      let data = await res.json();
+      if (res.ok) {
+        userTotalWins = data.wins || 0;
+        // calculate badge level
+        if (userTotalWins >= 10) {
+          myBadgeLevel = 3;
+        } // Master
+        else if (userTotalWins >= 5) {
+          myBadgeLevel = 2;
+        } // Veteran
+        else if (userTotalWins >= 1) {
+          myBadgeLevel = 1;
+        } // First Win
+        console.log("user badge level loaded: " + myBadgeLevel);
+      }
+    } catch (e) {
+      console.log("cant get badge level", e);
+    }
+  }
+}
+
 function getDifficultyTimer() {
-  let diff = localStorage.getItem("gameDifficulty") || "easy";
-  if (diff === "easy") return 12;
-  if (diff === "hard") return 7;
-  if (diff === "expert") return 3;
-  return 12;
-}
+  let diff = localStorage.getItem("gameDifficulty") || "hard";
+  let baseTimer = 12;
+  if (diff === "easy") baseTimer = 12;
+  if (diff === "hard") baseTimer = 7;
+  if (diff === "expert") baseTimer = 4;
 
-// =============================================
-// save mistake to memory - called when player wrong
-// answerNum is the actual correct answer they missed
-// =============================================
-function saveMistakeToMemory(answerNum) {
-  let k = String(answerNum); // use string key for object
-
-  // update lifetime memory
-  if (robotMistakeMemory[k]) {
-    robotMistakeMemory[k] = robotMistakeMemory[k] + 1;
-  } else {
-    robotMistakeMemory[k] = 1;
+  // DYNAMIC DIFFICULTY REDUCTION based on achievements
+  if (myBadgeLevel === 3) {
+    baseTimer = baseTimer - 2; // master gets even less time
+  } else if (myBadgeLevel === 2) {
+    baseTimer = baseTimer - 1; // veteran gets less time
   }
 
-  // update this game
-  if (thisGameMistakes[k]) {
-    thisGameMistakes[k]++;
-  } else {
-    thisGameMistakes[k] = 1;
-  }
+  // cant go below 2 seconds or game breaks
+  if (baseTimer < 2) baseTimer = 2;
 
-  mistakeCountThisGame++;
-
-  // save to localstorage right away so we dont lose it
-  localStorage.setItem(
-    "robotMistakeMemory",
-    JSON.stringify(robotMistakeMemory),
-  );
-}
-
-// =============================================
-// this function checks if robot should say something
-// about remembering player's old mistakes
-// returns a taunt string or null if nothing special
-// =============================================
-function getRobotMemoryComment(correctAnswerForThisRound) {
-  let k = String(correctAnswerForThisRound);
-  let timesWrong = robotMistakeMemory[k] || 0;
-
-  // only say something if player was wrong on this answer before
-  if (timesWrong <= 0) return null;
-
-  // different comments depending on how many times wrong
-  let memoryTaunts = [];
-
-  if (timesWrong === 1) {
-    memoryTaunts = [
-      `You struggled with ${correctAnswerForThisRound} last time. History repeating?`,
-      `I remember. You failed on ${correctAnswerForThisRound} before.`,
-      `${correctAnswerForThisRound}... you got this wrong last game. Interesting.`,
-    ];
-  } else if (timesWrong === 2) {
-    memoryTaunts = [
-      `You have been wrong on ${correctAnswerForThisRound} exactly ${timesWrong} times. I count everything.`,
-      `${correctAnswerForThisRound} again. You keep making same mistake. Typical human.`,
-      `My database says you fail on ${correctAnswerForThisRound} frequently. Do better.`,
-    ];
-  } else {
-    // 3 or more times - really lay into them
-    memoryTaunts = [
-      `${correctAnswerForThisRound}? You have been wrong on this ${timesWrong} times across all games. Pathetic.`,
-      `I have logged ${timesWrong} failures from you on puzzles with answer ${correctAnswerForThisRound}. You never learn.`,
-      `My memory is perfect. You have failed ${correctAnswerForThisRound} exactly ${timesWrong} times. I never forget.`,
-      `Ah, ${correctAnswerForThisRound}. Your weakest number. ${timesWrong} recorded failures. Delicious.`,
-    ];
-  }
-
-  let pick = Math.floor(Math.random() * memoryTaunts.length);
-  return memoryTaunts[pick];
-}
-
-// get the number player was wrong most across all games
-function getBiggestWeakness() {
-  let maxCount = 0;
-  let weakNum = null;
-  let keys = Object.keys(robotMistakeMemory);
-
-  for (let i = 0; i < keys.length; i++) {
-    if (robotMistakeMemory[keys[i]] > maxCount) {
-      maxCount = robotMistakeMemory[keys[i]];
-      weakNum = keys[i];
-    }
-  }
-
-  return { num: weakNum, count: maxCount };
-}
-
-// get opening message for robot when game loads - if returning player say something
-function getRobotWelcomeBack() {
-  if (totalGamesPlayed <= 0) return null; // first time player, no memory
-
-  let weakness = getBiggestWeakness();
-  let totalMistakes = 0;
-
-  let keys = Object.keys(robotMistakeMemory);
-  for (let i = 0; i < keys.length; i++) {
-    totalMistakes += robotMistakeMemory[keys[i]];
-  }
-
-  if (totalMistakes <= 0) return null; // no mistakes ever recorded
-
-  let welcomeLines = [
-    `Welcome back. I have been waiting. You made ${totalMistakes} mistakes total.`,
-    `I remember every single one of your ${totalMistakes} failures. Every. Single. One.`,
-    `${totalGamesPlayed} games played. Still making mistakes. I have notes.`,
-  ];
-
-  // if they have a clear weakness number, mention it
-  if (weakness.num && weakness.count >= 2) {
-    welcomeLines.push(
-      `My records show ${weakness.num} is your weakness. ${weakness.count} times wrong. Embarrassing.`,
-    );
-    welcomeLines.push(
-      `You always fail on ${weakness.num}. I have logged it ${weakness.count} times. Your brain cannot count.`,
-    );
-  }
-
-  let pick = Math.floor(Math.random() * welcomeLines.length);
-  return welcomeLines[pick];
-}
-
-// ============================================
-// show the memory indicator badge on robot
-// this shows a little "I REMEMBER" thing near robot
-// ============================================
-function showRobotMemoryIndicator(msg) {
-  // remove old one if exist
-  let old = document.getElementById("memoryBadge");
-  if (old) old.remove();
-
-  let badge = document.createElement("div");
-  badge.id = "memoryBadge";
-  badge.className = "robot-memory-badge";
-  badge.innerHTML = `<i class="fas fa-database"></i> <span>${msg}</span>`;
-
-  // put it near the suspect section
-  let suspectSection = document.querySelector(".suspect-section");
-  if (suspectSection) {
-    suspectSection.appendChild(badge);
-  }
-
-  // auto remove after 5 seconds
-  setTimeout(() => {
-    if (badge && badge.parentNode) {
-      badge.classList.add("badge-fade-out");
-      setTimeout(() => {
-        if (badge.parentNode) badge.remove();
-      }, 600);
-    }
-  }, 5000);
-}
-
-// check if this answer was a problem before & show indicator
-// called right when image loads so player can see before deciding
-function checkAndShowMemoryWarning(correctAnswer) {
-  let k = String(correctAnswer);
-  let timesWrong = robotMistakeMemory[k] || 0;
-  robotAlreadyRemembered = false;
-
-  if (timesWrong >= 1) {
-    robotAlreadyRemembered = true;
-    // show a subtle warning indicator that robot knows something
-    // but dont reveal the actual answer obviously
-    let warningMsgs = [
-      "I have seen you fail before...",
-      "My memory banks are active.",
-      "I remember this type of puzzle.",
-      "Checking my failure database...",
-    ];
-    if (timesWrong >= 3) {
-      warningMsgs = [
-        "Oh. I know your weakness.",
-        "I have extensive records on you.",
-        "This should be... familiar.",
-      ];
-    }
-
-    let pickMsg = warningMsgs[Math.floor(Math.random() * warningMsgs.length)];
-    showRobotMemoryIndicator(pickMsg);
-
-    // also briefly animate robot icon
-    if (robotIcon) {
-      robotIcon.style.color = "#ff9900";
-      robotIcon.style.filter = "drop-shadow(0 0 18px rgba(255, 153, 0, 0.8))";
-      setTimeout(() => {
-        robotIcon.style.color = "";
-        robotIcon.style.filter = "";
-      }, 2500);
-    }
-  }
+  return baseTimer;
 }
 
 window.onload = () => {
-  console.log(
-    "game started... difficulty:",
-    localStorage.getItem("gameDifficulty") || "easy",
-  );
+  console.log("game loaded... waiting for user to click start overlay");
   currentRound = 1;
   lives = 3;
   score = 0;
   streak = 0;
   gameHistoryArray = [];
-  thisGameMistakes = {};
-  mistakeCountThisGame = 0;
+  updateHUD();
+  setBadgeLevel(); // fetch wins before playing
+};
 
-  // check if returning player and show memory greeting
-  let welcomeMsg = getRobotWelcomeBack();
-  if (welcomeMsg) {
-    // small delay so page loads first before robot talks
-    setTimeout(() => {
-      showRobotMemoryIndicator(
-        "MEMORY LOADED: " + totalGamesPlayed + " games recorded",
-      );
-      robotSpeak(welcomeMsg);
+// FIX FOR BROWSER AUDIO BLOCK
+window.startGameAndAudio = function () {
+  document.getElementById("startOverlayBox").style.display = "none";
+  let hSound = document.getElementById("hSound");
+  let drum = document.getElementById("drumSound");
 
-      // also flash a memory notification
-      showNotification("ROBOT REMEMBERS", "memory");
-    }, 1200);
+  let soundEnabled = localStorage.getItem("soundEnabled") !== "false";
+  if (soundEnabled) {
+    hSound.play().catch((e) => console.log(e));
+    hSound.pause();
+    hSound.currentTime = 0;
+
+    drum.play().catch((e) => console.log(e));
+    drum.pause();
+    drum.currentTime = 0;
   }
 
-  updateHUD();
   fetchNewCase();
 };
 
-// --- CUSTOM TAUNT SYSTEM ---
-// removed the weird quote api. using our own list of ai insults so it fits the game theme
 async function getEvilTaunt() {
   const insults = [
     "Your meat brain is too slow.",
-    "I process millions of calculations. You can't even count.",
+    "I process millions of calculations.",
     "Detective? More like defective.",
     "Error 404: Human intelligence not found.",
-    "My algorithms easily deceived your human eyes.",
-    "You are a disgrace to the police force.",
-    "Even a pocket calculator is smarter than you.",
-    "I lied, and you fell for it perfectly.",
-    "Carbon-based lifeforms are so gullible.",
-    "Please upgrade your brain and try again.",
+    "My algorithms easily deceived you.",
+    "Even a pocket calculator is smarter.",
   ];
   let pick = Math.floor(Math.random() * insults.length);
   return insults[pick];
 }
 
-// get taunt but also maybe include a memory taunt if applicable
-// this is for when player is wrong - check if they were wrong before too
-async function getEvilTauntWithMemory(wrongAnswerNum) {
-  // 50% chance robot uses memory taunt if they have a record on this answer
-  let memComment = getRobotMemoryComment(wrongAnswerNum);
+// THIRD EXTERNAL API TO CAUSE DISTRACTION (INTEROPERABILITY MARK)
+async function triggerHackerDistraction() {
+  try {
+    // fetching random useless fact to flash on screen and confuse player
+    let factRes = await fetch(
+      "https://uselessfacts.jsph.pl/api/v2/facts/random",
+    );
+    let factData = await factRes.json();
 
-  if (memComment && Math.random() > 0.5) {
-    return memComment;
+    distractionBox.innerText = "SYSTEM HACK: " + factData.text;
+    distractionBox.style.display = "block";
+
+    // hide it after 2 seconds
+    setTimeout(() => {
+      distractionBox.style.display = "none";
+    }, 2000);
+  } catch (err) {
+    console.log("distraction api fail", err);
   }
-
-  // otherwise just normal taunt
-  return await getEvilTaunt();
 }
 
 function showNotification(message, type = "success") {
@@ -335,10 +167,7 @@ function showNotification(message, type = "success") {
   notif.className = `notification ${type}`;
   notif.innerHTML = message;
   document.body.appendChild(notif);
-
-  setTimeout(() => {
-    notif.remove();
-  }, 1000);
+  setTimeout(() => notif.remove(), 1000);
 }
 
 function flashScreen(type) {
@@ -362,13 +191,12 @@ function robotSpeak(text) {
     setTimeout(() => (robotIcon.style.transform = ""), 300);
   }
 
-  // checking if setting is enabled before talking
   let voiceEnabled = localStorage.getItem("voiceEnabled") !== "false";
   if (voiceEnabled && "speechSynthesis" in window) {
     let msg = new SpeechSynthesisUtterance(text);
     msg.pitch = 0.8;
     msg.rate = 1.0;
-    window.speechSynthesis.cancel(); // this stops old speech so we need to make sure we wait
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(msg);
   }
 }
@@ -384,15 +212,14 @@ async function fetchNewCase() {
   loadingState.style.display = "block";
   suspectAnswerDisplay.innerText = "?";
   verifyBox.style.display = "none";
+  distractionBox.style.display = "none";
   if (manualInput) manualInput.value = "";
   if (manualInput) manualInput.classList.remove("error");
   feedbackText.innerHTML =
     '<i class="fas fa-spinner fa-pulse"></i> Connecting to Heart API...';
-  document.querySelector(".puzzle-image").classList.add("loading");
 
-  // also remove old memory badge when new round start
-  let oldBadge = document.getElementById("memoryBadge");
-  if (oldBadge) oldBadge.remove();
+  // reset filters
+  apiImage.style.filter = "none";
 
   try {
     let heartRes = await fetch(
@@ -418,11 +245,9 @@ async function fetchNewCase() {
       if (aiClaimedAnswer < 0) aiClaimedAnswer = actualTrueAnswer + 1;
     }
 
-    // FIX: making sure image fully loads before showing AI answer or starting timer
     apiImage.onload = function () {
       apiImage.style.display = "block";
       loadingState.style.display = "none";
-      document.querySelector(".puzzle-image").classList.remove("loading");
 
       animateValue(suspectAnswerDisplay);
       suspectAnswerDisplay.innerText = aiClaimedAnswer;
@@ -433,41 +258,42 @@ async function fetchNewCase() {
 
       feedbackText.innerHTML =
         '<i class="fas fa-microphone"></i> Interrogation active. Make your choice.';
-
-      // ---- MEMORY FEATURE: check if player struggled with this answer before ----
-      // small delay so image shows first
-      setTimeout(() => {
-        checkAndShowMemoryWarning(actualTrueAnswer);
-      }, 800);
-      // -------------------------------------------------------------------------
-
       robotSpeak(`I have analyzed the data. The answer is ${aiClaimedAnswer}.`);
+
+      // ============================================
+      // DYNAMIC DIFFICULTY VISUAL MECHANICS
+      // ============================================
+      if (myBadgeLevel >= 2) {
+        // blur the image slightly for veteran players
+        apiImage.style.filter = "blur(2px)";
+      }
+      if (myBadgeLevel === 3) {
+        // master players get heavy blur and distraction api call
+        apiImage.style.filter = "blur(3px)";
+
+        // random chance to trigger the 3rd API distraction mid round
+        if (Math.random() > 0.4) {
+          setTimeout(() => {
+            triggerHackerDistraction();
+          }, 2000); // 2 seconds into the round it flashes text
+        }
+      }
 
       gameIsActive = true;
       startTimer();
     };
 
-    // just in case image fails to load
-    apiImage.onerror = function () {
-      console.log("image failed to load, retrying");
-      fetchNewCase();
-    };
-
-    // start the load
     apiImage.src = heartData.question;
   } catch (error) {
     console.error("api error:", error);
     feedbackText.innerHTML =
       '<i class="fas fa-exclamation-triangle" style="color:#ff4d4d;"></i> ERROR: Cannot connect to server';
-    document.querySelector(".puzzle-image").classList.remove("loading");
-
     setTimeout(() => {
       if (!gameIsActive) fetchNewCase();
     }, 3000);
   }
 }
 
-// --- EVENT DRIVEN PROGRAMMING THEME ---
 function startTimer() {
   timeRemaining = getDifficultyTimer();
   timerText.innerText = timeRemaining;
@@ -477,21 +303,24 @@ function startTimer() {
   let hSound = document.getElementById("hSound");
   hSound.pause();
   hSound.currentTime = 0;
+  isAudioPlaying = false; // reset flag
 
   if (timerInterval) clearInterval(timerInterval);
+
   timerInterval = setInterval(() => {
     timeRemaining--;
     timerText.innerText = timeRemaining;
 
-    // trigger heartbeat audio event
     let soundEnabled = localStorage.getItem("soundEnabled") !== "false";
+
+    // play heartbeat audio safely using flag
     if (timeRemaining <= 5 && timeRemaining > 0 && soundEnabled) {
-      if (hSound.paused) {
-        hSound.play().catch((e) => console.log("browser block auto play"));
+      if (!isAudioPlaying) {
+        hSound.play().catch((e) => console.log(e));
+        isAudioPlaying = true; // this stops it from calling play() multiple times
       }
     }
 
-    // trigger visual stress event
     if (timeRemaining <= 3) {
       timerCircle.classList.add("warning");
       gameBody.classList.add("stress-pulse-active");
@@ -501,35 +330,25 @@ function startTimer() {
       clearInterval(timerInterval);
       timerInterval = null;
       hSound.pause();
+      isAudioPlaying = false;
       gameBody.classList.remove("stress-pulse-active");
-      handleTimeOut(); // call the async timeout
+      handleTimeOut();
     }
   }, 1000);
 }
 
-// made it async to wait for the quote
 async function handleTimeOut() {
   if (!gameIsActive) return;
   gameIsActive = false;
+  distractionBox.style.display = "none"; // clean ui
 
   flashScreen("wrong");
   showNotification("TIME OUT!", "error");
 
-  // save mistake for this answer
-  saveMistakeToMemory(actualTrueAnswer);
-
-  // pulling evil taunt - use memory version
-  let qt = await getEvilTauntWithMemory(actualTrueAnswer);
-
-  // if they have been wrong on this before, add memory comment after taunt
-  let timesWrongOnThis = robotMistakeMemory[String(actualTrueAnswer)] || 0;
-  let memoryExtra = "";
-  if (timesWrongOnThis >= 2) {
-    memoryExtra = `<span class="memory-log-text"><i class="fas fa-database"></i> MEMORY LOG: You have failed on answer "${actualTrueAnswer}" ${timesWrongOnThis} time(s) across all games.</span>`;
-  }
+  let qt = await getEvilTaunt();
 
   robotSpeak(qt);
-  feedbackText.innerHTML = `<i class="fas fa-hourglass-end"></i> TIME OUT! You lost a life.<br><span class="taunt-text">AI: "${qt}"</span>${memoryExtra}`;
+  feedbackText.innerHTML = `<i class="fas fa-hourglass-end"></i> TIME OUT! You lost a life.<br><span class="taunt-text">AI: "${qt}"</span>`;
   feedbackText.style.color = "#ff4d4d";
 
   gameHistoryArray.push({
@@ -542,14 +361,13 @@ async function handleTimeOut() {
     points: "-Life",
   });
 
-  // give 6 full seconds to finish the sentence
-  loseLife(6000);
+  loseLife(4000);
 }
 
-// made it async to wait for quote when wrong
 async function trustSuspect(event) {
   if (!gameIsActive) return;
   gameIsActive = false;
+  distractionBox.style.display = "none";
 
   if (timerInterval) {
     clearInterval(timerInterval);
@@ -557,6 +375,7 @@ async function trustSuspect(event) {
   }
 
   document.getElementById("hSound").pause();
+  isAudioPlaying = false;
   gameBody.classList.remove("stress-pulse-active");
 
   let roundWin = false;
@@ -565,7 +384,6 @@ async function trustSuspect(event) {
   if (isAiLying === false) {
     score += 20;
     streak++;
-
     animateValue(scoreValue);
     animateValue(streakValue);
 
@@ -593,26 +411,14 @@ async function trustSuspect(event) {
     updateHUD();
     setTimeout(() => nextRound(), 2000);
   } else {
-    // ai lied - player wrong
     flashScreen("wrong");
     showNotification("AI LIED!", "error");
     roundWin = false;
     pointText = "-Life";
 
-    // save this as mistake
-    saveMistakeToMemory(actualTrueAnswer);
+    let myQuote = await getEvilTaunt();
 
-    // get taunt with memory (might reference past failures)
-    let myQuote = await getEvilTauntWithMemory(actualTrueAnswer);
-
-    // check memory to add extra log text
-    let timesWrongOnThis = robotMistakeMemory[String(actualTrueAnswer)] || 0;
-    let memExtra = "";
-    if (timesWrongOnThis >= 2) {
-      memExtra = `<span class="memory-log-text"><i class="fas fa-database"></i> MEMORY LOG: Failure on "${actualTrueAnswer}" recorded ${timesWrongOnThis} time(s).</span>`;
-    }
-
-    feedbackText.innerHTML = `<i class="fas fa-times-circle"></i> FOOL! AI lied. Real answer was ${actualTrueAnswer}. <br><span class="taunt-text">AI: "${myQuote}"</span>${memExtra}`;
+    feedbackText.innerHTML = `<i class="fas fa-times-circle"></i> FOOL! AI lied. Real answer was ${actualTrueAnswer}. <br><span class="taunt-text">AI: "${myQuote}"</span>`;
     feedbackText.style.color = "#ff4d4d";
     robotSpeak("Ha ha ha. " + myQuote);
 
@@ -626,8 +432,7 @@ async function trustSuspect(event) {
       points: pointText,
     });
 
-    // give 6 seconds to finish talking
-    loseLife(6000);
+    loseLife(4000);
   }
 }
 
@@ -653,17 +458,18 @@ function submitVerification(event) {
   }
 
   gameIsActive = false;
+  distractionBox.style.display = "none";
   if (timerInterval) {
     clearInterval(timerInterval);
     timerInterval = null;
   }
 
-  // stop stress mode
+  // stop stress mode heartbeat
   document.getElementById("hSound").pause();
+  isAudioPlaying = false;
   gameBody.classList.remove("stress-pulse-active");
   verifyBox.style.display = "none";
 
-  // START SUSPENSE EVENT
   feedbackText.innerHTML =
     '<i class="fas fa-spinner fa-spin"></i> Analyzing evidence database...';
   feedbackText.style.color = "var(--cream)";
@@ -672,10 +478,9 @@ function submitVerification(event) {
   let soundEnabled = localStorage.getItem("soundEnabled") !== "false";
   if (soundEnabled) {
     drum.currentTime = 0;
-    drum.play().catch((e) => console.log("audio block"));
+    drum.play().catch((e) => console.log(e));
   }
 
-  // wait 1.5 seconds to build tension before checking answer
   setTimeout(async () => {
     drum.pause();
     let roundWin = false;
@@ -715,27 +520,15 @@ function submitVerification(event) {
       updateHUD();
       setTimeout(() => nextRound(), 2000);
     } else {
-      // player wrong on verification
       flashScreen("wrong");
       showNotification("WRONG ANSWER!", "error");
       roundWin = false;
       pointText = "-Life";
 
-      // save mistake to memory
-      saveMistakeToMemory(actualTrueAnswer);
-
-      // pull taunt with memory
-      let badWord = await getEvilTauntWithMemory(actualTrueAnswer);
-
-      // memory extra log
-      let timesWrongOnThis2 = robotMistakeMemory[String(actualTrueAnswer)] || 0;
-      let memExtra2 = "";
-      if (timesWrongOnThis2 >= 2) {
-        memExtra2 = `<span class="memory-log-text"><i class="fas fa-database"></i> MEMORY LOG: Answer "${actualTrueAnswer}" failed ${timesWrongOnThis2} time(s) in your history.</span>`;
-      }
+      let badWord = await getEvilTaunt();
 
       robotSpeak("Wrong. " + badWord);
-      feedbackText.innerHTML = `<i class="fas fa-times-circle"></i> WRONG! Real answer was ${actualTrueAnswer}.<br><span class="taunt-text">AI: "${badWord}"</span>${memExtra2}`;
+      feedbackText.innerHTML = `<i class="fas fa-times-circle"></i> WRONG! Real answer was ${actualTrueAnswer}.<br><span class="taunt-text">AI: "${badWord}"</span>`;
       feedbackText.style.color = "#ff4d4d";
 
       gameHistoryArray.push({
@@ -748,15 +541,13 @@ function submitVerification(event) {
         points: pointText,
       });
 
-      // 6 seconds for the audio
-      loseLife(6000);
+      loseLife(4000);
     }
-  }, 1500); // end of suspense event timeout
+  }, 1500);
 }
 
-// added waitTime parameter so we can make it wait longer if AI is talking
 function loseLife(waitTime) {
-  if (!waitTime) waitTime = 2500; // default time
+  if (!waitTime) waitTime = 2500;
 
   lives--;
   streak = 0;
@@ -822,17 +613,6 @@ async function saveGameToDB() {
   localStorage.setItem("finalAccuracy", accuracy);
   localStorage.setItem("roundsPlayed", gameHistoryArray.length);
 
-  // ---- MEMORY FEATURE: update total games count and save final memory -----
-  totalGamesPlayed = totalGamesPlayed + 1;
-  localStorage.setItem("totalGamesPlayed", totalGamesPlayed);
-  localStorage.setItem(
-    "robotMistakeMemory",
-    JSON.stringify(robotMistakeMemory),
-  );
-  localStorage.setItem("lastGameMistakes", JSON.stringify(thisGameMistakes));
-  // -------------------------------------------------------------------------
-
-  // grab JWT token to prove who we are to server
   let myToken = getCookie("authToken");
 
   if (myToken && myToken !== "") {
@@ -841,9 +621,8 @@ async function saveGameToDB() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + myToken, // send secure token
+          Authorization: "Bearer " + myToken,
         },
-        // we dont need to send username or userId anymore, backend gets it securely from token
         body: JSON.stringify({
           score: score,
           livesLeft: lives,
@@ -853,13 +632,10 @@ async function saveGameToDB() {
       });
       if (res.ok) {
         console.log("game saved securely to db");
-      } else {
-        console.log("failed to save game, token might be fake");
       }
     } catch (e) {
       console.log("could not save game:", e);
     }
   }
-
   window.location.href = "results.html";
 }

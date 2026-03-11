@@ -237,7 +237,6 @@
         return match ? match[2] : null;
       }
 
-      // load header
       fetch("header.html")
         .then((res) => res.text())
         .then((data) => {
@@ -246,7 +245,6 @@
           if (window.updateHeaderAuth) window.updateHeaderAuth();
           if (window.setActiveNav) window.setActiveNav();
 
-          // load settings data
           checkLoginAndLoadSettings();
         })
         .catch((err) => {
@@ -254,31 +252,32 @@
         });
 
       async function checkLoginAndLoadSettings() {
-        let userId = getCookie("loggedId");
+        let myToken = getCookie("authToken");
 
-        if (!userId) {
-          alert("Please login to access settings");
+        if (!myToken || myToken === "") {
+          alert("Secure session expired. Please login to access settings.");
           window.location.href = "index.html";
           return;
         }
 
-        // load saved difficulty
         let savedDiff = localStorage.getItem("gameDifficulty") || "hard";
         document.getElementById("difficultySelect").value = savedDiff;
 
-        // load sound settings
         let soundEnabled = localStorage.getItem("soundEnabled") !== "false";
         document.getElementById("soundToggle").checked = soundEnabled;
 
         let voiceEnabled = localStorage.getItem("voiceEnabled") !== "false";
         document.getElementById("voiceToggle").checked = voiceEnabled;
 
-        // fetch user info from db
+        // fetch using secure header
         try {
           let res = await fetch("http://localhost:3000/api/user-info", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId: userId }),
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + myToken,
+            },
+            body: JSON.stringify({}),
           });
           let data = await res.json();
 
@@ -302,7 +301,6 @@
           }
         } catch (e) {
           console.log("settings fetch error:", e);
-          alert("Error loading settings. Make sure server is running.");
         }
       }
 
@@ -319,7 +317,6 @@
         } else if (tabName === "game") {
           document.getElementById("gameSettings").style.display = "block";
         }
-
         btn.classList.add("active");
       }
 
@@ -347,26 +344,23 @@
       }
 
       async function changePassword() {
-        let userId = getCookie("loggedId");
+        let myToken = getCookie("authToken");
         let current = document.getElementById("currentPass").value;
         let newPass = document.getElementById("newPass").value;
         let confirm = document.getElementById("confirmPass").value;
 
-        if (!userId) {
+        if (!myToken) {
           alert("Please login first");
           return;
         }
-
         if (!current || !newPass || !confirm) {
           alert("Please fill all password fields");
           return;
         }
-
         if (newPass !== confirm) {
           alert("New passwords do not match!");
           return;
         }
-
         if (newPass.length < 8) {
           alert("New password must be at least 8 characters");
           return;
@@ -375,9 +369,11 @@
         try {
           let res = await fetch("http://localhost:3000/api/update-pass", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + myToken,
+            },
             body: JSON.stringify({
-              userId: userId,
               oldPass: current,
               newPass: newPass,
             }),

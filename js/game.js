@@ -825,26 +825,26 @@ async function saveGameToDB() {
   // ---- MEMORY FEATURE: update total games count and save final memory -----
   totalGamesPlayed = totalGamesPlayed + 1;
   localStorage.setItem("totalGamesPlayed", totalGamesPlayed);
-  // memory already saved during game but save one more time just to be sure
   localStorage.setItem(
     "robotMistakeMemory",
     JSON.stringify(robotMistakeMemory),
   );
-  // also save summary of this game mistakes for results page to maybe use
   localStorage.setItem("lastGameMistakes", JSON.stringify(thisGameMistakes));
   // -------------------------------------------------------------------------
 
-  let userId = getCookie("loggedId");
-  let username = getCookie("loggedUser");
+  // grab JWT token to prove who we are to server
+  let myToken = getCookie("authToken");
 
-  if (userId && username) {
+  if (myToken && myToken !== "") {
     try {
       let res = await fetch("http://localhost:3000/api/save-game", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + myToken, // send secure token
+        },
+        // we dont need to send username or userId anymore, backend gets it securely from token
         body: JSON.stringify({
-          userId: userId,
-          username: username,
           score: score,
           livesLeft: lives,
           rounds: gameHistoryArray.length,
@@ -852,9 +852,9 @@ async function saveGameToDB() {
         }),
       });
       if (res.ok) {
-        console.log("game saved to db ok");
+        console.log("game saved securely to db");
       } else {
-        console.log("failed to save game");
+        console.log("failed to save game, token might be fake");
       }
     } catch (e) {
       console.log("could not save game:", e);

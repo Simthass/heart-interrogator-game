@@ -31,9 +31,10 @@ window.updateHeaderAuth = function () {
   if (!authSecBox) return;
 
   let loggedUser = getCookie("loggedUser");
-  let loggedId = getCookie("loggedId");
+  let secureToken = getCookie("authToken");
 
-  if (loggedUser && loggedId && loggedUser !== "") {
+  // check if we have the secure token
+  if (loggedUser && secureToken && secureToken !== "") {
     // user is logged in
     authSecBox.innerHTML = `
       <span class="user-display" style="color: var(--cream); margin-right: 15px; display: flex; align-items: center; gap: 8px; background: rgba(254, 158, 132, 0.1); padding: 5px 15px; border-radius: 30px; border: 1px solid rgba(254, 158, 132, 0.3);">
@@ -60,8 +61,8 @@ window.updateHeaderAuth = function () {
 window.handleLogout = function () {
   if (confirm("Are you sure you want to logout?")) {
     deleteCookie("loggedUser");
-    deleteCookie("loggedId");
-    deleteCookie("userEmail");
+    deleteCookie("authToken"); // remove token
+    deleteCookie("loggedId"); // keep this just to clear old data
     localStorage.clear();
     window.location.href = "index.html";
   }
@@ -116,9 +117,9 @@ function setupLoginForm() {
 
       if (res.ok) {
         let days = rememberMe ? 15 : 1;
+        // save the secure token instead of raw ID
+        setCookie("authToken", data.token, days);
         setCookie("loggedUser", data.user.name, days);
-        setCookie("loggedId", data.user.id, days);
-        setCookie("userEmail", data.user.email, days);
 
         alert("Login successful! Welcome back " + data.user.name);
         window.location.href = "index.html";
@@ -198,9 +199,9 @@ function setupRegisterForm() {
       let data = await res.json();
 
       if (res.ok) {
-        // auto login
+        // auto login by saving secure token
+        setCookie("authToken", data.token, 15);
         setCookie("loggedUser", data.user.name, 15);
-        setCookie("loggedId", data.user.id, 15);
 
         alert("Registration successful! Welcome " + usernameInp);
         window.location.href = "index.html";

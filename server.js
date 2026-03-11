@@ -1,15 +1,20 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken"); // added for security marks
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
+const mySecretKey = process.env.JWT_SECRET;
+
 // connect to mongodb
 mongoose
-  .connect("mongodb://127.0.0.1:27017/heartGameDb")
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("db connected successfully..."))
   .catch((err) => console.log("db connection failed:", err));
 
@@ -23,7 +28,7 @@ const UserSchema = new mongoose.Schema({
 });
 const UserModel = mongoose.model("usersData", UserSchema);
 
-// game data schema with timestamp
+// game data schema
 const GameSchema = new mongoose.Schema({
   userId: String,
   username: String,
@@ -36,47 +41,59 @@ const GameSchema = new mongoose.Schema({
 });
 const GameModel = mongoose.model("gameHistory", GameSchema);
 
+// ==========================================
+// MIDDLEWARE TO CHECK IF JWT TOKEN IS REAL
+// ==========================================
+function checkTokenMiddleware(req, res, next) {
+  let authHead = req.headers.authorization;
+
+  if (!authHead) {
+    return res.status(401).json({ msg: "no token found bro access denied" });
+  }
+
+  // split "Bearer <token>" to just get token part
+  let tokenOnly = authHead.split(" ")[1];
+
+  jwt.verify(tokenOnly, mySecretKey, (err, decodedData) => {
+    if (err) {
+      return res.status(401).json({ msg: "token fake or expired" });
+    }
+    // save the decrypted user data into the request so routes can use it
+    req.userData = decodedData;
+    next(); // move to the actual route
+  });
+}
+
 // ========== REGISTER ROUTE ==========
 app.post("/api/reg", async (req, res) => {
   try {
     let { fullname, username, email, password, confirmPass } = req.body;
 
-    // validate all fields
     if (!fullname || !username || !email || !password || !confirmPass) {
       return res.status(400).json({ msg: "please fill all fields brother" });
     }
-
-    // check password match
     if (password !== confirmPass) {
       return res
         .status(400)
         .json({ msg: "passwords not matching check again" });
     }
-
-    // password length check
     if (password.length < 8) {
       return res
         .status(400)
         .json({ msg: "password must be atleast 8 characters" });
     }
-
-    // email validation simple
     if (!email.includes("@") || !email.includes(".")) {
       return res.status(400).json({ msg: "email is not valid format" });
     }
-
-    // username min length
     if (username.length < 3) {
       return res
         .status(400)
         .json({ msg: "username must be atleast 3 characters" });
     }
 
-    // convert to lowercase for case insensitive
     let usernameLower = username.toLowerCase().trim();
     let emailLower = email.toLowerCase().trim();
 
-    // check if user exists
     let existingUser = await UserModel.findOne({
       $or: [{ email: emailLower }, { username: usernameLower }],
     });
@@ -94,10 +111,8 @@ app.post("/api/reg", async (req, res) => {
       }
     }
 
-    // hash password
     let hashedPass = await bcrypt.hash(password, 10);
 
-    // create new user
     let newUser = new UserModel({
       fullname: fullname,
       username: usernameLower,
@@ -107,9 +122,17 @@ app.post("/api/reg", async (req, res) => {
 
     await newUser.save();
 
+    // MAKE JWT TOKEN
+    let myToken = jwt.sign(
+      { id: newUser._id, name: newUser.username },
+      mySecretKey,
+      { expiresIn: "15d" },
+    );
+
     res.json({
       msg: "registration successful",
-      user: { id: newUser._id, name: newUser.username },
+      token: myToken,
+      user: { name: newUser.username },
     });
   } catch (error) {
     console.log("registration error:", error);
@@ -128,7 +151,6 @@ app.post("/api/log", async (req, res) => {
 
     let loginInput = username.toLowerCase().trim();
 
-    // find user by username or email
     let user = await UserModel.findOne({
       $or: [{ username: loginInput }, { email: loginInput }],
     });
@@ -137,21 +159,21 @@ app.post("/api/log", async (req, res) => {
       return res.status(400).json({ msg: "user not found in system" });
     }
 
-    // compare password
     let isValidPass = await bcrypt.compare(password, user.passHash);
 
     if (!isValidPass) {
       return res.status(400).json({ msg: "wrong password try again" });
     }
 
+    // MAKE JWT TOKEN
+    let myToken = jwt.sign({ id: user._id, name: user.username }, mySecretKey, {
+      expiresIn: "15d",
+    });
+
     res.json({
       msg: "login ok",
-      user: {
-        id: user._id,
-        name: user.username,
-        fullname: user.fullname,
-        email: user.email,
-      },
+      token: myToken,
+      user: { name: user.username },
     });
   } catch (error) {
     console.log("login error:", error);
@@ -160,13 +182,18 @@ app.post("/api/log", async (req, res) => {
 });
 
 // ========== SAVE GAME RESULT ==========
-app.post("/api/save-game", async (req, res) => {
+// added middleware here to protect it
+app.post("/api/save-game", checkTokenMiddleware, async (req, res) => {
   try {
-    let { userId, username, score, livesLeft, rounds, accuracy } = req.body;
+    let { score, livesLeft, rounds, accuracy } = req.body;
+
+    // get safe ID from token instead of trusting frontend
+    let safeUserId = req.userData.id;
+    let safeUsername = req.userData.name;
 
     let newGame = new GameModel({
-      userId: userId,
-      username: username,
+      userId: safeUserId,
+      username: safeUsername,
       score: score,
       livesLeft: livesLeft,
       isWin: livesLeft > 0 ? true : false,
@@ -176,7 +203,7 @@ app.post("/api/save-game", async (req, res) => {
     });
 
     await newGame.save();
-    res.json({ msg: "game saved to database" });
+    res.json({ msg: "game saved securely to database" });
   } catch (error) {
     console.log("save game error:", error);
     res.status(500).json({ msg: "could not save game" });
@@ -184,11 +211,11 @@ app.post("/api/save-game", async (req, res) => {
 });
 
 // ========== GET USER STATS ==========
-app.post("/api/my-stats", async (req, res) => {
+app.post("/api/my-stats", checkTokenMiddleware, async (req, res) => {
   try {
-    let { userId } = req.body;
+    let safeUserId = req.userData.id;
 
-    let games = await GameModel.find({ userId: userId });
+    let games = await GameModel.find({ userId: safeUserId });
 
     let totalScore = 0;
     let wins = 0;
@@ -223,11 +250,11 @@ app.post("/api/my-stats", async (req, res) => {
 });
 
 // ========== GET RECENT GAMES ==========
-app.post("/api/recent-games", async (req, res) => {
+app.post("/api/recent-games", checkTokenMiddleware, async (req, res) => {
   try {
-    let { userId } = req.body;
+    let safeUserId = req.userData.id;
 
-    let recent = await GameModel.find({ userId: userId })
+    let recent = await GameModel.find({ userId: safeUserId })
       .sort({ playDate: -1 })
       .limit(10);
 
@@ -239,11 +266,11 @@ app.post("/api/recent-games", async (req, res) => {
 });
 
 // ========== GET USER INFO ==========
-app.post("/api/user-info", async (req, res) => {
+app.post("/api/user-info", checkTokenMiddleware, async (req, res) => {
   try {
-    let { userId } = req.body;
+    let safeUserId = req.userData.id;
 
-    let user = await UserModel.findById(userId);
+    let user = await UserModel.findById(safeUserId);
 
     if (!user) {
       return res.status(400).json({ msg: "user not found" });
@@ -262,11 +289,12 @@ app.post("/api/user-info", async (req, res) => {
 });
 
 // ========== CHANGE PASSWORD ==========
-app.post("/api/update-pass", async (req, res) => {
+app.post("/api/update-pass", checkTokenMiddleware, async (req, res) => {
   try {
-    let { userId, oldPass, newPass } = req.body;
+    let { oldPass, newPass } = req.body;
+    let safeUserId = req.userData.id;
 
-    let user = await UserModel.findById(userId);
+    let user = await UserModel.findById(safeUserId);
 
     if (!user) {
       return res.status(400).json({ msg: "user not found" });
@@ -296,7 +324,7 @@ app.post("/api/update-pass", async (req, res) => {
 });
 
 // ========== GET GLOBAL STATS ==========
-// fetching data from all users to show real data on index.html
+// no token needed here because it is public home page data
 app.get("/api/global-data", async (req, res) => {
   try {
     let allUsersCount = await UserModel.countDocuments();
@@ -306,7 +334,6 @@ app.get("/api/global-data", async (req, res) => {
     let bestScore = 0;
     let totalAcc = 0;
 
-    // looping to find highest score and total accuracy for average
     for (let i = 0; i < allGames.length; i++) {
       if (allGames[i].score > bestScore) {
         bestScore = allGames[i].score;

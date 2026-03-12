@@ -20,12 +20,12 @@
       <div class="game-info-left">
         <img src="public/Logo.png" alt="Logo" class="game-logo-mini" />
         <div class="info-item">
-          <i class="far fa-clock"></i>
-          <span>R<span id="currentRound">1</span>/10</span>
+          <i class="far fa-clock"></i
+          ><span>R<span id="currentRound">1</span>/10</span>
         </div>
         <div class="info-item lives-count">
-          <i class="fas fa-heart" style="color: #fe9e84"></i>
-          <span id="livesDisplay">3</span>
+          <i class="fas fa-heart" style="color: #fe9e84"></i
+          ><span id="livesDisplay">3</span>
         </div>
       </div>
 
@@ -39,12 +39,12 @@
 
       <div class="game-info-right">
         <div class="info-item">
-          <i class="fas fa-star" style="color: #fe9e84"></i>
-          <span id="scoreValue">0</span>
+          <i class="fas fa-star" style="color: #fe9e84"></i
+          ><span id="scoreValue">0</span>
         </div>
         <div class="info-item">
-          <i class="fas fa-fire" style="color: #fe9e84"></i>
-          <span id="streakValue">0</span>
+          <i class="fas fa-fire" style="color: #fe9e84"></i
+          ><span id="streakValue">0</span>
         </div>
         <button
           class="exit-btn"
@@ -59,20 +59,18 @@
       <div class="suspect-section panel-box">
         <div class="section-title"><i class="fas fa-robot"></i> AI SUSPECT</div>
         <div class="suspect-content">
-          <div class="robot-icon">
-            <i class="fas fa-robot"></i>
-          </div>
+          <div class="robot-icon"><i class="fas fa-robot"></i></div>
           <div class="suspect-claim">
             <div class="claim-label">CLAIMS</div>
-            <div class="claim-number" id="suspectAnswer">6</div>
+            <div class="claim-number" id="suspectAnswer">?</div>
           </div>
-          <div class="confidence-meter">
+
+          <div class="confidence-meter" id="meterBoxDiv">
             <div class="conf-label">
-              <span>CONF</span>
-              <span id="confValue">87%</span>
+              <span>CONF</span><span id="confValue">0%</span>
             </div>
             <div class="conf-bar">
-              <div class="conf-fill" id="confFill" style="width: 87%"></div>
+              <div class="conf-fill" id="confFill" style="width: 0%"></div>
             </div>
           </div>
         </div>
@@ -83,9 +81,8 @@
         <div class="evidence-frame">
           <div class="puzzle-image" id="imageContainer">
             <div class="image-placeholder" id="loadingState">
-              <i class="fas fa-circle-notch fa-spin"></i>
-              <span>LOADING...</span>
-              <small>Heart API</small>
+              <i class="fas fa-circle-notch fa-spin"></i><span>LOADING...</span
+              ><small>Heart API</small>
             </div>
             <img
               id="apiImage"
@@ -96,19 +93,24 @@
                 max-width: 100%;
                 max-height: 100%;
                 border-radius: 10px;
+                transition: 0.1s;
               "
             />
           </div>
         </div>
         <div class="evidence-instruction" id="feedbackText">
-          <i class="fas fa-info-circle"></i> Count hearts
+          <i class="fas fa-info-circle"></i> Counting...
         </div>
       </div>
 
       <div class="decision-section panel-box">
         <div class="section-title"><i class="fas fa-gavel"></i> DECISION</div>
-        <div class="decision-content">
-          <div class="decision-card">
+        <div
+          class="decision-content"
+          id="decisionWrapBox"
+          style="display: flex; flex-direction: column"
+        >
+          <div class="decision-card" id="trustCardBox" style="order: 1">
             <i class="fas fa-handshake"></i>
             <div class="card-title">TRUST</div>
             <div class="card-info">Accept AI answer</div>
@@ -121,7 +123,7 @@
             </button>
           </div>
 
-          <div class="decision-card">
+          <div class="decision-card" id="verifyCardBox" style="order: 2">
             <i class="fas fa-search"></i>
             <div class="card-title">VERIFY</div>
             <div class="card-info">Count yourself</div>
@@ -151,23 +153,11 @@
     </div>
 
     <audio
-      id="hSound"
-      loop
-      src="https://actions.google.com/sounds/v1/alarms/heartbeat_fast.ogg"
-    ></audio>
-    <audio
       id="drumSound"
       src="https://actions.google.com/sounds/v1/foley/drum_roll.ogg"
     ></audio>
 
     <script src="js/home.js"></script>
     <script src="js/game.js"></script>
-    <script>
-      // load difficulty setting
-      document.addEventListener("DOMContentLoaded", function () {
-        const diff = localStorage.getItem("gameDifficulty") || "easy";
-        console.log("current difficulty:", diff);
-      });
-    </script>
   </body>
 </html>

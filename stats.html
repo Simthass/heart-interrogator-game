@@ -14,6 +14,69 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <style>
+      /* custom grid for new roles and 20 achievements */
+      .progression-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+      }
+      .rank-item {
+        background: rgba(0, 119, 123, 0.4);
+        border: 2px solid var(--teal-light);
+        border-radius: 12px;
+        padding: 15px 10px;
+        text-align: center;
+        transition: 0.3s;
+      }
+      .rank-item i {
+        font-size: 28px;
+        color: var(--coral);
+        margin-bottom: 8px;
+      }
+      .rank-item .badge-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--cream);
+        font-family: "Orbitron";
+        line-height: 1.2;
+        margin-bottom: 5px;
+      }
+      .rank-item small {
+        font-size: 11px;
+        opacity: 0.7;
+      }
+
+      .rank-item.locked {
+        opacity: 0.3;
+        filter: grayscale(1);
+        border-style: dashed;
+      }
+      .rank-item.current-role {
+        border-color: #39ff14;
+        box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+        background: rgba(57, 255, 20, 0.1);
+      }
+
+      .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+      }
+
+      @media (max-width: 1024px) {
+        .progression-grid,
+        .achievements-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      @media (max-width: 768px) {
+        .progression-grid,
+        .achievements-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="header-placeholder"></div>
@@ -35,7 +98,7 @@
             <p class="profile-username" id="profUserTag">@loading</p>
             <div class="rank-display">
               <span class="rank-badge" id="rankBadge"
-                ><i class="fas fa-medal"></i> DETECTIVE</span
+                ><i class="fas fa-user"></i> ROOKIE CADET</span
               >
             </div>
           </div>
@@ -80,13 +143,24 @@
         </div>
       </div>
 
-      <div class="achievements-section">
+      <div class="achievements-section" style="margin-top: 40px">
         <h2 class="section-heading">
-          <i class="fas fa-trophy" style="margin-right: 8px"></i>ACHIEVEMENTS
+          <i class="fas fa-briefcase" style="margin-right: 8px"></i>CAREER
+          PROGRESSION
         </h2>
-        <div class="achievements-grid" id="achievementsGrid">
-          <!-- achievements will be loaded here -->
-        </div>
+        <p style="font-size: 14px; opacity: 0.7; margin-bottom: 15px">
+          Unlock higher ranks to face harder difficulties and advanced AI
+          mechanics.
+        </p>
+        <div class="progression-grid" id="rolesGrid"></div>
+      </div>
+
+      <div class="achievements-section" style="margin-top: 40px">
+        <h2 class="section-heading">
+          <i class="fas fa-trophy" style="margin-right: 8px"></i>ALL
+          ACHIEVEMENTS
+        </h2>
+        <div class="achievements-grid" id="achievementsGrid"></div>
       </div>
     </main>
 
@@ -100,7 +174,6 @@
     <script src="js/home.js"></script>
     <script src="js/pages.js"></script>
     <script>
-      // cookie helper
       function getCookie(name) {
         let match = document.cookie.match(
           new RegExp("(^| )" + name + "=([^;]+)"),
@@ -108,19 +181,13 @@
         return match ? match[2] : null;
       }
 
-      // load header
       fetch("header.html")
         .then((res) => res.text())
         .then((data) => {
           document.getElementById("header-placeholder").innerHTML = data;
           if (window.updateHeaderAuth) window.updateHeaderAuth();
           if (window.setActiveNav) window.setActiveNav();
-
-          // after header is ready load the stats
           checkLoginAndLoadStats();
-        })
-        .catch((err) => {
-          console.log("header load error:", err);
         });
 
       async function checkLoginAndLoadStats() {
@@ -131,17 +198,13 @@
           document.getElementById("profNameTag").innerText = "Not Logged In";
           document.getElementById("profUserTag").innerText = "@guest";
           document.getElementById("recentGamesBox").innerHTML =
-            '<p style="text-align: center; padding: 20px;">Please login to see your secure stats.</p>';
+            '<p style="text-align: center; padding: 20px;">Please login.</p>';
           return;
         }
 
-        // update profile info
         document.getElementById("profNameTag").innerText = username;
         document.getElementById("profUserTag").innerText = "@" + username;
 
-        updateRank(0);
-
-        // fetch user info using JWT
         try {
           let infoRes = await fetch("http://localhost:3000/api/user-info", {
             method: "POST",
@@ -149,18 +212,16 @@
               "Content-Type": "application/json",
               Authorization: "Bearer " + secureToken,
             },
-            body: JSON.stringify({}), // empty body cuz token has id
+            body: JSON.stringify({}),
           });
           let infoData = await infoRes.json();
-          if (infoRes.ok) {
+          if (infoRes.ok)
             document.getElementById("profNameTag").innerText =
               infoData.fullname || username;
-          }
         } catch (e) {
-          console.log("info fetch error:", e);
+          console.log(e);
         }
 
-        // fetch secure stats
         try {
           let statsRes = await fetch("http://localhost:3000/api/my-stats", {
             method: "POST",
@@ -170,25 +231,32 @@
             },
             body: JSON.stringify({}),
           });
-
           let statsData = await statsRes.json();
 
           if (statsRes.ok) {
-            document.getElementById("totScoreDisplay").innerText =
-              statsData.totalScore || 0;
-            document.getElementById("winsDisplay").innerText =
-              statsData.wins || 0;
-            document.getElementById("accDisplay").innerText =
-              (statsData.avgAccuracy || 0) + "%";
-            document.getElementById("gamesPlayedDisplay").innerText =
-              statsData.gamesPlayed || 0;
-            updateRank(statsData.wins || 0);
+            let sScore = statsData.totalScore || 0;
+            let sWins = statsData.wins || 0;
+            let sAcc = statsData.avgAccuracy || 0;
+            let sPlayed = statsData.gamesPlayed || 0;
+
+            document.getElementById("totScoreDisplay").innerText = sScore;
+            document.getElementById("winsDisplay").innerText = sWins;
+            document.getElementById("accDisplay").innerText = sAcc + "%";
+            document.getElementById("gamesPlayedDisplay").innerText = sPlayed;
+
+            updateRankAndRoles(sWins);
+
+            // get local extra stats to pass to achievements
+            let extraObj = JSON.parse(
+              localStorage.getItem("playerExtraObj") || "{}",
+            );
+            loadAchievements(sWins, sPlayed, sAcc, sScore, extraObj);
           }
         } catch (e) {
-          console.log("stats fetch error:", e);
+          console.log(e);
         }
 
-        // fetch secure recent games
+        // recent games fetch
         try {
           let recentRes = await fetch(
             "http://localhost:3000/api/recent-games",
@@ -201,10 +269,8 @@
               body: JSON.stringify({}),
             },
           );
-
           let recentData = await recentRes.json();
           let gamesBox = document.getElementById("recentGamesBox");
-
           if (recentRes.ok && recentData.length > 0) {
             gamesBox.innerHTML = "";
             for (let i = 0; i < recentData.length; i++) {
@@ -214,82 +280,17 @@
                 date.toLocaleDateString() + " " + date.toLocaleTimeString();
               let winClass = game.isWin ? "success" : "fail";
               let winIcon = game.isWin ? "fa-check-circle" : "fa-times-circle";
-              let winText = game.isWin ? "Won" : "Lost";
-
               gamesBox.innerHTML += `
                   <div class="game-record">
                     <span class="record-date"><i class="far fa-calendar"></i> ${dateStr}</span>
                     <span class="record-score" style="color: ${game.isWin ? "var(--coral)" : "#ff4d4d"}">${game.score} pts</span>
-                    <span class="record-status ${winClass}"><i class="fas ${winIcon}"></i> ${winText}</span>
-                  </div>
-                `;
+                    <span class="record-status ${winClass}"><i class="fas ${winIcon}"></i> ${game.isWin ? "Won" : "Lost"}</span>
+                  </div>`;
             }
-          } else {
-            gamesBox.innerHTML =
-              '<p style="text-align: center; padding: 20px;">No games played yet!</p>';
           }
         } catch (e) {
-          console.log("recent games error:", e);
-          document.getElementById("recentGamesBox").innerHTML =
-            '<p style="text-align: center; padding: 20px;">Error loading games.</p>';
+          console.log(e);
         }
-
-        loadAchievements();
-      }
-
-      function updateRank(wins) {
-        let rankBadge = document.getElementById("rankBadge");
-        let rankText = "DETECTIVE";
-        let rankIcon = "fa-medal";
-
-        if (wins >= 20) {
-          rankText = "MASTER DETECTIVE";
-        } else if (wins >= 10) {
-          rankText = "INSPECTOR";
-        } else if (wins >= 5) {
-          rankText = "SERGEANT";
-        } else if (wins >= 1) {
-          rankText = "OFFICER";
-        } else {
-          rankText = "CADET";
-          rankIcon = "fa-user-graduate";
-        }
-
-        rankBadge.innerHTML = `<i class="fas ${rankIcon}"></i> ${rankText}`;
-      }
-
-      function loadAchievements() {
-        let achievementsGrid = document.getElementById("achievementsGrid");
-        let wins =
-          parseInt(document.getElementById("winsDisplay").innerText) || 0;
-        let gamesPlayed =
-          parseInt(document.getElementById("gamesPlayedDisplay").innerText) ||
-          0;
-        let accuracy =
-          parseInt(document.getElementById("accDisplay").innerText) || 0;
-
-        achievementsGrid.innerHTML = `
-            <div class="achievement-badge-item ${wins >= 1 ? "" : "locked"}">
-              <i class="fas fa-crown"></i>
-              <div class="badge-name">First Victory</div>
-              <small>${wins >= 1 ? "Unlocked" : "Win 1 game"}</small>
-            </div>
-            <div class="achievement-badge-item ${gamesPlayed >= 5 ? "" : "locked"}">
-              <i class="fas fa-gamepad"></i>
-              <div class="badge-name">Veteran</div>
-              <small>${gamesPlayed >= 5 ? "Unlocked" : "Play 5 games"}</small>
-            </div>
-            <div class="achievement-badge-item ${accuracy >= 70 ? "" : "locked"}">
-              <i class="fas fa-bullseye"></i>
-              <div class="badge-name">Sharpshooter</div>
-              <small>${accuracy >= 70 ? "Unlocked" : "70% accuracy"}</small>
-            </div>
-            <div class="achievement-badge-item ${wins >= 10 ? "" : "locked"}">
-              <i class="fas fa-skull"></i>
-              <div class="badge-name">Master Detective</div>
-              <small>${wins >= 10 ? "Unlocked" : "Win 10 games"}</small>
-            </div>
-          `;
       }
     </script>
   </body>

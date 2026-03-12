@@ -1,259 +1,220 @@
 // helper to format big numbers nicely with commas
-// e.g. 1234 becomes 1,234
 function formatNumber(num) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-// calculate accuracy percent from correct / total
-function calcAccuracy(correctAns, totalAns) {
-  if (totalAns === 0) return 0;
-  return Math.round((correctAns / totalAns) * 100);
-}
-
-// get rank title + icon based on how many wins user has
-// this is for the stats page badge
-function getRankTitle(totalWins) {
-  if (totalWins >= 20) return { title: "MASTER DETECTIVE", icon: "fa-medal" };
-  if (totalWins >= 10) return { title: "INSPECTOR", icon: "fa-medal" };
-  if (totalWins >= 5) return { title: "SERGEANT", icon: "fa-medal" };
-  if (totalWins >= 1) return { title: "OFFICER", icon: "fa-user-shield" };
-  // default rank for new player
-  return { title: "CADET", icon: "fa-user-graduate" };
-}
-
-// update the rank badge on stats page
-function updateRankBadge(winCount) {
+// this calculates the 10 tier detective roles and builds the DOM grid
+function updateRankAndRoles(totalWins) {
   let rankEl = document.getElementById("rankBadge");
-  if (!rankEl) return;
+  let rolesGrid = document.getElementById("rolesGrid");
 
-  let rnkInfo = getRankTitle(winCount);
-  rankEl.innerHTML = `<i class="fas ${rnkInfo.icon}"></i> ${rnkInfo.title}`;
+  // the 10 tier progression roles
+  let allRoles = [
+    { title: "Rookie Cadet", req: 0, icon: "fa-user" },
+    { title: "Patrol Officer", req: 2, icon: "fa-shield-alt" },
+    { title: "Junior Detective", req: 5, icon: "fa-search" },
+    { title: "Senior Detective", req: 10, icon: "fa-user-secret" },
+    { title: "Lead Investigator", req: 15, icon: "fa-eye" },
+    { title: "Inspector", req: 20, icon: "fa-id-badge" },
+    { title: "Chief Inspector", req: 30, icon: "fa-star" },
+    { title: "Deputy Super", req: 40, icon: "fa-building" },
+    { title: "Master Interrogator", req: 50, icon: "fa-brain" },
+    { title: "Director of Intel", req: 75, icon: "fa-crown" },
+  ];
+
+  // find highest rank they reached
+  let currentRankObj = allRoles[0];
+  let highestIndex = 0;
+  for (let i = 0; i < allRoles.length; i++) {
+    if (totalWins >= allRoles[i].req) {
+      currentRankObj = allRoles[i];
+      highestIndex = i;
+    }
+  }
+
+  // update small badge
+  if (rankEl) {
+    rankEl.innerHTML = `<i class="fas ${currentRankObj.icon}"></i> ${currentRankObj.title.toUpperCase()}`;
+  }
+
+  // render the 10 roles grid
+  if (rolesGrid) {
+    rolesGrid.innerHTML = "";
+    for (let i = 0; i < allRoles.length; i++) {
+      let role = allRoles[i];
+      let isLocked = totalWins < role.req;
+      let isCurrent = i === highestIndex;
+
+      let cssClass = "rank-item";
+      if (isLocked) cssClass += " locked";
+      if (isCurrent) cssClass += " current-role";
+
+      rolesGrid.innerHTML += `
+            <div class="${cssClass}">
+              <i class="fas ${role.icon}"></i>
+              <div class="badge-name">${role.title}</div>
+              <small>${isLocked ? `Need ${role.req} Wins` : isCurrent ? "Current Rank" : "Unlocked"}</small>
+            </div>
+          `;
+    }
+  }
 }
 
-// build the achievements grid based on player stats
-// each achievement has a condition - unlocked or locked
-function loadAchievements(winCount, gamesCount, accPercent) {
+// 20 unique achievements showing different player behaviours
+function loadAchievements(
+  winCount,
+  gamesCount,
+  accPercent,
+  totalScore,
+  exStats,
+) {
   let achGrid = document.getElementById("achievementsGrid");
   if (!achGrid) return;
 
-  // define all achievements with their unlock conditions
   let allAchievements = [
+    // The Grind (Games Played)
     {
-      icon: "fa-crown",
-      name: "First Victory",
-      req: "Win 1 game",
+      icon: "fa-door-open",
+      name: "First Shift",
+      req: "Play 1 game",
+      unlocked: gamesCount >= 1,
+    },
+    {
+      icon: "fa-walking",
+      name: "Night Shift",
+      req: "Play 10 games",
+      unlocked: gamesCount >= 10,
+    },
+    {
+      icon: "fa-running",
+      name: "Overtime",
+      req: "Play 25 games",
+      unlocked: gamesCount >= 25,
+    },
+    {
+      icon: "fa-bed",
+      name: "Workaholic",
+      req: "Play 50 games",
+      unlocked: gamesCount >= 50,
+    },
+    {
+      icon: "fa-infinity",
+      name: "Century",
+      req: "Play 100 games",
+      unlocked: gamesCount >= 100,
+    },
+
+    // The Milestones (Wins)
+    {
+      icon: "fa-check",
+      name: "First Case",
+      req: "Win 1 case",
       unlocked: winCount >= 1,
     },
     {
-      icon: "fa-gamepad",
-      name: "Veteran",
-      req: "Play 5 games",
-      unlocked: gamesCount >= 5,
+      icon: "fa-medal",
+      name: "Getting Good",
+      req: "Win 5 cases",
+      unlocked: winCount >= 5,
     },
     {
-      icon: "fa-bullseye",
-      name: "Sharpshooter",
-      req: "70% accuracy",
-      unlocked: accPercent >= 70,
-    },
-    {
-      icon: "fa-skull",
-      name: "Master Detective",
-      req: "Win 10 games",
+      icon: "fa-award",
+      name: "Regular",
+      req: "Win 10 cases",
       unlocked: winCount >= 10,
     },
     {
-      icon: "fa-fire",
-      name: "Hot Streak",
-      req: "Win 3 games in a row",
-      unlocked: winCount >= 3, // simplified - streak not tracked per session
+      icon: "fa-trophy",
+      name: "Experienced",
+      req: "Win 25 cases",
+      unlocked: winCount >= 25,
+    },
+    {
+      icon: "fa-gem",
+      name: "Legend",
+      req: "Win 50 cases",
+      unlocked: winCount >= 50,
+    },
+
+    // The Points (Score)
+    {
+      icon: "fa-coins",
+      name: "Piggy Bank",
+      req: "Score > 500",
+      unlocked: totalScore >= 500,
+    },
+    {
+      icon: "fa-money-bill",
+      name: "Rich Man",
+      req: "Score > 1000",
+      unlocked: totalScore >= 1000,
+    },
+    {
+      icon: "fa-sack-dollar",
+      name: "Millionaire",
+      req: "Score > 5000",
+      unlocked: totalScore >= 5000,
+    },
+
+    // The Skill (Accuracy)
+    {
+      icon: "fa-bullseye",
+      name: "Not Bad",
+      req: "50% Accuracy",
+      unlocked: accPercent >= 50 && gamesCount > 0,
+    },
+    {
+      icon: "fa-crosshairs",
+      name: "Sharp Eye",
+      req: "75% Accuracy",
+      unlocked: accPercent >= 75 && gamesCount > 0,
     },
     {
       icon: "fa-robot",
-      name: "AI Slayer",
-      req: "Win 20 games",
-      unlocked: winCount >= 20,
+      name: "Better Than AI",
+      req: "90% Accuracy",
+      unlocked: accPercent >= 90 && gamesCount > 0,
+    },
+
+    // The Behaviours (tracked locally in extra stats object)
+    {
+      icon: "fa-handshake",
+      name: "Risk Taker",
+      req: "Trust AI 5x in a game",
+      unlocked: exStats.riskTaker === true,
+    },
+    {
+      icon: "fa-search",
+      name: "Skeptic",
+      req: "Verify 8x in a game",
+      unlocked: exStats.skeptic === true,
+    },
+    {
+      icon: "fa-heartbeat",
+      name: "Close Call",
+      req: "Win with 1 life left",
+      unlocked: exStats.closeCall === true,
+    },
+    {
+      icon: "fa-check-double",
+      name: "Flawless",
+      req: "100% correct in a game",
+      unlocked: exStats.flawless === true,
     },
   ];
 
-  achGrid.innerHTML = ""; // clear old content
+  achGrid.innerHTML = "";
 
   for (let i = 0; i < allAchievements.length; i++) {
     let ach = allAchievements[i];
-    let itemDiv = document.createElement("div");
-    // locked class makes it grey out in css
-    itemDiv.className =
-      "achievement-badge-item" + (ach.unlocked ? "" : " locked");
-    itemDiv.innerHTML = `
-      <i class="fas ${ach.icon}"></i>
-      <div class="badge-name">${ach.name}</div>
-      <small>${ach.unlocked ? "Unlocked!" : ach.req}</small>
+    let cssLocked = ach.unlocked ? "" : " locked";
+
+    achGrid.innerHTML += `
+        <div class="achievement-badge-item${cssLocked}" style="background: rgba(0, 119, 123, 0.4); border: 2px solid var(--teal-light); border-radius: 12px; padding: 15px 10px; text-align: center;">
+          <i class="fas ${ach.icon}" style="font-size: 28px; color: var(--coral); margin-bottom: 8px;"></i>
+          <div class="badge-name" style="font-size: 13px; font-weight: 700; color: var(--cream); font-family: 'Orbitron'; line-height: 1.2; margin-bottom: 5px;">${ach.name}</div>
+          <small style="font-size: 11px; opacity: 0.7;">${ach.unlocked ? "Unlocked!" : ach.req}</small>
+        </div>
     `;
-    achGrid.appendChild(itemDiv);
   }
 }
-
-// =====================================================
-// STATS PAGE - main loading function
-// fetches user stats from backend using JWT token
-// this demostrates virtual identity - token identifies user securely
-// without sending username in every request
-// =====================================================
-window.checkLoginAndLoadStats = async function () {
-  // get auth cookie - this proves user identity
-  let userAuthToken = getCookie("authToken");
-  let loggedUsername = getCookie("loggedUser");
-
-  let nameDisplay = document.getElementById("profNameTag");
-  let userDisplay = document.getElementById("profUserTag");
-
-  if (!userAuthToken || userAuthToken === "") {
-    // user not loggedin - show guest message
-    if (nameDisplay) nameDisplay.innerText = "Not Logged In";
-    if (userDisplay) userDisplay.innerText = "@guest";
-
-    let recentEl = document.getElementById("recentGamesBox");
-    if (recentEl)
-      recentEl.innerHTML =
-        '<p style="text-align:center; padding:20px; color:rgba(255,255,255,0.5);">Please login to see your stats.</p>';
-    return;
-  }
-
-  // show username while loading actual fullname
-  if (nameDisplay) nameDisplay.innerText = loggedUsername || "Loading...";
-  if (userDisplay) userDisplay.innerText = "@" + (loggedUsername || "loading");
-
-  updateRankBadge(0); // show default rank while loading
-
-  // --- fetch user profile info from server ---
-  // we use the JWT token in Authorization header, not username in body
-  // this is how virtual identity works - server decodes token to get user id
-  try {
-    let profileRes = await fetch("http://localhost:3000/api/user-info", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + userAuthToken, // token proves who we are
-      },
-      body: JSON.stringify({}), // body is empty, server gets id from token
-    });
-
-    let profileData = await profileRes.json();
-
-    if (profileRes.ok && profileData.fullname) {
-      if (nameDisplay) nameDisplay.innerText = profileData.fullname;
-    }
-  } catch (e) {
-    console.log("user info fetch error:", e);
-  }
-
-  // --- fetch player statistics from server ---
-  try {
-    let statsResp = await fetch("http://localhost:3000/api/my-stats", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + userAuthToken,
-      },
-      body: JSON.stringify({}),
-    });
-
-    let statsResp_data = await statsResp.json();
-
-    if (statsResp.ok) {
-      let myTotalScore = statsResp_data.totalScore || 0;
-      let myWins = statsResp_data.wins || 0;
-      let myAvgAcc = statsResp_data.avgAccuracy || 0;
-      let myGamesPlayed = statsResp_data.gamesPlayed || 0;
-
-      // populate the stat cards in HTML
-      let totScrEl = document.getElementById("totScoreDisplay");
-      let winsEl = document.getElementById("winsDisplay");
-      let accEl = document.getElementById("accDisplay");
-      let gPlayedEl = document.getElementById("gamesPlayedDisplay");
-
-      if (totScrEl) totScrEl.innerText = formatNumber(myTotalScore);
-      if (winsEl) winsEl.innerText = myWins;
-      if (accEl) accEl.innerText = myAvgAcc + "%";
-      if (gPlayedEl) gPlayedEl.innerText = myGamesPlayed;
-
-      // update rank badge with actual win count
-      updateRankBadge(myWins);
-
-      // load achievement badges
-      loadAchievements(myWins, myGamesPlayed, myAvgAcc);
-    }
-  } catch (e) {
-    console.log("stats fetch error:", e);
-  }
-
-  // --- fetch recent game history ---
-  try {
-    let recentResp = await fetch("http://localhost:3000/api/recent-games", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + userAuthToken,
-      },
-      body: JSON.stringify({}),
-    });
-
-    let recentGamesData = await recentResp.json();
-    let recentBox = document.getElementById("recentGamesBox");
-
-    if (!recentBox) return;
-
-    if (recentResp.ok && recentGamesData.length > 0) {
-      recentBox.innerHTML = "";
-
-      // loop through each recent game and create a row for it
-      for (let i = 0; i < recentGamesData.length; i++) {
-        let gm = recentGamesData[i];
-        let gmDate = new Date(gm.playDate);
-        let gmDateStr =
-          gmDate.toLocaleDateString() + " " + gmDate.toLocaleTimeString();
-        let winCssClass = gm.isWin ? "success" : "fail";
-        let winIco = gm.isWin ? "fa-check-circle" : "fa-times-circle";
-        let winTxt = gm.isWin ? "Won" : "Lost";
-
-        recentBox.innerHTML += `
-          <div class="game-record">
-            <span class="record-date"><i class="far fa-calendar"></i> ${gmDateStr}</span>
-            <span class="record-score" style="color: ${gm.isWin ? "var(--coral)" : "#ff4d4d"}">${gm.score} pts</span>
-            <span class="record-status ${winCssClass}"><i class="fas ${winIco}"></i> ${winTxt}</span>
-          </div>
-        `;
-      }
-    } else {
-      recentBox.innerHTML =
-        '<p style="text-align:center; padding:20px; color:rgba(255,255,255,0.5);">No games played yet!</p>';
-    }
-  } catch (e) {
-    console.log("recent games fetch error:", e);
-    let recentBox = document.getElementById("recentGamesBox");
-    if (recentBox)
-      recentBox.innerHTML =
-        '<p style="text-align:center; padding:20px; color:#ff4d4d;">Error loading recent games.</p>';
-  }
-};
-
-// run on page load - setup any settings page buttons that dont have handlers
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("pages.js ready");
-
-  // if theres setting buttons without onclick, add a placeholder
-  let settingBtns = document.querySelectorAll(".setting-btn");
-  settingBtns.forEach(function (btn) {
-    if (!btn.getAttribute("onclick")) {
-      btn.addEventListener("click", function () {
-        if (
-          !this.innerText.toLowerCase().includes("change") &&
-          !this.innerText.toLowerCase().includes("delete") &&
-          !this.innerText.toLowerCase().includes("save")
-        ) {
-          alert("This feature is coming soon!");
-        }
-      });
-    }
-  });
-});

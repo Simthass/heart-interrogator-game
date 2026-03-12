@@ -1,11 +1,3 @@
-// =====================================================
-// game.js - main game logic for Heart Interrogator
-// handles API calls, timer, decisions, scoring etc
-// NOTE: home.js loaded before this so getCookie available
-// CIS045-3 Distributed Service Architectures
-// Student: Simthass Mohammed (2540927)
-// =====================================================
-
 // --- game state variables ---
 let currentRound = 1;
 let lives = 3;

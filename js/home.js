@@ -1,11 +1,3 @@
-// =====================================================
-// home.js - handles header, cookies, auth stuff
-// this file is loaded on EVERY page so all shared
-// functions go here
-// CIS045-3 Distributed Service Architectures
-// Student: Simthass Mohammed (2540927)
-// =====================================================
-
 // --- cookie functions ---
 // i need these everywhere so putting here
 

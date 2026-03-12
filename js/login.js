@@ -1,11 +1,3 @@
-// =====================================================
-// login.js - handles login form submission and validation
-// NOTE: cookie helpers (getCookie, setCookie etc.) are in home.js
-// home.js is always loaded BEFORE this file on every page
-// CIS045-3 Distributed Service Architectures
-// Student: Simthass Mohammed (2540927)
-// =====================================================
-
 // this function sets up the login form event listener
 // it gets called on DOMContentLoaded at bottom of this file
 function setupLoginForm() {

@@ -1,11 +1,3 @@
-// =====================================================
-// pages.js - helper functions for stats page and settings page
-// handles leaderboard, rank calculation, achievements etc
-// NOTE: home.js always loaded before this so getCookie is available
-// CIS045-3 Distributed Service Architectures
-// Student: Simthass Mohammed (2540927)
-// =====================================================
-
 // helper to format big numbers nicely with commas
 // e.g. 1234 becomes 1,234
 function formatNumber(num) {

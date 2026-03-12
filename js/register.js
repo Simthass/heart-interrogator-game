@@ -1,11 +1,3 @@
-// =====================================================
-// register.js - handles registration form logic + delete account
-// NOTE: getCookie, setCookie, deleteCookie etc are in home.js
-// login.js is loaded before this file on pages that need both
-// CIS045-3 Distributed Service Architectures
-// Student: Simthass Mohammed (2540927)
-// =====================================================
-
 // password strength checker
 // returns a score 0-100 based on how strong the password is
 function checkPasswordStrength(pw) {

@@ -148,11 +148,9 @@ app.post("/api/log", async (req, res) => {
 });
 
 // --- SAVE GAME ROUTE ---
-// protected - needs valid JWT token
 app.post("/api/save-game", checkTokenMiddleware, async (req, res) => {
   try {
     let { score, livesLeft, rounds, accuracy } = req.body;
-    // get user identity securely from token - NOT from request body
     let safeUserId = req.userData.id;
     let safeUsername = req.userData.name;
 
@@ -269,8 +267,6 @@ app.post("/api/update-pass", checkTokenMiddleware, async (req, res) => {
 });
 
 // --- DELETE ACCOUNT ROUTE ---
-// THIS WAS MISSING - this is why delete account was not working
-// it verifies password first then deletes user + all their game history
 app.post("/api/delete-account", checkTokenMiddleware, async (req, res) => {
   try {
     let { password } = req.body;
@@ -282,11 +278,9 @@ app.post("/api/delete-account", checkTokenMiddleware, async (req, res) => {
         .json({ msg: "please enter password to confirm delete" });
     }
 
-    // find the user
     let user = await UserModel.findById(safeUserId);
     if (!user) return res.status(400).json({ msg: "user not found" });
 
-    // verify password before deleting - security check
     let isValidPass = await bcrypt.compare(password, user.passHash);
     if (!isValidPass) {
       return res
@@ -294,12 +288,8 @@ app.post("/api/delete-account", checkTokenMiddleware, async (req, res) => {
         .json({ msg: "wrong password, account not deleted" });
     }
 
-    // delete all game history for this user first
     await GameModel.deleteMany({ userId: safeUserId });
-
-    // then delete the user account
     await UserModel.findByIdAndDelete(safeUserId);
-
     console.log("account deleted for userId:", safeUserId);
     res.json({ msg: "account and all game data deleted successfully" });
   } catch (error) {
@@ -347,29 +337,43 @@ app.get("/api/leaderboard", async (req, res) => {
     let allGames = await GameModel.find({});
     let playersObj = {};
 
-    // loop through all games to find the best single score for EACH user
+    // loop to add all scores together for each user instead of just one high score
     for (let i = 0; i < allGames.length; i++) {
       let g = allGames[i];
-      // if user not in object yet, or if this game score is bigger
-      if (!playersObj[g.username] || g.score > playersObj[g.username].score) {
+
+      // if user not in object yet, make them
+      if (!playersObj[g.username]) {
         playersObj[g.username] = {
           username: g.username,
-          score: g.score,
-          accuracy: g.accuracy || 0,
+          score: 0,
+          totalAcc: 0,
+          gameCount: 0,
         };
       }
+
+      // add up their total stats
+      playersObj[g.username].score += g.score;
+      playersObj[g.username].totalAcc += g.accuracy || 0;
+      playersObj[g.username].gameCount += 1;
     }
 
-    // convert object to array
     let leaderArr = [];
+
+    // calc avg accuracy so it dont show weird numbers
     for (let key in playersObj) {
-      leaderArr.push(playersObj[key]);
+      let p = playersObj[key];
+      if (p.gameCount > 0) {
+        p.accuracy = Math.round(p.totalAcc / p.gameCount);
+      } else {
+        p.accuracy = 0;
+      }
+      leaderArr.push(p);
     }
 
-    // sort by highest score first
+    // sort array by total highest score first
     leaderArr.sort((a, b) => b.score - a.score);
 
-    // only return top 5
+    // only send top 5 unique players to frontend
     let top5 = leaderArr.slice(0, 5);
     res.json(top5);
   } catch (e) {

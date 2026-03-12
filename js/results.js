@@ -1,11 +1,3 @@
-// =====================================================
-// results.js - reads game data from localstorage and
-// shows the results/summary after game ends
-// game.js saves everything to localstorage, this reads it
-// CIS045-3 Distributed Service Architectures
-// Student: Simthass Mohammed (2540927)
-// =====================================================
-
 // this runs when results page loads
 document.addEventListener("DOMContentLoaded", function () {
   console.log("results.js loaded - loading game results from localstorage...");

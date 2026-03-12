@@ -98,6 +98,7 @@
     </footer>
 
     <script src="js/home.js"></script>
+    <script src="js/pages.js"></script>
     <script>
       // cookie helper
       function getCookie(name) {
@@ -216,12 +217,12 @@
               let winText = game.isWin ? "Won" : "Lost";
 
               gamesBox.innerHTML += `
-                <div class="game-record">
-                  <span class="record-date"><i class="far fa-calendar"></i> ${dateStr}</span>
-                  <span class="record-score" style="color: ${game.isWin ? "var(--coral)" : "#ff4d4d"}">${game.score} pts</span>
-                  <span class="record-status ${winClass}"><i class="fas ${winIcon}"></i> ${winText}</span>
-                </div>
-              `;
+                  <div class="game-record">
+                    <span class="record-date"><i class="far fa-calendar"></i> ${dateStr}</span>
+                    <span class="record-score" style="color: ${game.isWin ? "var(--coral)" : "#ff4d4d"}">${game.score} pts</span>
+                    <span class="record-status ${winClass}"><i class="fas ${winIcon}"></i> ${winText}</span>
+                  </div>
+                `;
             }
           } else {
             gamesBox.innerHTML =
@@ -268,27 +269,27 @@
           parseInt(document.getElementById("accDisplay").innerText) || 0;
 
         achievementsGrid.innerHTML = `
-          <div class="achievement-badge-item ${wins >= 1 ? "" : "locked"}">
-            <i class="fas fa-crown"></i>
-            <div class="badge-name">First Victory</div>
-            <small>${wins >= 1 ? "Unlocked" : "Win 1 game"}</small>
-          </div>
-          <div class="achievement-badge-item ${gamesPlayed >= 5 ? "" : "locked"}">
-            <i class="fas fa-gamepad"></i>
-            <div class="badge-name">Veteran</div>
-            <small>${gamesPlayed >= 5 ? "Unlocked" : "Play 5 games"}</small>
-          </div>
-          <div class="achievement-badge-item ${accuracy >= 70 ? "" : "locked"}">
-            <i class="fas fa-bullseye"></i>
-            <div class="badge-name">Sharpshooter</div>
-            <small>${accuracy >= 70 ? "Unlocked" : "70% accuracy"}</small>
-          </div>
-          <div class="achievement-badge-item ${wins >= 10 ? "" : "locked"}">
-            <i class="fas fa-skull"></i>
-            <div class="badge-name">Master Detective</div>
-            <small>${wins >= 10 ? "Unlocked" : "Win 10 games"}</small>
-          </div>
-        `;
+            <div class="achievement-badge-item ${wins >= 1 ? "" : "locked"}">
+              <i class="fas fa-crown"></i>
+              <div class="badge-name">First Victory</div>
+              <small>${wins >= 1 ? "Unlocked" : "Win 1 game"}</small>
+            </div>
+            <div class="achievement-badge-item ${gamesPlayed >= 5 ? "" : "locked"}">
+              <i class="fas fa-gamepad"></i>
+              <div class="badge-name">Veteran</div>
+              <small>${gamesPlayed >= 5 ? "Unlocked" : "Play 5 games"}</small>
+            </div>
+            <div class="achievement-badge-item ${accuracy >= 70 ? "" : "locked"}">
+              <i class="fas fa-bullseye"></i>
+              <div class="badge-name">Sharpshooter</div>
+              <small>${accuracy >= 70 ? "Unlocked" : "70% accuracy"}</small>
+            </div>
+            <div class="achievement-badge-item ${wins >= 10 ? "" : "locked"}">
+              <i class="fas fa-skull"></i>
+              <div class="badge-name">Master Detective</div>
+              <small>${wins >= 10 ? "Unlocked" : "Win 10 games"}</small>
+            </div>
+          `;
       }
     </script>
   </body>

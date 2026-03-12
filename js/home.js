@@ -1,53 +1,71 @@
-// cookie functions for saving session
-function setCookie(cname, cvalue, days) {
+// =====================================================
+// home.js - handles header, cookies, auth stuff
+// this file is loaded on EVERY page so all shared
+// functions go here
+// CIS045-3 Distributed Service Architectures
+// Student: Simthass Mohammed (2540927)
+// =====================================================
+
+// --- cookie functions ---
+// i need these everywhere so putting here
+
+function setCookie(cname, cval, days) {
   let d = new Date();
   d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
-  let expires = "expires=" + d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  let exp = "expires=" + d.toUTCString();
+  // path=/ means cookie works on all pages not just current folder
+  document.cookie = cname + "=" + cval + ";" + exp + ";path=/";
 }
 
 function getCookie(cname) {
-  let name = cname + "=";
-  let ca = document.cookie.split(";");
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == " ") {
-      c = c.substring(1);
+  let nm = cname + "=";
+  let allCookies = document.cookie.split(";");
+  for (let i = 0; i < allCookies.length; i++) {
+    let singleC = allCookies[i];
+    // trim spaces from start
+    while (singleC.charAt(0) == " ") {
+      singleC = singleC.substring(1);
     }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
+    if (singleC.indexOf(nm) == 0) {
+      return singleC.substring(nm.length, singleC.length);
     }
   }
   return "";
 }
 
 function deleteCookie(cname) {
+  // set date to past so browser deletes it
   document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
-// fixing the innerhtml scope bug by putting header funcs here globally
+// =====================================================
+// updateHeaderAuth - this is called after we fetch
+// and inject the header.html into the page
+// shows login/reg buttons if not loggedin
+// or shows username + logout if loggedin
+// =====================================================
 window.updateHeaderAuth = function () {
-  let authSecBox = document.getElementById("auth-section");
-  if (!authSecBox) return;
+  let authSection = document.getElementById("auth-section");
+  if (!authSection) return;
 
-  let loggedUser = getCookie("loggedUser");
-  let secureToken = getCookie("authToken");
+  let whosLoggedIn = getCookie("loggedUser");
+  let theirToken = getCookie("authToken");
 
-  // check if we have the secure token
-  if (loggedUser && secureToken && secureToken !== "") {
-    // user is logged in
-    authSecBox.innerHTML = `
+  // check both cookie exists and token is not empty
+  if (whosLoggedIn && theirToken && theirToken !== "") {
+    // user is logged in - show name and logout btn
+    authSection.innerHTML = `
       <span class="user-display" style="color: var(--cream); margin-right: 15px; display: flex; align-items: center; gap: 8px; background: rgba(254, 158, 132, 0.1); padding: 5px 15px; border-radius: 30px; border: 1px solid rgba(254, 158, 132, 0.3);">
         <i class="fas fa-user-secret" style="color: var(--coral);"></i>
-        <span style="font-weight: 600; font-family: 'Orbitron', sans-serif;">${loggedUser}</span>
+        <span style="font-weight: 600; font-family: 'Orbitron', sans-serif;">${whosLoggedIn}</span>
       </span>
       <button onclick="handleLogout()" style="background: transparent; border: 2px solid var(--coral); color: var(--coral); padding: 8px 16px; border-radius: 30px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s;">
         <i class="fas fa-sign-out-alt"></i> Logout
       </button>
     `;
   } else {
-    // not logged in show buttons
-    authSecBox.innerHTML = `
+    // not loggedin - show login and register button
+    authSection.innerHTML = `
       <button onclick="showLogin()" style="background: transparent; border: 2px solid var(--coral); color: var(--coral); padding: 8px 20px; border-radius: 30px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s;">
         <i class="fas fa-sign-in-alt"></i> Login
       </button>
@@ -58,188 +76,67 @@ window.updateHeaderAuth = function () {
   }
 };
 
+// --- logout ---
+// called from header button, window.* so inline onclick in injected html can reach it
 window.handleLogout = function () {
   if (confirm("Are you sure you want to logout?")) {
     deleteCookie("loggedUser");
-    deleteCookie("authToken"); // remove token
-    deleteCookie("loggedId"); // keep this just to clear old data
-    localStorage.clear();
+    deleteCookie("authToken");
+    deleteCookie("loggedId"); // old cookie, just remove it too
+    localStorage.clear(); // clear game data too
     window.location.href = "index.html";
   }
 };
 
+// --- set active nav link ---
+// highlights the current page in navbar
 window.setActiveNav = function () {
-  let path = window.location.pathname;
-  let page = path.split("/").pop() || "index.html";
+  let currentPg = window.location.pathname.split("/").pop() || "index.html";
 
-  let hLink = document.getElementById("nav-home");
-  let sLink = document.getElementById("nav-stats");
-  let setLink = document.getElementById("nav-settings");
+  let homeLink = document.getElementById("nav-home");
+  let statsLink = document.getElementById("nav-stats");
+  let settingsLink = document.getElementById("nav-settings");
 
-  if (hLink) hLink.classList.remove("active");
-  if (sLink) sLink.classList.remove("active");
-  if (setLink) setLink.classList.remove("active");
+  // remove active from all first
+  if (homeLink) homeLink.classList.remove("active");
+  if (statsLink) statsLink.classList.remove("active");
+  if (settingsLink) settingsLink.classList.remove("active");
 
-  if (page === "index.html" || page === "") {
-    if (hLink) hLink.classList.add("active");
-  } else if (page === "stats.html") {
-    if (sLink) sLink.classList.add("active");
-  } else if (page === "settings.html") {
-    if (setLink) setLink.classList.add("active");
+  // now add active to the right one
+  if (currentPg === "index.html" || currentPg === "" || currentPg === "/") {
+    if (homeLink) homeLink.classList.add("active");
+  } else if (currentPg === "stats.html") {
+    if (statsLink) statsLink.classList.add("active");
+  } else if (currentPg === "settings.html") {
+    if (settingsLink) settingsLink.classList.add("active");
   }
 };
 
-// setup login form submit
-function setupLoginForm() {
-  let loginForm = document.getElementById("loginForm");
-  if (!loginForm) return;
+// --- modal open/close/switch ---
+// these must be window.* globals becuase they called from injected header html
 
-  loginForm.addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    let uNameInp = document.getElementById("username").value;
-    let pWordInp = document.getElementById("password").value;
-    let rememberMe = document.getElementById("rememberMe")?.checked || false;
-
-    if (!uNameInp || !pWordInp) {
-      alert("Please enter username and password");
-      return;
-    }
-
-    try {
-      let res = await fetch("http://localhost:3000/api/log", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: uNameInp, password: pWordInp }),
-      });
-
-      let data = await res.json();
-
-      if (res.ok) {
-        let days = rememberMe ? 15 : 1;
-        // save the secure token instead of raw ID
-        setCookie("authToken", data.token, days);
-        setCookie("loggedUser", data.user.name, days);
-
-        alert("Login successful! Welcome back " + data.user.name);
-        window.location.href = "index.html";
-      } else {
-        alert(data.msg || "Login failed try again");
-      }
-    } catch (err) {
-      console.log("login error:", err);
-      alert("Cannot connect to server. Make sure server is running.");
-    }
-  });
-}
-
-// setup register form submit
-function setupRegisterForm() {
-  let registerForm = document.getElementById("registerForm");
-  if (!registerForm) return;
-
-  registerForm.addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    let fullnameInp = document.getElementById("regFullName").value;
-    let usernameInp = document.getElementById("regUsername").value;
-    let emailInp = document.getElementById("regEmail").value;
-    let passwordInp = document.getElementById("regPassword").value;
-    let confirmPassInp = document.getElementById("regConfirmPassword").value;
-    let agreeTermsBox = document.getElementById("agreeTerms")?.checked || false;
-
-    if (
-      !fullnameInp ||
-      !usernameInp ||
-      !emailInp ||
-      !passwordInp ||
-      !confirmPassInp
-    ) {
-      alert("Please fill all fields");
-      return;
-    }
-
-    if (!agreeTermsBox) {
-      alert("You must agree to Terms & Privacy");
-      return;
-    }
-
-    if (passwordInp !== confirmPassInp) {
-      alert("Passwords do not match!");
-      return;
-    }
-
-    if (passwordInp.length < 8) {
-      alert("Password must be at least 8 characters");
-      return;
-    }
-
-    if (usernameInp.length < 3) {
-      alert("Username must be at least 3 characters");
-      return;
-    }
-
-    if (!emailInp.includes("@") || !emailInp.includes(".")) {
-      alert("Please enter a valid email");
-      return;
-    }
-
-    try {
-      let res = await fetch("http://localhost:3000/api/reg", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullname: fullnameInp,
-          username: usernameInp,
-          email: emailInp,
-          password: passwordInp,
-          confirmPass: confirmPassInp,
-        }),
-      });
-      let data = await res.json();
-
-      if (res.ok) {
-        // auto login by saving secure token
-        setCookie("authToken", data.token, 15);
-        setCookie("loggedUser", data.user.name, 15);
-
-        alert("Registration successful! Welcome " + usernameInp);
-        window.location.href = "index.html";
-      } else {
-        alert(data.msg || "Registration failed");
-      }
-    } catch (err) {
-      console.log("registration error:", err);
-      alert("Cannot connect to server. Make sure server is running.");
-    }
-  });
-}
-
-// modals display
 window.showLogin = function () {
-  let loginModal = document.getElementById("loginModal");
-  if (loginModal) {
-    loginModal.classList.add("active");
-    let registerModal = document.getElementById("registerModal");
-    if (registerModal) registerModal.classList.remove("active");
-  }
+  let loginMod = document.getElementById("loginModal");
+  let regMod = document.getElementById("registerModal");
+  if (loginMod) loginMod.classList.add("active");
+  if (regMod) regMod.classList.remove("active");
+  // clear old errors when opening
+  let errEl = document.getElementById("loginErrorBox");
+  if (errEl) errEl.innerHTML = "";
 };
 
 window.showRegister = function () {
-  let registerModal = document.getElementById("registerModal");
-  if (registerModal) {
-    registerModal.classList.add("active");
-    let loginModal = document.getElementById("loginModal");
-    if (loginModal) loginModal.classList.remove("active");
-  }
+  let regMod = document.getElementById("registerModal");
+  let loginMod = document.getElementById("loginModal");
+  if (regMod) regMod.classList.add("active");
+  if (loginMod) loginMod.classList.remove("active");
 };
 
 window.closeModals = function () {
-  let loginModal = document.getElementById("loginModal");
-  let registerModal = document.getElementById("registerModal");
-
-  if (loginModal) loginModal.classList.remove("active");
-  if (registerModal) registerModal.classList.remove("active");
+  let loginMod = document.getElementById("loginModal");
+  let regMod = document.getElementById("registerModal");
+  if (loginMod) loginMod.classList.remove("active");
+  if (regMod) regMod.classList.remove("active");
 };
 
 window.switchToRegister = function () {
@@ -252,19 +149,30 @@ window.switchToLogin = function () {
   showLogin();
 };
 
+// toggle password field visibility - the eye icon thing
 window.togglePassword = function (inputId) {
-  let input = document.getElementById(inputId);
-  if (input) {
-    if (input.type === "password") {
-      input.type = "text";
-    } else {
-      input.type = "password";
-    }
+  let theInput = document.getElementById(inputId);
+  if (!theInput) return;
+  // if password, make it text so user can see it, else hide again
+  if (theInput.type === "password") {
+    theInput.type = "text";
+  } else {
+    theInput.type = "password";
   }
 };
 
-// init stuff
-document.addEventListener("DOMContentLoaded", function () {
-  setupLoginForm();
-  setupRegisterForm();
+// close modal when user click outside of it
+window.addEventListener("click", function (e) {
+  let loginMod = document.getElementById("loginModal");
+  let regMod = document.getElementById("registerModal");
+  // if the click was directly on the modal backdrop (not content inside), close it
+  if (e.target === loginMod) loginMod.classList.remove("active");
+  if (e.target === regMod) regMod.classList.remove("active");
+});
+
+// also close if escape key pressed
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") {
+    if (window.closeModals) window.closeModals();
+  }
 });

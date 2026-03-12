@@ -229,14 +229,8 @@
     </footer>
 
     <script src="js/home.js"></script>
+    <script src="js/register.js"></script>
     <script>
-      function getCookie(name) {
-        let match = document.cookie.match(
-          new RegExp("(^| )" + name + "=([^;]+)"),
-        );
-        return match ? match[2] : null;
-      }
-
       fetch("header.html")
         .then((res) => res.text())
         .then((data) => {
@@ -392,16 +386,6 @@
         } catch (e) {
           console.log("password change error:", e);
           alert("Error connecting to server");
-        }
-      }
-
-      function deleteAccount() {
-        if (
-          confirm(
-            "WARNING: This will permanently delete your account and all game data. Are you absolutely sure?",
-          )
-        ) {
-          alert("Account deletion not implemented in this version");
         }
       }
 

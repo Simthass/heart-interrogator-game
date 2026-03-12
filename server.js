@@ -41,7 +41,7 @@ const GameSchema = new mongoose.Schema({
 });
 const GameModel = mongoose.model("gameHistory", GameSchema);
 
-// middleware for token
+// middleware for token - checks Authorization header and decodes JWT
 function checkTokenMiddleware(req, res, next) {
   let authHead = req.headers.authorization;
   if (!authHead) {
@@ -57,7 +57,7 @@ function checkTokenMiddleware(req, res, next) {
   });
 }
 
-// routes
+// --- REGISTER ROUTE ---
 app.post("/api/reg", async (req, res) => {
   try {
     let { fullname, username, email, password, confirmPass } = req.body;
@@ -111,6 +111,7 @@ app.post("/api/reg", async (req, res) => {
   }
 });
 
+// --- LOGIN ROUTE ---
 app.post("/api/log", async (req, res) => {
   try {
     let { username, password } = req.body;
@@ -146,9 +147,12 @@ app.post("/api/log", async (req, res) => {
   }
 });
 
+// --- SAVE GAME ROUTE ---
+// protected - needs valid JWT token
 app.post("/api/save-game", checkTokenMiddleware, async (req, res) => {
   try {
     let { score, livesLeft, rounds, accuracy } = req.body;
+    // get user identity securely from token - NOT from request body
     let safeUserId = req.userData.id;
     let safeUsername = req.userData.name;
 
@@ -170,6 +174,7 @@ app.post("/api/save-game", checkTokenMiddleware, async (req, res) => {
   }
 });
 
+// --- MY STATS ROUTE ---
 app.post("/api/my-stats", checkTokenMiddleware, async (req, res) => {
   try {
     let safeUserId = req.userData.id;
@@ -206,6 +211,7 @@ app.post("/api/my-stats", checkTokenMiddleware, async (req, res) => {
   }
 });
 
+// --- RECENT GAMES ROUTE ---
 app.post("/api/recent-games", checkTokenMiddleware, async (req, res) => {
   try {
     let safeUserId = req.userData.id;
@@ -218,6 +224,7 @@ app.post("/api/recent-games", checkTokenMiddleware, async (req, res) => {
   }
 });
 
+// --- USER INFO ROUTE ---
 app.post("/api/user-info", checkTokenMiddleware, async (req, res) => {
   try {
     let safeUserId = req.userData.id;
@@ -235,6 +242,7 @@ app.post("/api/user-info", checkTokenMiddleware, async (req, res) => {
   }
 });
 
+// --- UPDATE PASSWORD ROUTE ---
 app.post("/api/update-pass", checkTokenMiddleware, async (req, res) => {
   try {
     let { oldPass, newPass } = req.body;
@@ -260,6 +268,47 @@ app.post("/api/update-pass", checkTokenMiddleware, async (req, res) => {
   }
 });
 
+// --- DELETE ACCOUNT ROUTE ---
+// THIS WAS MISSING - this is why delete account was not working
+// it verifies password first then deletes user + all their game history
+app.post("/api/delete-account", checkTokenMiddleware, async (req, res) => {
+  try {
+    let { password } = req.body;
+    let safeUserId = req.userData.id;
+
+    if (!password) {
+      return res
+        .status(400)
+        .json({ msg: "please enter password to confirm delete" });
+    }
+
+    // find the user
+    let user = await UserModel.findById(safeUserId);
+    if (!user) return res.status(400).json({ msg: "user not found" });
+
+    // verify password before deleting - security check
+    let isValidPass = await bcrypt.compare(password, user.passHash);
+    if (!isValidPass) {
+      return res
+        .status(400)
+        .json({ msg: "wrong password, account not deleted" });
+    }
+
+    // delete all game history for this user first
+    await GameModel.deleteMany({ userId: safeUserId });
+
+    // then delete the user account
+    await UserModel.findByIdAndDelete(safeUserId);
+
+    console.log("account deleted for userId:", safeUserId);
+    res.json({ msg: "account and all game data deleted successfully" });
+  } catch (error) {
+    console.log("delete account error:", error);
+    res.status(500).json({ msg: "server error could not delete account" });
+  }
+});
+
+// --- GLOBAL STATS ROUTE ---
 app.get("/api/global-data", async (req, res) => {
   try {
     let allUsersCount = await UserModel.countDocuments();
@@ -292,7 +341,7 @@ app.get("/api/global-data", async (req, res) => {
   }
 });
 
-// FIXED LEADERBOARD ROUTE
+// --- LEADERBOARD ROUTE ---
 app.get("/api/leaderboard", async (req, res) => {
   try {
     let allGames = await GameModel.find({});
@@ -301,8 +350,7 @@ app.get("/api/leaderboard", async (req, res) => {
     // loop through all games to find the best single score for EACH user
     for (let i = 0; i < allGames.length; i++) {
       let g = allGames[i];
-
-      // if user not in object yet, OR if this game's score is bigger than their saved one
+      // if user not in object yet, or if this game score is bigger
       if (!playersObj[g.username] || g.score > playersObj[g.username].score) {
         playersObj[g.username] = {
           username: g.username,
@@ -312,15 +360,16 @@ app.get("/api/leaderboard", async (req, res) => {
       }
     }
 
+    // convert object to array
     let leaderArr = [];
     for (let key in playersObj) {
       leaderArr.push(playersObj[key]);
     }
 
-    // sort array by highest score first
+    // sort by highest score first
     leaderArr.sort((a, b) => b.score - a.score);
 
-    // only send top 5 unique players to frontend
+    // only return top 5
     let top5 = leaderArr.slice(0, 5);
     res.json(top5);
   } catch (e) {

@@ -52,7 +52,7 @@ function getCookie(name) {
   return match ? match[2] : null;
 }
 
-// this implements high cohesion. we fetch stats from db to directly affect game state.
+// we fetch stats from db to directly affect game state.
 async function setBadgeLevel() {
   let myToken = getCookie("authToken");
   if (myToken) {
@@ -137,10 +137,10 @@ window.onload = () => {
 async function getEvilTaunt() {
   const insultList = [
     "Your meat brain is too slow.",
-    "I process millions of calculations.",
+    "I process millions of calculations. You can't even count",
     "Detective? More like defective.",
     "Error 404: Human intelligence not found.",
-    "Even a pocket calculator is smarter.",
+    "Even a pocket calculator is smarter than You.",
   ];
   return insultList[Math.floor(Math.random() * insultList.length)];
 }

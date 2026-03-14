@@ -166,30 +166,18 @@
           <div class="stat-box">
             <div class="stat-number" id="realGlobalUsers">...</div>
             <div class="stat-label">Active Detectives</div>
-            <div class="stat-trend">
-              <i class="fas fa-server"></i> real data
-            </div>
           </div>
           <div class="stat-box">
             <div class="stat-number" id="realGlobalGames">...</div>
             <div class="stat-label">Games Played</div>
-            <div class="stat-trend">
-              <i class="fas fa-server"></i> real data
-            </div>
           </div>
           <div class="stat-box">
             <div class="stat-number" id="realGlobalAcc">...</div>
             <div class="stat-label">Avg Accuracy</div>
-            <div class="stat-trend">
-              <i class="fas fa-server"></i> real data
-            </div>
           </div>
           <div class="stat-box">
             <div class="stat-number" id="realGlobalTop">...</div>
             <div class="stat-label">Top Score</div>
-            <div class="stat-trend">
-              <i class="fas fa-server"></i> real data
-            </div>
           </div>
         </div>
 
@@ -403,8 +391,11 @@
             finalData.gamesPlayed;
           document.getElementById("realGlobalAcc").innerText =
             finalData.avgAcc + "%";
-          document.getElementById("realGlobalTop").innerText =
-            finalData.topScore;
+
+          // i commented this out because top score should be the total score of a user
+          // not just one highest game! we do this in fetchLeaderBoard now.
+          // document.getElementById("realGlobalTop").innerText =
+          //   finalData.topScore;
         } catch (err) {
           console.log("cant get global stats", err);
         }
@@ -416,6 +407,14 @@
           let ldRes = await fetch("http://localhost:3000/api/leaderboard");
           if (!ldRes.ok) return;
           let ldData = await ldRes.json();
+
+          // this puts the number 1 guy score to the global stats box
+          // array is sorted so 0 is first place!
+          if (ldData.length > 0) {
+            let number1GuyTotalScore = ldData[0].score;
+            document.getElementById("realGlobalTop").innerText =
+              number1GuyTotalScore;
+          }
 
           let tBody = document.getElementById("leaderboardBody");
           tBody.innerHTML = ""; // clear loading

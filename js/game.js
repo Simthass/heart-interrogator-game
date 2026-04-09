@@ -1,17 +1,13 @@
-function getCookie(name) {
-  let match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-  return match ? match[2] : null;
-}
-
-function saveMistakeToMemory(ansNum) {
-  let keyStr = String(ansNum);
-  if (robotMistakeMemory[keyStr]) robotMistakeMemory[keyStr]++;
-  else robotMistakeMemory[keyStr] = 1;
-  localStorage.setItem(
-    "robotMistakeMemory",
-    JSON.stringify(robotMistakeMemory),
-  );
-}
+// main game orchestrator - ties all the game modules together
+// this file only contains the round flow and decision handlers
+// everything else has been separated:
+//   gameState.js  - variables
+//   gameUI.js     - dom updates
+//   gameTimer.js  - countdown + difficulty mechanics
+//   gameAPI.js    - external api calls (heart api + yesno api)
+//   gameAudio.js  - robot voice + sound effects
+//   gameRank.js   - rank level from db
+//   gameSave.js   - saving results
 
 window.onload = () => {
   currentRound = 1;
@@ -19,38 +15,236 @@ window.onload = () => {
   score = 0;
   streak = 0;
   gameHistoryArray = [];
-  thisGameMistakes = {};
 
   updateHUD();
+
+  // load rank from db first, then start the first round
+  // rank affects the timer so we need it before fetchNewCase runs
   setBadgeLevel().then(() => {
-    fetchNewCase(); // start after rank is loaded
+    fetchNewCase();
   });
 };
 
-// robot voice with mechanic 2 (corrupted audio)
-function robotSpeak(textToSay) {
-  if (robotIcon) {
-    robotIcon.style.transform = "scale(1.1)";
-    setTimeout(() => (robotIcon.style.transform = ""), 300);
-  }
+// fetches a new round from the heart api and sets up the board
+async function fetchNewCase() {
+  stopTimer();
+  gameIsActive = false;
 
-  let voiceOn = localStorage.getItem("voiceEnabled") !== "false";
-  if (voiceOn && "speechSynthesis" in window) {
-    let utterance = new SpeechSynthesisUtterance(textToSay);
+  // reset mechanic flags for the new round
+  isSwitchedNow = false;
+  isBlackoutDone = false;
 
-    // MECHANIC 2: Corrupted Comms for Inspector (Rank 5) and above
-    if (userRankLevel >= 5) {
-      utterance.pitch = 0.1; // sounds evil
-      utterance.rate = 0.6; // slow and creepy
-    } else {
-      utterance.pitch = 0.8;
-      utterance.rate = 1.0;
-    }
+  // put trust/verify cards back in original order
+  let trustCard = document.getElementById("trustCardBox");
+  let verifyCard = document.getElementById("verifyCardBox");
+  if (trustCard) trustCard.style.order = "1";
+  if (verifyCard) verifyCard.style.order = "2";
 
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
+  resetEvidencePanel();
+
+  // hide confidence meter at master rank (8+) - mechanic 4: classified data
+  updateConfidenceMeter(userRankLevel < 8);
+
+  try {
+    let { heartData, yesnoData } = await fetchRoundData();
+
+    actualTrueAnswer = heartData.solution;
+
+    let { lying, claimed } = calculateAiAnswer(
+      actualTrueAnswer,
+      yesnoData.answer,
+    );
+    isAiLying = lying;
+    aiClaimedAnswer = claimed;
+
+    // wait for the image to finish loading before starting the timer
+    // apiImage.onload is the event that kicks off the round
+    apiImage.onload = function () {
+      apiImage.style.display = "block";
+      loadingState.style.display = "none";
+
+      let confPercent = Math.floor(Math.random() * 30) + 65;
+      displaySuspectClaim(aiClaimedAnswer, confPercent);
+      robotSpeak(
+        "I have analyzed the data. The answer is " + aiClaimedAnswer + ".",
+      );
+
+      // mechanic 3: blackout event - image goes black briefly at deputy rank (7+)
+      if (userRankLevel >= 7) {
+        let delay = Math.floor(Math.random() * 2000) + 1000;
+        setTimeout(() => {
+          if (gameIsActive) {
+            apiImage.style.filter = "brightness(0)";
+            setTimeout(() => (apiImage.style.filter = "none"), 500);
+          }
+        }, delay);
+      }
+
+      gameIsActive = true;
+      startTimer();
+    };
+
+    apiImage.src = heartData.question;
+  } catch (err) {
+    console.log("api error:", err);
+    feedbackText.innerHTML =
+      '<i class="fas fa-exclamation-triangle" style="color:#ff4d4d;"></i> ERROR: Could not connect to Heart API';
+
+    // try again after 3 seconds if the round never started
+    setTimeout(() => {
+      if (!gameIsActive) fetchNewCase();
+    }, 3000);
   }
 }
+
+// --- PLAYER DECISIONS ---
+
+// player chose to trust the ai's answer
+async function trustSuspect() {
+  if (!gameIsActive) return;
+  gameIsActive = false;
+  stopTimer();
+
+  if (!isAiLying) {
+    score += 20;
+    streak++;
+    animateValue(scoreValue);
+    animateValue(streakValue);
+
+    feedbackText.innerHTML =
+      '<i class="fas fa-check-circle" style="color:#39ff14;"></i> CORRECT! AI told the truth. +20 POINTS';
+    feedbackText.style.color = "#39ff14";
+    flashScreen("correct");
+    showNotification("+20 POINTS!", "success");
+    robotSpeak("Thank you for trusting me.");
+
+    gameHistoryArray.push({
+      round: currentRound,
+      decision: "TRUST",
+      aiSaid: aiClaimedAnswer,
+      realAnswer: actualTrueAnswer,
+      aiLied: false,
+      isWin: true,
+      points: "+20",
+    });
+
+    updateHUD();
+    setTimeout(() => nextRound(), 2000);
+  } else {
+    flashScreen("wrong");
+    showNotification("AI LIED!", "error");
+    saveMistakeToMemory(actualTrueAnswer);
+
+    let taunt = getRandomTaunt();
+    feedbackText.innerHTML = `<i class="fas fa-times-circle"></i> FOOL! AI lied. Real answer was ${actualTrueAnswer}.<br><span class="taunt-text">AI: "${taunt}"</span>`;
+    feedbackText.style.color = "#ff4d4d";
+    robotSpeak("Ha ha ha. " + taunt);
+
+    gameHistoryArray.push({
+      round: currentRound,
+      decision: "TRUST",
+      aiSaid: aiClaimedAnswer,
+      realAnswer: actualTrueAnswer,
+      aiLied: true,
+      isWin: false,
+      points: "-Life",
+    });
+
+    loseLife(4000);
+  }
+}
+
+// toggles the manual input box for verify
+function showVerifyInput() {
+  if (!gameIsActive) return;
+  if (verifyBox.style.display === "none" || verifyBox.style.display === "") {
+    verifyBox.style.display = "flex";
+    manualInput.focus();
+  } else {
+    verifyBox.style.display = "none";
+  }
+}
+
+// player chose to verify and submitted their own count
+function submitVerification() {
+  if (!gameIsActive) return;
+
+  let guess = parseInt(manualInput.value);
+
+  if (isNaN(guess)) {
+    manualInput.classList.add("error");
+    setTimeout(() => manualInput.classList.remove("error"), 500);
+    alert("please type a number");
+    return;
+  }
+
+  gameIsActive = false;
+  stopTimer();
+  verifyBox.style.display = "none";
+
+  feedbackText.innerHTML =
+    '<i class="fas fa-spinner fa-spin"></i> Analyzing evidence...';
+  feedbackText.style.color = "var(--cream)";
+
+  let drum = playDrumRoll();
+
+  // slight delay for dramatic effect while drum plays
+  setTimeout(async () => {
+    if (drum) drum.pause();
+
+    if (guess === actualTrueAnswer) {
+      score += 10;
+      streak++;
+      animateValue(scoreValue);
+      animateValue(streakValue);
+
+      feedbackText.innerHTML =
+        '<i class="fas fa-check-circle" style="color:#39ff14;"></i> VERIFIED! Correct answer. +10 POINTS';
+      feedbackText.style.color = "#39ff14";
+      flashScreen("correct");
+      showNotification("+10 POINTS!", "success");
+
+      if (isAiLying) robotSpeak("You caught my deception.");
+      else robotSpeak("I told you I was right.");
+
+      gameHistoryArray.push({
+        round: currentRound,
+        decision: "VERIFY (" + guess + ")",
+        aiSaid: aiClaimedAnswer,
+        realAnswer: actualTrueAnswer,
+        aiLied: isAiLying,
+        isWin: true,
+        points: "+10",
+      });
+
+      updateHUD();
+      setTimeout(() => nextRound(), 2000);
+    } else {
+      flashScreen("wrong");
+      showNotification("WRONG ANSWER!", "error");
+      saveMistakeToMemory(actualTrueAnswer);
+
+      let taunt = getRandomTaunt();
+      feedbackText.innerHTML = `<i class="fas fa-times-circle"></i> WRONG! Real answer was ${actualTrueAnswer}.<br><span class="taunt-text">AI: "${taunt}"</span>`;
+      feedbackText.style.color = "#ff4d4d";
+      robotSpeak("Wrong. " + taunt);
+
+      gameHistoryArray.push({
+        round: currentRound,
+        decision: "VERIFY (" + guess + ")",
+        aiSaid: aiClaimedAnswer,
+        realAnswer: actualTrueAnswer,
+        aiLied: isAiLying,
+        isWin: false,
+        points: "-Life",
+      });
+
+      loseLife(4000);
+    }
+  }, 1500);
+}
+
+// --- ROUND FLOW ---
 
 async function handleTimeOut() {
   if (!gameIsActive) return;
@@ -58,12 +252,11 @@ async function handleTimeOut() {
 
   flashScreen("wrong");
   showNotification("TIME OUT!", "error");
-
   saveMistakeToMemory(actualTrueAnswer);
-  let tauntMsg = await getEvilTaunt();
 
-  robotSpeak(tauntMsg);
-  feedbackText.innerHTML = `<i class="fas fa-hourglass-end"></i> TIME OUT! You lost a life.<br><span class="taunt-text">AI: "${tauntMsg}"</span>`;
+  let taunt = getRandomTaunt();
+  robotSpeak(taunt);
+  feedbackText.innerHTML = `<i class="fas fa-hourglass-end"></i> TIME OUT! You lost a life.<br><span class="taunt-text">AI: "${taunt}"</span>`;
   feedbackText.style.color = "#ff4d4d";
 
   gameHistoryArray.push({
@@ -75,184 +268,19 @@ async function handleTimeOut() {
     isWin: false,
     points: "-Life",
   });
+
   loseLife(4000);
 }
 
-async function trustSuspect(event) {
-  if (!gameIsActive) return;
-  gameIsActive = false;
-
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    timerInterval = null;
-  }
-  gameBody.classList.remove("stress-pulse-active");
-
-  let wonThisRound = false;
-
-  if (isAiLying === false) {
-    score += 20;
-    streak++;
-    animateValue(scoreValue);
-    animateValue(streakValue);
-
-    feedbackText.innerHTML =
-      '<i class="fas fa-check-circle" style="color:#39ff14;"></i> CORRECT! AI told truth. +20 POINTS';
-    feedbackText.style.color = "#39ff14";
-    robotSpeak("Thank you for trusting me.");
-    flashScreen("correct");
-    showNotification("+20 POINTS!", "success");
-
-    wonThisRound = true;
-    gameHistoryArray.push({
-      round: currentRound,
-      decision: "TRUST",
-      aiSaid: aiClaimedAnswer,
-      realAnswer: actualTrueAnswer,
-      aiLied: isAiLying,
-      isWin: wonThisRound,
-      points: "+20",
-    });
-
-    updateHUD();
-    setTimeout(() => nextRound(), 2000);
-  } else {
-    flashScreen("wrong");
-    showNotification("AI LIED!", "error");
-    wonThisRound = false;
-
-    saveMistakeToMemory(actualTrueAnswer);
-    let taunt = await getEvilTaunt();
-
-    feedbackText.innerHTML = `<i class="fas fa-times-circle"></i> FOOL! AI lied. Real answer was ${actualTrueAnswer}. <br><span class="taunt-text">AI: "${taunt}"</span>`;
-    feedbackText.style.color = "#ff4d4d";
-    robotSpeak("Ha ha ha. " + taunt);
-
-    gameHistoryArray.push({
-      round: currentRound,
-      decision: "TRUST",
-      aiSaid: aiClaimedAnswer,
-      realAnswer: actualTrueAnswer,
-      aiLied: isAiLying,
-      isWin: wonThisRound,
-      points: "-Life",
-    });
-    loseLife(4000);
-  }
-}
-
-function showVerifyInput(event) {
-  if (!gameIsActive) return;
-  if (verifyBox.style.display === "none" || verifyBox.style.display === "") {
-    verifyBox.style.display = "flex";
-    manualInput.focus();
-  } else {
-    verifyBox.style.display = "none";
-  }
-}
-
-function submitVerification(event) {
-  if (!gameIsActive) return;
-  let playerGuess = parseInt(manualInput.value);
-
-  if (isNaN(playerGuess)) {
-    manualInput.classList.add("error");
-    setTimeout(() => manualInput.classList.remove("error"), 500);
-    alert("Please type a number!");
-    return;
-  }
-
-  gameIsActive = false;
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    timerInterval = null;
-  }
-  gameBody.classList.remove("stress-pulse-active");
-  verifyBox.style.display = "none";
-
-  feedbackText.innerHTML =
-    '<i class="fas fa-spinner fa-spin"></i> Analyzing evidence database...';
-  feedbackText.style.color = "var(--cream)";
-
-  let drumSnd = document.getElementById("drumSound");
-  let sndOn = localStorage.getItem("soundEnabled") !== "false";
-  if (sndOn) {
-    drumSnd.currentTime = 0;
-    drumSnd.play().catch((e) => console.log(e));
-  }
-
-  setTimeout(async () => {
-    drumSnd.pause();
-    let wonRound = false;
-
-    if (playerGuess === actualTrueAnswer) {
-      score += 10;
-      streak++;
-      animateValue(scoreValue);
-      animateValue(streakValue);
-
-      feedbackText.innerHTML =
-        '<i class="fas fa-check-circle" style="color:#39ff14;"></i> VERIFIED! Correct answer. +10 POINTS';
-      feedbackText.style.color = "#39ff14";
-      flashScreen("correct");
-      if (isAiLying) robotSpeak("You caught my deception.");
-      else robotSpeak("I told you I was right.");
-      showNotification("+10 POINTS!", "success");
-
-      wonRound = true;
-      gameHistoryArray.push({
-        round: currentRound,
-        decision: "VERIFY (" + playerGuess + ")",
-        aiSaid: aiClaimedAnswer,
-        realAnswer: actualTrueAnswer,
-        aiLied: isAiLying,
-        isWin: wonRound,
-        points: "+10",
-      });
-
-      updateHUD();
-      setTimeout(() => nextRound(), 2000);
-    } else {
-      flashScreen("wrong");
-      showNotification("WRONG ANSWER!", "error");
-      wonRound = false;
-
-      saveMistakeToMemory(actualTrueAnswer);
-      let taunt2 = await getEvilTaunt();
-
-      robotSpeak("Wrong. " + taunt2);
-      feedbackText.innerHTML = `<i class="fas fa-times-circle"></i> WRONG! Real answer was ${actualTrueAnswer}.<br><span class="taunt-text">AI: "${taunt2}"</span>`;
-      feedbackText.style.color = "#ff4d4d";
-
-      gameHistoryArray.push({
-        round: currentRound,
-        decision: "VERIFY (" + playerGuess + ")",
-        aiSaid: aiClaimedAnswer,
-        realAnswer: actualTrueAnswer,
-        aiLied: isAiLying,
-        isWin: wonRound,
-        points: "-Life",
-      });
-      loseLife(4000);
-    }
-  }, 1500);
-}
-
-function loseLife(waitTime) {
-  if (!waitTime) waitTime = 2500;
+function loseLife(delay) {
   lives--;
   streak = 0;
   animateValue(livesDisplay);
-
-  let livesIcon = document.querySelector(".lives-count i");
-  if (livesIcon) {
-    livesIcon.style.animation = "shake 0.3s";
-    setTimeout(() => (livesIcon.style.animation = ""), 300);
-  }
+  animateLivesLost();
   updateHUD();
 
-  if (lives <= 0) setTimeout(() => gameOver(), waitTime);
-  else setTimeout(() => nextRound(), waitTime);
+  if (lives <= 0) setTimeout(() => gameOver(), delay);
+  else setTimeout(() => nextRound(), delay);
 }
 
 function nextRound() {

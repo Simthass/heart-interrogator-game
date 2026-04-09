@@ -1,4 +1,3 @@
-// modal.js
 // controls which modal is open - login, register, or none
 // all functions are window.* because theyre called from
 // the dynamically injected header.html onclick attributes

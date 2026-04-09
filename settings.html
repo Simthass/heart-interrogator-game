@@ -40,8 +40,8 @@
 
         <div class="settings-group">
           <span class="setting-label"
-            ><i class="fas fa-envelope" style="margin-right: 8px"></i>
-            Email</span
+            ><i class="fas fa-envelope" style="margin-right: 8px"></i
+            >Email</span
           >
           <div class="setting-control">
             <input
@@ -56,8 +56,7 @@
 
         <div class="settings-group">
           <span class="setting-label"
-            ><i class="fas fa-user" style="margin-right: 8px"></i>
-            Username</span
+            ><i class="fas fa-user" style="margin-right: 8px"></i>Username</span
           >
           <div class="setting-control">
             <input
@@ -72,7 +71,7 @@
 
         <div class="settings-group">
           <span class="setting-label"
-            ><i class="fas fa-user-tag" style="margin-right: 8px"></i> Full
+            ><i class="fas fa-user-tag" style="margin-right: 8px"></i>Full
             Name</span
           >
           <div class="setting-control">
@@ -88,7 +87,7 @@
 
         <div class="settings-group">
           <span class="setting-label"
-            ><i class="fas fa-calendar" style="margin-right: 8px"></i> Member
+            ><i class="fas fa-calendar" style="margin-right: 8px"></i>Member
             Since</span
           >
           <div class="setting-control">
@@ -106,7 +105,7 @@
 
         <div class="settings-group">
           <span class="setting-label"
-            ><i class="fas fa-lock" style="margin-right: 8px"></i> Current</span
+            ><i class="fas fa-lock" style="margin-right: 8px"></i>Current</span
           >
           <div class="setting-control">
             <input
@@ -120,7 +119,7 @@
 
         <div class="settings-group">
           <span class="setting-label"
-            ><i class="fas fa-lock" style="margin-right: 8px"></i> New</span
+            ><i class="fas fa-lock" style="margin-right: 8px"></i>New</span
           >
           <div class="setting-control">
             <input
@@ -134,7 +133,7 @@
 
         <div class="settings-group">
           <span class="setting-label"
-            ><i class="fas fa-lock" style="margin-right: 8px"></i> Confirm</span
+            ><i class="fas fa-lock" style="margin-right: 8px"></i>Confirm</span
           >
           <div class="setting-control">
             <input
@@ -228,135 +227,123 @@
       </p>
     </footer>
 
-    <script src="js/home.js"></script>
-    <script src="js/register.js"></script>
+    <script src="js/cookies.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/account.js"></script>
     <script>
       fetch("header.html")
         .then((res) => res.text())
         .then((data) => {
           document.getElementById("header-placeholder").innerHTML = data;
-
           if (window.updateHeaderAuth) window.updateHeaderAuth();
           if (window.setActiveNav) window.setActiveNav();
-
-          checkLoginAndLoadSettings();
+          checkLoginAndLoad();
         })
-        .catch((err) => {
-          console.log("header load error:", err);
-        });
+        .catch((err) => console.log("header error:", err));
 
-      async function checkLoginAndLoadSettings() {
-        let myToken = getCookie("authToken");
-
-        if (!myToken || myToken === "") {
-          alert("Secure session expired. Please login to access settings.");
+      async function checkLoginAndLoad() {
+        let token = getCookie("authToken");
+        if (!token) {
+          alert("Session expired. Please login.");
           window.location.href = "index.html";
           return;
         }
 
-        let savedDiff = localStorage.getItem("gameDifficulty") || "hard";
-        document.getElementById("difficultySelect").value = savedDiff;
+        // restore saved game preferences
+        document.getElementById("difficultySelect").value =
+          localStorage.getItem("gameDifficulty") || "hard";
+        document.getElementById("soundToggle").checked =
+          localStorage.getItem("soundEnabled") !== "false";
+        document.getElementById("voiceToggle").checked =
+          localStorage.getItem("voiceEnabled") !== "false";
 
-        let soundEnabled = localStorage.getItem("soundEnabled") !== "false";
-        document.getElementById("soundToggle").checked = soundEnabled;
-
-        let voiceEnabled = localStorage.getItem("voiceEnabled") !== "false";
-        document.getElementById("voiceToggle").checked = voiceEnabled;
-
-        // fetch using secure header
         try {
           let res = await fetch("http://localhost:3000/api/user-info", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + myToken,
+              Authorization: "Bearer " + token,
             },
             body: JSON.stringify({}),
           });
           let data = await res.json();
-
           if (res.ok) {
-            document.getElementById("emailInput").value =
-              data.email || "No email";
+            document.getElementById("emailInput").value = data.email || "";
             document.getElementById("usernameInput").value =
-              data.username || "No username";
+              data.username || "";
             document.getElementById("fullnameInput").value =
-              data.fullname || "No name";
-
-            if (data.createdAt) {
-              let joinedDate = new Date(data.createdAt);
-              document.getElementById("joinedInput").value =
-                joinedDate.toLocaleDateString();
-            } else {
-              document.getElementById("joinedInput").value = "Unknown";
-            }
-          } else {
-            console.log("failed to load user data");
+              data.fullname || "";
+            document.getElementById("joinedInput").value = data.createdAt
+              ? new Date(data.createdAt).toLocaleDateString()
+              : "Unknown";
           }
         } catch (e) {
-          console.log("settings fetch error:", e);
+          console.log("settings load error:", e);
         }
       }
 
-      function showTab(tabName, btn) {
+      function showTab(name, btn) {
         document.getElementById("accountSettings").style.display = "none";
         document.getElementById("gameSettings").style.display = "none";
-
         document
           .querySelectorAll(".settings-tab")
           .forEach((t) => t.classList.remove("active"));
-
-        if (tabName === "account") {
-          document.getElementById("accountSettings").style.display = "block";
-        } else if (tabName === "game") {
-          document.getElementById("gameSettings").style.display = "block";
-        }
+        document.getElementById(
+          name === "account" ? "accountSettings" : "gameSettings",
+        ).style.display = "block";
         btn.classList.add("active");
       }
 
       function saveDifficulty() {
-        let diff = document.getElementById("difficultySelect").value;
-        localStorage.setItem("gameDifficulty", diff);
-        showNotification("Difficulty saved!");
+        localStorage.setItem(
+          "gameDifficulty",
+          document.getElementById("difficultySelect").value,
+        );
+        showToast("Difficulty saved!");
       }
 
       function toggleSound() {
-        let enabled = document.getElementById("soundToggle").checked;
-        localStorage.setItem("soundEnabled", enabled);
+        localStorage.setItem(
+          "soundEnabled",
+          document.getElementById("soundToggle").checked,
+        );
       }
 
       function toggleVoice() {
-        let enabled = document.getElementById("voiceToggle").checked;
-        localStorage.setItem("voiceEnabled", enabled);
+        localStorage.setItem(
+          "voiceEnabled",
+          document.getElementById("voiceToggle").checked,
+        );
       }
 
       function saveGameSettings() {
         saveDifficulty();
         toggleSound();
         toggleVoice();
-        showNotification("Settings saved!");
+        showToast("Settings saved!");
       }
 
       async function changePassword() {
-        let myToken = getCookie("authToken");
+        let token = getCookie("authToken");
         let current = document.getElementById("currentPass").value;
-        let newPass = document.getElementById("newPass").value;
+        let newP = document.getElementById("newPass").value;
         let confirm = document.getElementById("confirmPass").value;
 
-        if (!myToken) {
-          alert("Please login first");
+        if (!token) {
+          alert("please login first");
           return;
         }
-        if (!current || !newPass || !confirm) {
-          alert("Please fill all password fields");
+        if (!current || !newP || !confirm) {
+          alert("fill all password fields");
           return;
         }
-        if (newPass !== confirm) {
-          alert("New passwords do not match!");
+        if (newP !== confirm) {
+          alert("new passwords dont match");
           return;
         }
-        if (newPass.length < 8) {
-          alert("New password must be at least 8 characters");
+        if (newP.length < 8) {
+          alert("new password needs at least 8 characters");
           return;
         }
 
@@ -365,39 +352,30 @@
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + myToken,
+              Authorization: "Bearer " + token,
             },
-            body: JSON.stringify({
-              oldPass: current,
-              newPass: newPass,
-            }),
+            body: JSON.stringify({ oldPass: current, newPass: newP }),
           });
-
           let data = await res.json();
-
           if (res.ok) {
             alert("Password changed successfully!");
             document.getElementById("currentPass").value = "";
             document.getElementById("newPass").value = "";
             document.getElementById("confirmPass").value = "";
           } else {
-            alert(data.msg || "Failed to change password");
+            alert(data.msg || "failed to change password");
           }
         } catch (e) {
-          console.log("password change error:", e);
-          alert("Error connecting to server");
+          alert("server error");
         }
       }
 
-      function showNotification(msg) {
-        let notif = document.createElement("div");
-        notif.className = "notification success";
-        notif.innerHTML = msg;
-        document.body.appendChild(notif);
-
-        setTimeout(() => {
-          notif.remove();
-        }, 2000);
+      function showToast(msg) {
+        let el = document.createElement("div");
+        el.className = "notification success";
+        el.innerHTML = msg;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 2000);
       }
     </script>
   </body>

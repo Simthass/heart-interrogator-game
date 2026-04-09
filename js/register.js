@@ -1,195 +1,158 @@
-// password strength checker
-// returns a score 0-100 based on how strong the password is
-function checkPasswordStrength(pw) {
+// handles new account creation
+// also includes password strength checker used in the register form
+
+// quick check - just needs @ and a dot, proper validation is on the server
+function isEmailValid(email) {
+  return email.includes("@") && email.includes(".");
+}
+
+// returns 0-100 score based on password complexity
+// used to drive the strength bar colour in the form
+function getPasswordStrength(pw) {
   let score = 0;
-  if (pw.length >= 8) score += 25; // min length
-  if (pw.length >= 12) score += 25; // bonus for longer
-  if (/[A-Z]/.test(pw)) score += 25; // has uppercase letter
-  if (/[0-9]/.test(pw)) score += 25; // has a number
+  if (pw.length >= 8) score += 25;
+  if (pw.length >= 12) score += 25;
+  if (/[A-Z]/.test(pw)) score += 25;
+  if (/[0-9]/.test(pw)) score += 25;
   return score;
 }
 
-// update the visual strength bar in register form
-// called everytime user types in password field
 function updateStrengthBar(pw) {
-  let sBar = document.getElementById("strengthBar");
-  if (!sBar) return; // not on register page
+  let bar = document.getElementById("strengthBar");
+  if (!bar) return;
 
-  let strScore = checkPasswordStrength(pw);
-  sBar.style.width = strScore + "%";
+  let strength = getPasswordStrength(pw);
+  bar.style.width = strength + "%";
 
-  // color changes based on strength
-  if (strScore <= 25) {
-    sBar.style.background = "#ef4444"; // red = weak
-  } else if (strScore <= 50) {
-    sBar.style.background = "#f59e0b"; // orange = ok
-  } else if (strScore <= 75) {
-    sBar.style.background = "#eab308"; // yellow = good
-  } else {
-    sBar.style.background = "#10b981"; // green = strong!
-  }
+  if (strength <= 25) bar.style.background = "#ef4444";
+  else if (strength <= 50) bar.style.background = "#f59e0b";
+  else if (strength <= 75) bar.style.background = "#eab308";
+  else bar.style.background = "#10b981";
 }
 
-// simple email check - just check it has @ and a dot
-function checkEmailValid(emailStr) {
-  return emailStr.includes("@") && emailStr.includes(".");
-}
-
-// show error message inside register form
-// same idea as login error box
-function showRegisterError(errMsg) {
+function showRegisterError(msg) {
   let errBox = document.getElementById("registerErrorBox");
 
   if (!errBox) {
     errBox = document.createElement("div");
     errBox.id = "registerErrorBox";
     errBox.style.cssText =
-      "color:#ff4d4d; background:rgba(255,77,77,0.1); border:1px solid rgba(255,77,77,0.4); padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:12px;";
-
+      "color:#ff4d4d;background:rgba(255,77,77,0.1);border:1px solid rgba(255,77,77,0.4);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;";
     let frm = document.getElementById("registerForm");
     if (frm) frm.insertBefore(errBox, frm.firstChild);
   }
 
-  errBox.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + errMsg;
+  errBox.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + msg;
 
-  // clear after 5 sec
   setTimeout(() => {
     if (errBox) errBox.innerHTML = "";
   }, 5000);
 }
 
-// main registration form setup
 function setupRegisterForm() {
-  let regFrm = document.getElementById("registerForm");
-  if (!regFrm) return; // if no register form on this page skip
+  let frm = document.getElementById("registerForm");
+  if (!frm) return;
 
-  // attach password strength event - update bar as user types
-  // i check for both id names becuase some pages use different id
-  let passFieldEl =
+  // hook up the password strength bar as they type
+  let passField =
     document.getElementById("regPassword") ||
     document.getElementById("newPassword");
-
-  if (passFieldEl) {
-    passFieldEl.addEventListener("input", function () {
+  if (passField) {
+    passField.addEventListener("input", function () {
       updateStrengthBar(this.value);
     });
   }
 
-  // main submit event
-  regFrm.addEventListener("submit", async function (ev) {
-    ev.preventDefault();
+  frm.addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-    // read all form values
-    let fullNm = document.getElementById("regFullName")?.value?.trim() || "";
-    let uNm = document.getElementById("regUsername")?.value?.trim() || "";
-    let emailNm = document.getElementById("regEmail")?.value?.trim() || "";
-    let passNm = document.getElementById("regPassword")?.value || "";
-    let confPassNm = document.getElementById("regConfirmPassword")?.value || "";
+    let fullname = document.getElementById("regFullName")?.value?.trim() || "";
+    let username = document.getElementById("regUsername")?.value?.trim() || "";
+    let email = document.getElementById("regEmail")?.value?.trim() || "";
+    let password = document.getElementById("regPassword")?.value || "";
+    let confirm = document.getElementById("regConfirmPassword")?.value || "";
     let termsOk = document.getElementById("agreeTerms")?.checked || false;
 
-    // --- validation ---
-    if (!fullNm || !uNm || !emailNm || !passNm || !confPassNm) {
-      showRegisterError("Please fill in all fields");
+    if (!fullname || !username || !email || !password || !confirm) {
+      showRegisterError("please fill in all fields");
       return;
     }
 
     if (!termsOk) {
-      showRegisterError("You must agree to Terms & Privacy Policy");
+      showRegisterError("you need to agree to the terms");
       return;
     }
 
-    if (!checkEmailValid(emailNm)) {
-      showRegisterError("Please enter a valid email address");
+    if (!isEmailValid(email)) {
+      showRegisterError("email doesnt look right");
       return;
     }
 
-    if (uNm.length < 3) {
-      showRegisterError("Username must be atleast 3 characters long");
+    if (username.length < 3) {
+      showRegisterError("username needs at least 3 characters");
       return;
     }
 
-    if (passNm.length < 8) {
-      showRegisterError("Password must be atleast 8 characters");
+    if (password.length < 8) {
+      showRegisterError("password needs at least 8 characters");
       return;
     }
 
-    if (passNm !== confPassNm) {
-      showRegisterError("Passwords do not match!");
+    if (password !== confirm) {
+      showRegisterError("passwords dont match");
       return;
     }
 
-    // weak password just log a warning but dont block
-    let pwStrength = checkPasswordStrength(passNm);
-    if (pwStrength <= 25) {
-      console.log("weak password but user allowed to proceed");
-    }
-
-    // show loading state on button
-    let subBtn = regFrm.querySelector("button[type='submit']");
-    let origBtnTxt = subBtn ? subBtn.innerHTML : "";
-    if (subBtn) {
-      subBtn.innerHTML =
-        '<i class="fas fa-spinner fa-spin"></i> Registering...';
-      subBtn.disabled = true;
+    let btn = frm.querySelector("button[type='submit']");
+    let origHtml = btn ? btn.innerHTML : "";
+    if (btn) {
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+      btn.disabled = true;
     }
 
     try {
-      // send registration data to server API
-      // server will hash password, save to MongoDB and return JWT token
-      let regRes = await fetch("http://localhost:3000/api/reg", {
+      let res = await fetch("http://localhost:3000/api/reg", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          fullname: fullNm,
-          username: uNm,
-          email: emailNm,
-          password: passNm,
-          confirmPass: confPassNm,
+          fullname,
+          username,
+          email,
+          password,
+          confirmPass: confirm,
         }),
       });
 
-      let regData = await regRes.json();
+      let data = await res.json();
 
-      if (regRes.ok) {
-        // auto-login after successful registration
-        // save token and username as cookies (virtual identity established!)
-        setCookie("authToken", regData.token, 15);
-        setCookie("loggedUser", regData.user.name, 15);
+      if (res.ok) {
+        // auto-login after successful reg - save token + username to cookies
+        setCookie("authToken", data.token, 15);
+        setCookie("loggedUser", data.user.name, 15);
 
-        console.log("registration success for:", uNm);
-        alert("Registration successful! Welcome Detective " + uNm + "!");
+        alert("Welcome Detective " + username + "!");
 
-        // close modal and refresh header
         if (window.closeModals) window.closeModals();
         if (window.updateHeaderAuth) window.updateHeaderAuth();
 
-        // if on a dedicated register page redirect to home
         if (window.location.pathname.includes("register.html")) {
           window.location.href = "index.html";
         }
       } else {
-        // server returned error (username taken etc)
         showRegisterError(
-          regData.msg ||
-            "Registration failed. Username or email might already exist.",
+          data.msg || "registration failed, try a different username",
         );
       }
     } catch (err) {
-      console.log("registration error:", err);
-      showRegisterError(
-        "Cannot connect to server. Make sure server is running.",
-      );
+      console.log("register error:", err);
+      showRegisterError("cant connect to server");
     } finally {
-      // always restore button
-      if (subBtn) {
-        subBtn.innerHTML = origBtnTxt;
-        subBtn.disabled = false;
+      if (btn) {
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
       }
     }
   });
 }
 
-// run on page load
-document.addEventListener("DOMContentLoaded", function () {
-  setupRegisterForm();
-});
+document.addEventListener("DOMContentLoaded", setupRegisterForm);

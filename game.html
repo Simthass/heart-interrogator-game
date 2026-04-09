@@ -20,12 +20,12 @@
       <div class="game-info-left">
         <img src="public/Logo.png" alt="Logo" class="game-logo-mini" />
         <div class="info-item">
-          <i class="far fa-clock"></i
-          ><span>R<span id="currentRound">1</span>/10</span>
+          <i class="far fa-clock"></i>
+          <span>R<span id="currentRound">1</span>/10</span>
         </div>
         <div class="info-item lives-count">
-          <i class="fas fa-heart" style="color: #fe9e84"></i
-          ><span id="livesDisplay">3</span>
+          <i class="fas fa-heart" style="color: #fe9e84"></i>
+          <span id="livesDisplay">3</span>
         </div>
       </div>
 
@@ -39,12 +39,12 @@
 
       <div class="game-info-right">
         <div class="info-item">
-          <i class="fas fa-star" style="color: #fe9e84"></i
-          ><span id="scoreValue">0</span>
+          <i class="fas fa-star" style="color: #fe9e84"></i>
+          <span id="scoreValue">0</span>
         </div>
         <div class="info-item">
-          <i class="fas fa-fire" style="color: #fe9e84"></i
-          ><span id="streakValue">0</span>
+          <i class="fas fa-fire" style="color: #fe9e84"></i>
+          <span id="streakValue">0</span>
         </div>
         <button
           class="exit-btn"
@@ -64,7 +64,6 @@
             <div class="claim-label">CLAIMS</div>
             <div class="claim-number" id="suspectAnswer">?</div>
           </div>
-
           <div class="confidence-meter" id="meterBoxDiv">
             <div class="conf-label">
               <span>CONF</span><span id="confValue">0%</span>
@@ -81,8 +80,9 @@
         <div class="evidence-frame">
           <div class="puzzle-image" id="imageContainer">
             <div class="image-placeholder" id="loadingState">
-              <i class="fas fa-circle-notch fa-spin"></i><span>LOADING...</span
-              ><small>Heart API</small>
+              <i class="fas fa-circle-notch fa-spin"></i>
+              <span>LOADING...</span>
+              <small>Heart API</small>
             </div>
             <img
               id="apiImage"
@@ -115,10 +115,7 @@
             <div class="card-title">TRUST</div>
             <div class="card-info">Accept AI answer</div>
             <div class="card-points">+20</div>
-            <button
-              class="decision-btn trust-btn"
-              onclick="trustSuspect(event)"
-            >
+            <button class="decision-btn trust-btn" onclick="trustSuspect()">
               <i class="fas fa-check-circle"></i> TRUST
             </button>
           </div>
@@ -128,10 +125,7 @@
             <div class="card-title">VERIFY</div>
             <div class="card-info">Count yourself</div>
             <div class="card-points">+10</div>
-            <button
-              class="decision-btn verify-btn"
-              onclick="showVerifyInput(event)"
-            >
+            <button class="decision-btn verify-btn" onclick="showVerifyInput()">
               <i class="fas fa-calculator"></i> VERIFY
             </button>
 
@@ -143,7 +137,7 @@
                 min="0"
                 max="99"
               />
-              <button class="submit-btn" onclick="submitVerification(event)">
+              <button class="submit-btn" onclick="submitVerification()">
                 <i class="fas fa-arrow-right"></i> GO
               </button>
             </div>
@@ -157,7 +151,19 @@
       src="https://actions.google.com/sounds/v1/foley/drum_roll.ogg"
     ></audio>
 
-    <script src="js/home.js"></script>
+    <!-- load order matters:
+         cookies first (getCookie needed by everything)
+         then gameState (shared vars)
+         then ui/timer/api/audio/rank/save modules
+         then game.js last (orchestrator that calls all the above) -->
+    <script src="js/cookies.js"></script>
+    <script src="js/gameState.js"></script>
+    <script src="js/gameUI.js"></script>
+    <script src="js/gameTimer.js"></script>
+    <script src="js/gameAPI.js"></script>
+    <script src="js/gameAudio.js"></script>
+    <script src="js/gameRank.js"></script>
+    <script src="js/gameSave.js"></script>
     <script src="js/game.js"></script>
   </body>
 </html>

@@ -15,7 +15,6 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <style>
-      /* custom grid for new roles and 20 achievements */
       .progression-grid {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
@@ -46,7 +45,6 @@
         font-size: 11px;
         opacity: 0.7;
       }
-
       .rank-item.locked {
         opacity: 0.3;
         filter: grayscale(1);
@@ -57,13 +55,11 @@
         box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
         background: rgba(57, 255, 20, 0.1);
       }
-
       .achievements-grid {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         gap: 15px;
       }
-
       @media (max-width: 1024px) {
         .progression-grid,
         .achievements-grid {
@@ -171,46 +167,42 @@
       </p>
     </footer>
 
-    <script src="js/home.js"></script>
+    <script src="js/cookies.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/header.js"></script>
     <script src="js/pages.js"></script>
     <script>
-      function getCookie(name) {
-        let match = document.cookie.match(
-          new RegExp("(^| )" + name + "=([^;]+)"),
-        );
-        return match ? match[2] : null;
-      }
-
       fetch("header.html")
         .then((res) => res.text())
         .then((data) => {
           document.getElementById("header-placeholder").innerHTML = data;
           if (window.updateHeaderAuth) window.updateHeaderAuth();
           if (window.setActiveNav) window.setActiveNav();
-          checkLoginAndLoadStats();
+          loadStats();
         });
 
-      async function checkLoginAndLoadStats() {
-        let secureToken = getCookie("authToken");
+      async function loadStats() {
+        let token = getCookie("authToken");
         let username = getCookie("loggedUser");
 
-        if (!secureToken || secureToken === "") {
+        if (!token) {
           document.getElementById("profNameTag").innerText = "Not Logged In";
           document.getElementById("profUserTag").innerText = "@guest";
           document.getElementById("recentGamesBox").innerHTML =
-            '<p style="text-align: center; padding: 20px;">Please login.</p>';
+            '<p style="text-align:center;padding:20px;">Please login to see your stats.</p>';
           return;
         }
 
         document.getElementById("profNameTag").innerText = username;
         document.getElementById("profUserTag").innerText = "@" + username;
 
+        // load full name from server
         try {
           let infoRes = await fetch("http://localhost:3000/api/user-info", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + secureToken,
+              Authorization: "Bearer " + token,
             },
             body: JSON.stringify({}),
           });
@@ -222,41 +214,43 @@
           console.log(e);
         }
 
+        // load aggregated stats
         try {
           let statsRes = await fetch("http://localhost:3000/api/my-stats", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + secureToken,
+              Authorization: "Bearer " + token,
             },
             body: JSON.stringify({}),
           });
-          let statsData = await statsRes.json();
-
+          let stats = await statsRes.json();
           if (statsRes.ok) {
-            let sScore = statsData.totalScore || 0;
-            let sWins = statsData.wins || 0;
-            let sAcc = statsData.avgAccuracy || 0;
-            let sPlayed = statsData.gamesPlayed || 0;
+            document.getElementById("totScoreDisplay").innerText =
+              stats.totalScore || 0;
+            document.getElementById("winsDisplay").innerText = stats.wins || 0;
+            document.getElementById("accDisplay").innerText =
+              (stats.avgAccuracy || 0) + "%";
+            document.getElementById("gamesPlayedDisplay").innerText =
+              stats.gamesPlayed || 0;
 
-            document.getElementById("totScoreDisplay").innerText = sScore;
-            document.getElementById("winsDisplay").innerText = sWins;
-            document.getElementById("accDisplay").innerText = sAcc + "%";
-            document.getElementById("gamesPlayedDisplay").innerText = sPlayed;
-
-            updateRankAndRoles(sWins);
-
-            // get local extra stats to pass to achievements
-            let extraObj = JSON.parse(
+            updateRankAndRoles(stats.wins || 0);
+            let extras = JSON.parse(
               localStorage.getItem("playerExtraObj") || "{}",
             );
-            loadAchievements(sWins, sPlayed, sAcc, sScore, extraObj);
+            loadAchievements(
+              stats.wins || 0,
+              stats.gamesPlayed || 0,
+              stats.avgAccuracy || 0,
+              stats.totalScore || 0,
+              extras,
+            );
           }
         } catch (e) {
           console.log(e);
         }
 
-        // recent games fetch
+        // load recent 10 games
         try {
           let recentRes = await fetch(
             "http://localhost:3000/api/recent-games",
@@ -264,28 +258,27 @@
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + secureToken,
+                Authorization: "Bearer " + token,
               },
               body: JSON.stringify({}),
             },
           );
-          let recentData = await recentRes.json();
-          let gamesBox = document.getElementById("recentGamesBox");
-          if (recentRes.ok && recentData.length > 0) {
-            gamesBox.innerHTML = "";
-            for (let i = 0; i < recentData.length; i++) {
-              let game = recentData[i];
-              let date = new Date(game.playDate);
+          let recent = await recentRes.json();
+          let box = document.getElementById("recentGamesBox");
+          if (recentRes.ok && recent.length > 0) {
+            box.innerHTML = "";
+            for (let g of recent) {
+              let date = new Date(g.playDate);
               let dateStr =
                 date.toLocaleDateString() + " " + date.toLocaleTimeString();
-              let winClass = game.isWin ? "success" : "fail";
-              let winIcon = game.isWin ? "fa-check-circle" : "fa-times-circle";
-              gamesBox.innerHTML += `
-                  <div class="game-record">
-                    <span class="record-date"><i class="far fa-calendar"></i> ${dateStr}</span>
-                    <span class="record-score" style="color: ${game.isWin ? "var(--coral)" : "#ff4d4d"}">${game.score} pts</span>
-                    <span class="record-status ${winClass}"><i class="fas ${winIcon}"></i> ${game.isWin ? "Won" : "Lost"}</span>
-                  </div>`;
+              let winColor = g.isWin ? "var(--coral)" : "#ff4d4d";
+              let icon = g.isWin ? "fa-check-circle" : "fa-times-circle";
+              box.innerHTML += `
+                <div class="game-record">
+                  <span class="record-date"><i class="far fa-calendar"></i> ${dateStr}</span>
+                  <span class="record-score" style="color:${winColor}">${g.score} pts</span>
+                  <span class="record-status ${g.isWin ? "success" : "fail"}"><i class="fas ${icon}"></i> ${g.isWin ? "Won" : "Lost"}</span>
+                </div>`;
             }
           }
         } catch (e) {

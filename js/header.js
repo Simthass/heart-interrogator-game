@@ -1,4 +1,3 @@
-// header.js
 // handles everything to do with the injected header.html
 // - shows login/register buttons when not logged in
 // - shows username + logout when logged in

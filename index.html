@@ -90,8 +90,8 @@
             <i class="fas fa-brain"></i>
             <h3>AI DECEPTION</h3>
             <p>
-              The AI suspect might lie or tell the truth. You never know! It
-              uses real API to decide randomly.
+              The AI suspect might lie or tell the truth. It uses a real
+              external API to decide randomly.
             </p>
             <span class="feature-tag">50/50 Chance</span>
           </div>
@@ -99,7 +99,7 @@
             <i class="fas fa-balance-scale"></i>
             <h3>RISK VS REWARD</h3>
             <p>
-              Trust the AI: +20 points but if it lies you lose life. Verify
+              Trust the AI: +20 points but if it lies you lose a life. Verify
               yourself: +10 points but safe.
             </p>
             <span class="feature-tag">Strategic Choice</span>
@@ -108,7 +108,7 @@
             <i class="fas fa-clock"></i>
             <h3>TIME PRESSURE</h3>
             <p>
-              Only 10 seconds to decide! Unlock badges to face harder dynamic
+              Only 10 seconds to decide! Earn badges to face harder dynamic
               difficulties.
             </p>
             <span class="feature-tag">Fast Decisions</span>
@@ -215,7 +215,8 @@
         <div class="cta-box">
           <h2>READY FOR INTERROGATION?</h2>
           <p>
-            Join 1000+ detectives testing their instincts against AI deception.
+            Join detectives worldwide testing their instincts against AI
+            deception.
           </p>
           <div class="cta-buttons" id="bottomCtaButtons">
             <button
@@ -254,9 +255,9 @@
               placeholder="Password"
               required
             />
-            <span class="toggle-password" onclick="togglePassword('password')"
-              ><i class="fas fa-eye"></i
-            ></span>
+            <span class="toggle-password" onclick="togglePassword('password')">
+              <i class="fas fa-eye"></i>
+            </span>
           </div>
           <button type="submit" class="btn-submit">
             <i class="fas fa-sign-in-alt"></i> LOGIN
@@ -275,8 +276,8 @@
         <h2 class="modal-title">CREATE ACCOUNT</h2>
         <form id="registerForm" class="auth-form">
           <div class="form-group">
-            <i class="fas fa-user input-icon"></i
-            ><input
+            <i class="fas fa-user input-icon"></i>
+            <input
               type="text"
               id="regFullName"
               placeholder="Full Name"
@@ -284,8 +285,8 @@
             />
           </div>
           <div class="form-group">
-            <i class="fas fa-id-card input-icon"></i
-            ><input
+            <i class="fas fa-id-card input-icon"></i>
+            <input
               type="text"
               id="regUsername"
               placeholder="Username"
@@ -293,8 +294,8 @@
             />
           </div>
           <div class="form-group">
-            <i class="fas fa-envelope input-icon"></i
-            ><input
+            <i class="fas fa-envelope input-icon"></i>
+            <input
               type="email"
               id="regEmail"
               placeholder="Email Address"
@@ -312,12 +313,13 @@
             <span
               class="toggle-password"
               onclick="togglePassword('regPassword')"
-              ><i class="fas fa-eye"></i
-            ></span>
+            >
+              <i class="fas fa-eye"></i>
+            </span>
           </div>
           <div class="form-group">
-            <i class="fas fa-lock input-icon"></i
-            ><input
+            <i class="fas fa-lock input-icon"></i>
+            <input
               type="password"
               id="regConfirmPassword"
               placeholder="Confirm Password"
@@ -325,11 +327,10 @@
             />
           </div>
           <div class="form-options">
-            <label class="checkbox-label"
-              ><input type="checkbox" id="agreeTerms" required /><span
-                >I agree to Terms & Privacy</span
-              ></label
-            >
+            <label class="checkbox-label">
+              <input type="checkbox" id="agreeTerms" required />
+              <span>I agree to Terms & Privacy</span>
+            </label>
           </div>
           <button type="submit" class="btn-submit">
             <i class="fas fa-user-plus"></i> REGISTER
@@ -349,10 +350,13 @@
       </p>
     </footer>
 
-    <script src="js/home.js"></script>
+    <script src="js/cookies.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/header.js"></script>
     <script src="js/login.js"></script>
     <script src="js/register.js"></script>
     <script>
+      // load the shared header component into the placeholder
       fetch("header.html")
         .then((res) => res.text())
         .then((data) => {
@@ -361,97 +365,80 @@
           if (window.setActiveNav) window.setActiveNav();
           updateBottomCta();
         })
-        .catch((err) => console.log("header error:", err));
+        .catch((err) => console.log("header load error:", err));
 
+      // swap the bottom CTA to just "start game" if already logged in
       function updateBottomCta() {
-        let nameInCookie = null;
-        let ca = document.cookie.split(";");
-        for (let i = 0; i < ca.length; i++) {
-          let c = ca[i].trim();
-          if (c.indexOf("loggedUser=") == 0)
-            nameInCookie = c.substring(11, c.length);
-        }
-        if (nameInCookie && nameInCookie !== "") {
+        let user = getCookie("loggedUser");
+        if (user && user !== "") {
           document.getElementById("bottomCtaButtons").innerHTML = `
-              <button class="btn-cta btn-cta-primary" style="width: 300px;" onclick="window.location.href = 'game.html'">
-                <i class="fas fa-play"></i> START INTERROGATION
-              </button>
-            `;
+            <button class="btn-cta btn-cta-primary" style="width:300px;" onclick="window.location.href='game.html'">
+              <i class="fas fa-play"></i> START INTERROGATION
+            </button>`;
         }
       }
 
-      async function fetchRealGlobalStats() {
+      async function fetchGlobalStats() {
         try {
-          let datRes = await fetch("http://localhost:3000/api/global-data");
-          if (!datRes.ok) return;
-          let finalData = await datRes.json();
+          let res = await fetch("http://localhost:3000/api/global-data");
+          if (!res.ok) return;
+          let data = await res.json();
           document.getElementById("realGlobalUsers").innerText =
-            finalData.totalDetectives;
+            data.totalDetectives;
           document.getElementById("realGlobalGames").innerText =
-            finalData.gamesPlayed;
+            data.gamesPlayed;
           document.getElementById("realGlobalAcc").innerText =
-            finalData.avgAcc + "%";
-
-          // i commented this out because top score should be the total score of a user
-          // not just one highest game! we do this in fetchLeaderBoard now.
-          // document.getElementById("realGlobalTop").innerText =
-          //   finalData.topScore;
+            data.avgAcc + "%";
         } catch (err) {
-          console.log("cant get global stats", err);
+          console.log("global stats error:", err);
         }
       }
 
-      // new function to get leaderboard
-      async function fetchLeaderBoard() {
+      async function fetchLeaderboard() {
         try {
-          let ldRes = await fetch("http://localhost:3000/api/leaderboard");
-          if (!ldRes.ok) return;
-          let ldData = await ldRes.json();
+          let res = await fetch("http://localhost:3000/api/leaderboard");
+          if (!res.ok) return;
+          let data = await res.json();
 
-          // this puts the number 1 guy score to the global stats box
-          // array is sorted so 0 is first place!
-          if (ldData.length > 0) {
-            let number1GuyTotalScore = ldData[0].score;
-            document.getElementById("realGlobalTop").innerText =
-              number1GuyTotalScore;
+          if (data.length > 0) {
+            document.getElementById("realGlobalTop").innerText = data[0].score;
           }
 
-          let tBody = document.getElementById("leaderboardBody");
-          tBody.innerHTML = ""; // clear loading
+          let tbody = document.getElementById("leaderboardBody");
+          tbody.innerHTML = "";
 
-          for (let i = 0; i < ldData.length; i++) {
+          for (let i = 0; i < data.length; i++) {
             let rankClass = "";
-            let rankIcon = i + 1;
+            let rankLabel = i + 1;
             if (i === 0) {
               rankClass = "rank-1";
-              rankIcon = '<i class="fas fa-trophy"></i> 1';
+              rankLabel = '<i class="fas fa-trophy"></i> 1';
             }
             if (i === 1) {
               rankClass = "rank-2";
-              rankIcon = '<i class="fas fa-medal"></i> 2';
+              rankLabel = '<i class="fas fa-medal"></i> 2';
             }
             if (i === 2) {
               rankClass = "rank-3";
-              rankIcon = '<i class="fas fa-award"></i> 3';
+              rankLabel = '<i class="fas fa-award"></i> 3';
             }
 
-            tBody.innerHTML += `
-                    <tr>
-                        <td class="${rankClass}">${rankIcon}</td>
-                        <td style="font-weight: bold;">@${ldData[i].username}</td>
-                        <td style="color: var(--coral);">${ldData[i].score} pts</td>
-                        <td>${ldData[i].accuracy}%</td>
-                    </tr>
-                  `;
+            tbody.innerHTML += `
+              <tr>
+                <td class="${rankClass}">${rankLabel}</td>
+                <td style="font-weight:bold;">@${data[i].username}</td>
+                <td style="color:var(--coral);">${data[i].score} pts</td>
+                <td>${data[i].accuracy}%</td>
+              </tr>`;
           }
         } catch (err) {
-          console.log("leaderboard error", err);
+          console.log("leaderboard error:", err);
         }
       }
 
       document.addEventListener("DOMContentLoaded", () => {
-        fetchRealGlobalStats();
-        fetchLeaderBoard();
+        fetchGlobalStats();
+        fetchLeaderboard();
       });
     </script>
   </body>

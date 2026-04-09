@@ -17,6 +17,7 @@
   </head>
   <body class="results-page">
     <div id="header-placeholder"></div>
+
     <div class="results-container">
       <div class="results-header">
         <h1 class="results-title">
@@ -53,20 +54,20 @@
 
           <div class="summary-stats">
             <div class="summary-item">
-              <span class="summary-label">Accuracy:</span
-              ><span class="summary-value" id="accRate">0%</span>
+              <span class="summary-label">Accuracy:</span>
+              <span class="summary-value" id="accRate">0%</span>
             </div>
             <div class="summary-item">
-              <span class="summary-label">Trusts:</span
-              ><span class="summary-value" id="trustCount">0</span>
+              <span class="summary-label">Trusts:</span>
+              <span class="summary-value" id="trustCount">0</span>
             </div>
             <div class="summary-item">
-              <span class="summary-label">Verifies:</span
-              ><span class="summary-value" id="verifyCount">0</span>
+              <span class="summary-label">Verifies:</span>
+              <span class="summary-value" id="verifyCount">0</span>
             </div>
             <div class="summary-item">
-              <span class="summary-label">Lives:</span
-              ><span class="summary-value" id="finalLives">❤️ 0</span>
+              <span class="summary-label">Lives:</span>
+              <span class="summary-value" id="finalLives">❤️ 0</span>
             </div>
           </div>
 
@@ -104,10 +105,11 @@
       </div>
     </div>
 
-    <script src="js/home.js"></script>
+    <script src="js/cookies.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/header.js"></script>
     <script src="js/results.js"></script>
     <script>
-      // load header into results
       fetch("header.html")
         .then((res) => res.text())
         .then((data) => {
@@ -115,7 +117,7 @@
           if (window.updateHeaderAuth) window.updateHeaderAuth();
           if (window.setActiveNav) window.setActiveNav();
         })
-        .catch((err) => console.log("header load error:", err));
+        .catch((err) => console.log("header error:", err));
     </script>
   </body>
 </html>

@@ -19,28 +19,6 @@ mongoose
   .then(() => console.log("db connected successfully..."))
   .catch((err) => console.log("db connection failed:", err));
 
-// schemas
-const UserSchema = new mongoose.Schema({
-  fullname: String,
-  username: String,
-  email: String,
-  passHash: String,
-  createdAt: { type: Date, default: Date.now },
-});
-const UserModel = mongoose.model("usersData", UserSchema);
-
-const GameSchema = new mongoose.Schema({
-  userId: String,
-  username: String,
-  score: Number,
-  livesLeft: Number,
-  isWin: Boolean,
-  rounds: Number,
-  accuracy: Number,
-  playDate: { type: Date, default: Date.now },
-});
-const GameModel = mongoose.model("gameHistory", GameSchema);
-
 // middleware for token - checks Authorization header and decodes JWT
 function checkTokenMiddleware(req, res, next) {
   let authHead = req.headers.authorization;

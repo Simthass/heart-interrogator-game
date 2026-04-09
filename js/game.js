@@ -1,21 +1,3 @@
-// dom elements
-const timerText = document.getElementById("timerText");
-const timerCircle = document.getElementById("timerCircle");
-const scoreValue = document.getElementById("scoreValue");
-const streakValue = document.getElementById("streakValue");
-const livesDisplay = document.getElementById("livesDisplay");
-const currentRoundDisplay = document.getElementById("currentRound");
-const suspectAnswerDisplay = document.getElementById("suspectAnswer");
-const confValue = document.getElementById("confValue");
-const confFill = document.getElementById("confFill");
-const apiImage = document.getElementById("apiImage");
-const loadingState = document.getElementById("loadingState");
-const feedbackText = document.getElementById("feedbackText");
-const manualInput = document.getElementById("manualInput");
-const verifyBox = document.getElementById("verifyBox");
-const robotIcon = document.querySelector(".robot-icon i");
-const gameBody = document.querySelector(".game-body");
-
 function getCookie(name) {
   let match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
   return match ? match[2] : null;
@@ -120,29 +102,6 @@ async function getEvilTaunt() {
     "Perhaps you should let an abacus do the thinking.",
   ];
   return insultList[Math.floor(Math.random() * insultList.length)];
-}
-
-function showNotification(message, type = "success") {
-  let notifEl = document.createElement("div");
-  notifEl.className = `notification ${type}`;
-  notifEl.innerHTML = message;
-  document.body.appendChild(notifEl);
-  setTimeout(() => notifEl.remove(), 1000);
-}
-
-function flashScreen(type) {
-  if (type === "correct") {
-    gameBody.classList.add("flash-correct");
-    setTimeout(() => gameBody.classList.remove("flash-correct"), 400);
-  } else {
-    gameBody.classList.add("flash-wrong");
-    setTimeout(() => gameBody.classList.remove("flash-wrong"), 400);
-  }
-}
-
-function animateValue(el) {
-  el.classList.add("pulse-value");
-  setTimeout(() => el.classList.remove("pulse-value"), 400);
 }
 
 // robot voice with mechanic 2 (corrupted audio)
@@ -519,14 +478,6 @@ function nextRound() {
     updateHUD();
     fetchNewCase();
   }
-}
-
-function updateHUD() {
-  scoreValue.innerText = score;
-  streakValue.innerText = streak;
-  currentRoundDisplay.innerText = currentRound;
-  livesDisplay.innerText = lives;
-  animateValue(currentRoundDisplay);
 }
 
 function gameOver() {

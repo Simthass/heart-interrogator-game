@@ -1,12 +1,14 @@
-// --- modal open/close/switch ---
-// these must be window.* globals becuase they called from injected header html
+// modal.js
+// controls which modal is open - login, register, or none
+// all functions are window.* because theyre called from
+// the dynamically injected header.html onclick attributes
 
 window.showLogin = function () {
   let loginMod = document.getElementById("loginModal");
   let regMod = document.getElementById("registerModal");
   if (loginMod) loginMod.classList.add("active");
   if (regMod) regMod.classList.remove("active");
-  // clear old errors when opening
+  // wipe any old error messages when reopening
   let errEl = document.getElementById("loginErrorBox");
   if (errEl) errEl.innerHTML = "";
 };
@@ -35,30 +37,22 @@ window.switchToLogin = function () {
   showLogin();
 };
 
-// toggle password field visibility - the eye icon thing
+// toggle the password input between hidden and visible
 window.togglePassword = function (inputId) {
-  let theInput = document.getElementById(inputId);
-  if (!theInput) return;
-  // if password, make it text so user can see it, else hide again
-  if (theInput.type === "password") {
-    theInput.type = "text";
-  } else {
-    theInput.type = "password";
-  }
+  let input = document.getElementById(inputId);
+  if (!input) return;
+  input.type = input.type === "password" ? "text" : "password";
 };
 
-// close modal when user click outside of it
+// close modal when clicking the dark backdrop behind it
 window.addEventListener("click", function (e) {
   let loginMod = document.getElementById("loginModal");
   let regMod = document.getElementById("registerModal");
-  // if the click was directly on the modal backdrop (not content inside), close it
   if (e.target === loginMod) loginMod.classList.remove("active");
   if (e.target === regMod) regMod.classList.remove("active");
 });
 
-// also close if escape key pressed
+// escape key also closes modals
 document.addEventListener("keydown", function (e) {
-  if (e.key === "Escape") {
-    if (window.closeModals) window.closeModals();
-  }
+  if (e.key === "Escape" && window.closeModals) window.closeModals();
 });

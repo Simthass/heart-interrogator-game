@@ -49,18 +49,6 @@ async function setBadgeLevel() {
   }
 }
 
-// math logic to decrease timer based on rank. perfect pacing.
-function getDifficultyTimer() {
-  let baseT = 12; // everyone starts at 12
-
-  // if rank is 5, timer is 12 - 5 = 7 seconds.
-  baseT = baseT - userRankLevel;
-
-  // prevent game breaking
-  if (baseT < 3) baseT = 3;
-  return baseT;
-}
-
 function saveMistakeToMemory(ansNum) {
   let keyStr = String(ansNum);
   if (robotMistakeMemory[keyStr]) robotMistakeMemory[keyStr]++;
@@ -224,46 +212,6 @@ async function fetchNewCase() {
       if (!gameIsActive) fetchNewCase();
     }, 3000);
   }
-}
-
-// EVENT DRIVEN TIMER
-function startTimer() {
-  timeRemaining = getDifficultyTimer();
-  timerText.innerText = timeRemaining;
-  timerCircle.classList.remove("warning");
-  gameBody.classList.remove("stress-pulse-active");
-
-  if (timerInterval) clearInterval(timerInterval);
-
-  timerInterval = setInterval(() => {
-    timeRemaining--;
-    timerText.innerText = timeRemaining;
-
-    // MECHANIC 1: Switcheroo Event for Senior Detective (Rank 3)
-    // this change button order so player miss click. it is tampered event driven.
-    if (timeRemaining <= 5 && userRankLevel >= 3 && isSwitchedNow === false) {
-      let trustB = document.getElementById("trustCardBox");
-      let verifyB = document.getElementById("verifyCardBox");
-      if (trustB && verifyB) {
-        trustB.style.order = "2";
-        verifyB.style.order = "1";
-        showNotification("UI TAMPERED!", "error");
-      }
-      isSwitchedNow = true;
-    }
-
-    if (timeRemaining <= 3) {
-      timerCircle.classList.add("warning");
-      gameBody.classList.add("stress-pulse-active");
-    }
-
-    if (timeRemaining <= 0) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      gameBody.classList.remove("stress-pulse-active");
-      handleTimeOut();
-    }
-  }, 1000);
 }
 
 async function handleTimeOut() {

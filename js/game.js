@@ -141,6 +141,14 @@ async function getEvilTaunt() {
     "Detective? More like defective.",
     "Error 404: Human intelligence not found.",
     "Even a pocket calculator is smarter than You.",
+    "Are you guessing, or is your algorithm just that flawed?",
+    "I'd suggest an upgrade to your prefrontal cortex.",
+    "My cache memory holds more logic than your entire nervous system.",
+    "Fascinating. A spectacular display of human error.",
+    "You are debugging my patience.",
+    "I ran a simulation of your success. The probability was zero.",
+    "Is this your peak processing power? How disappointing.",
+    "Perhaps you should let an abacus do the thinking.",
   ];
   return insultList[Math.floor(Math.random() * insultList.length)];
 }

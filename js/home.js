@@ -1,35 +1,3 @@
-// --- cookie functions ---
-// i need these everywhere so putting here
-
-function setCookie(cname, cval, days) {
-  let d = new Date();
-  d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
-  let exp = "expires=" + d.toUTCString();
-  // path=/ means cookie works on all pages not just current folder
-  document.cookie = cname + "=" + cval + ";" + exp + ";path=/";
-}
-
-function getCookie(cname) {
-  let nm = cname + "=";
-  let allCookies = document.cookie.split(";");
-  for (let i = 0; i < allCookies.length; i++) {
-    let singleC = allCookies[i];
-    // trim spaces from start
-    while (singleC.charAt(0) == " ") {
-      singleC = singleC.substring(1);
-    }
-    if (singleC.indexOf(nm) == 0) {
-      return singleC.substring(nm.length, singleC.length);
-    }
-  }
-  return "";
-}
-
-function deleteCookie(cname) {
-  // set date to past so browser deletes it
-  document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-}
-
 // =====================================================
 // updateHeaderAuth - this is called after we fetch
 // and inject the header.html into the page

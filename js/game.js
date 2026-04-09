@@ -1,34 +1,3 @@
-// --- game state variables ---
-let currentRound = 1;
-let lives = 3;
-let score = 0;
-let streak = 0;
-let timeRemaining = 10;
-let timerInterval = null;
-
-// api related variables
-let actualTrueAnswer = 0;
-let aiClaimedAnswer = 0;
-let isAiLying = false;
-let gameIsActive = false;
-
-// arrays to store history
-let gameHistoryArray = [];
-
-// tracking local stats for new achievements
-let robotMistakeMemory = JSON.parse(
-  localStorage.getItem("robotMistakeMemory") || "{}",
-);
-let totalGamesPlayed = parseInt(
-  localStorage.getItem("totalGamesPlayed") || "0",
-);
-let thisGameMistakes = {};
-
-// dynamic difficulity variables
-let userRankLevel = 0; // 0 to 9 based on 10 tier roles
-let isSwitchedNow = false; // for switcheroo mechanic
-let isBlackoutDone = false; // for blackout mechanic
-
 // dom elements
 const timerText = document.getElementById("timerText");
 const timerCircle = document.getElementById("timerCircle");

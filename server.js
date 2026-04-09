@@ -19,22 +19,6 @@ mongoose
   .then(() => console.log("db connected successfully..."))
   .catch((err) => console.log("db connection failed:", err));
 
-// middleware for token - checks Authorization header and decodes JWT
-function checkTokenMiddleware(req, res, next) {
-  let authHead = req.headers.authorization;
-  if (!authHead) {
-    return res.status(401).json({ msg: "no token found bro access denied" });
-  }
-  let tokenOnly = authHead.split(" ")[1];
-  jwt.verify(tokenOnly, mySecretKey, (err, decodedData) => {
-    if (err) {
-      return res.status(401).json({ msg: "token fake or expired" });
-    }
-    req.userData = decodedData;
-    next();
-  });
-}
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("server running on http://localhost:" + PORT);

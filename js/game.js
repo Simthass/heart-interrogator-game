@@ -3,52 +3,6 @@ function getCookie(name) {
   return match ? match[2] : null;
 }
 
-// we fetch stats from db to directly affect game state.
-async function setBadgeLevel() {
-  let myToken = getCookie("authToken");
-  if (myToken) {
-    try {
-      let res = await fetch("http://localhost:3000/api/my-stats", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + myToken,
-        },
-        body: JSON.stringify({}),
-      });
-      let data = await res.json();
-      if (res.ok) {
-        let userTotalWins = data.wins || 0;
-
-        // checking user how many wins to set hard difficulity (0 to 9 index)
-        if (userTotalWins >= 75)
-          userRankLevel = 9; // Director
-        else if (userTotalWins >= 50)
-          userRankLevel = 8; // Master
-        else if (userTotalWins >= 40)
-          userRankLevel = 7; // Deputy
-        else if (userTotalWins >= 30)
-          userRankLevel = 6; // Chief
-        else if (userTotalWins >= 20)
-          userRankLevel = 5; // Inspector
-        else if (userTotalWins >= 15)
-          userRankLevel = 4; // Lead
-        else if (userTotalWins >= 10)
-          userRankLevel = 3; // Senior (unlocks switcheroo)
-        else if (userTotalWins >= 5)
-          userRankLevel = 2; // Junior
-        else if (userTotalWins >= 2)
-          userRankLevel = 1; // Patrol
-        else userRankLevel = 0; // Noob
-
-        console.log("Player Rank Level loaded: ", userRankLevel);
-      }
-    } catch (e) {
-      console.log("cant get rank level", e);
-    }
-  }
-}
-
 function saveMistakeToMemory(ansNum) {
   let keyStr = String(ansNum);
   if (robotMistakeMemory[keyStr]) robotMistakeMemory[keyStr]++;
